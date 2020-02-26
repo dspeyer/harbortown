@@ -1,0 +1,57 @@
+div.advancer {
+    width: 46px;
+    height: 46px;
+    border-radius: 23px;
+    box-shadow: 4px 4px #777;
+    background: #fdc;
+    position: relative;
+    border: 1px solid #333;
+    margin: 7px;
+}
+
+div.active {
+    box-shadow: 4px 4px #777, 2px 2px 6px 6px blue;
+}
+    
+div.advancer > div.a {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+}
+
+div.advancer > div.b {
+    position: absolute;
+    right: 4px;
+    bottom: 10px;
+}
+
+div.advancer > div {
+    z-index: 2;
+    width: 26px;
+    text-align: center;
+    text-shadow: 1px 1px white, -1px -1px white;
+    font-size:8pt;
+}
+
+div.advancer > div > img {
+    width: 21px;
+    height: 21px;
+    top: 0px;
+    left: 3px;
+    position: absolute;
+    z-index: -1;
+}
+
+div.horiz {
+    display: flex;
+    flex-direction: row;
+}
+
+div.horizw {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin: auto;
+    width: 463px;
+}

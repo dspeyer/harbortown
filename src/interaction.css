@@ -1,0 +1,54 @@
+.clickTarget {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+    z-index: 999;
+    cursor: pointer;
+    background: radial-gradient(ellipse,
+                                transparent 0%,
+                                rgba(128,0,0,0) 50%,
+                                rgba(128,0,0,0.3) 60%,
+                                rgba(255,255,0,0.3) 70%,
+                                rgba(255,255,0,0) 80%,
+                                transparent 100%);
+}
+
+.msg {
+    position: fixed;
+    width: 80vw;
+    top: -3px;
+    left: 10vw;
+    margin: auto;
+    background: #ffd;
+    border: 3px #770 solid;
+}
+
+.pickResourcesDialog {
+    position: fixed;
+    width: 350px;
+    top: 10vw;
+    left: calc( 50vw - 350px / 2 );
+    background: #ffd;
+    border: 3px #770 outset;
+    z-index: 500;
+}
+
+.instructions {
+    position: absolute;
+    background: cyan;
+    opacity: 0.65;
+    border: 2px #077 solid;
+    z-index: 999;
+}
+
+.chosen {
+    box-shadow: 0 0 2px 2px blue;
+}
+
+.prdstate {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}

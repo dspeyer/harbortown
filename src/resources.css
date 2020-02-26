@@ -1,0 +1,91 @@
+.tile {
+    width: 32px;
+    height: 32px;
+    background: #ccc;
+    border: 2px outset #bbb;
+    text-align: center;
+    position: relative;
+    display: inline-block;
+    margin: 2px;
+    text-shadow: 1px 1px white, 1px -1px white, -1px 1px white, -1px -1px white;
+    font-size: 8pt;
+    font-weight: bold;
+    color: black;
+}
+
+.small {
+    font-size:6pt;
+}
+
+.advtrue {
+    background: linear-gradient(-45deg, #ccc, #ccc 20%, #ffb 50%, #ccc 90%);
+}
+
+.tile > img {
+    width: 21px;
+    height: 21px;
+    position: absolute;
+    top: 4px;
+    left: 4px;
+}
+
+.tile > .name {
+    position: relative;
+}
+
+.tile > div {
+    z-index: 2;
+}
+
+.tile > .use {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.tile > .value {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+.money {
+    background: #fe0;
+    border-radius: 16px;
+    font-size: 26px;
+}
+
+
+div.stack {
+    display: flex;
+    flex-direction: row;
+    height: 34px;
+    align-items: center;
+    margin: 4px;
+    position: relative;
+    width: calc( 2em + 70px );
+}
+
+div.stack > div.count {
+    min-width: 2em;
+    text-align: right;
+}
+
+div.stack > div.tiles {
+    width: 70px;
+    height: 34px;
+    position: relative;
+}
+
+div.stack > div.tiles > div.os {
+    position: absolute;
+    top: 0px;
+}
+
+div.stack > div.tiles > div.faded {
+    opacity: 0.4;
+}
+
+.darkbkg .count {
+    color: white;
+}
