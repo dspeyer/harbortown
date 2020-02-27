@@ -25,39 +25,37 @@ export function shuffle(input) {
 
 const example_names = ['Daniel', 'Nick', 'Eppilito', 'Pei-hsin', 'Bob'];
 
-class Player {
-    constructor(i) {
-        this.name = example_names[i];
-        this.color = player_colors[i];
-        this.number = i;
-        this.resources = {};
-        this.buildings = [];
-    }
-    countSymbol(sym) {
-        let cnt = 0;
-        for (let b of this.buildings) {
-            for (let s of buildingHelpers.buildings_by_number[b].symbols) {
-                if (sym==s) {
-                    cnt += 1;
-                }
+export function countSymbol(player, sym) {
+    let cnt = 0;
+    for (let b of player.buildings) {
+        for (let s of buildingHelpers.buildings_by_number[b].symbols) {
+            if (sym==s) {
+                cnt += 1;
             }
         }
-        return cnt;
     }
-    addResources(gain) {
-        console.log(['adding resources',this.resources,gain]);
-        for (let r in gain) {
-            if (this.resources[r] == undefined) this.resources[r]=0;
-            this.resources[r] += gain[r];
-        }
+    return cnt;
+}
+
+export function addResources(player, gain) {
+    for (let r in gain) {
+        if (player.resources[r] == undefined) player.resources[r]=0;
+        player.resources[r] += gain[r];
     }
 }
+
 
 export function newGame(nplayers) {
     endGame();
     ui.initUi(nplayers);
     for (let i=0; i<nplayers; i++) {
-        gameState.players.push(new Player(i));
+        gameState.players.push({
+            name: example_names[i],
+            color: player_colors[i],
+            number: i,
+            resources: {},
+            buildings: [],
+        });
     }
     gameState.advancers = shuffle(drop_tiles);
     gameState.townResources = {};
@@ -76,8 +74,7 @@ export function safeCopy(x) {
     if (typeof(x)=='object') {
         if (Array.isArray(x)) {
             return x.map(safeCopy);
-        } else if ((x.constructor==Object && x.prototype==undefined) ||
-                   (x.constructor==Player)) {
+        } else if ((x.constructor==Object && x.prototype==undefined)) {
             let out = {};
             for (let i in x) {
                 if (i[0]=='_') continue;
@@ -192,13 +189,13 @@ export async function sell() {
     const idx = player.buildings.indexOf(b.number);
     if (idx == -1) throw "Cannot sell";
     player.buildings.splice(idx,1);
-    player.addResources({money:Math.floor(b.cost/2)});
+    addResources(player, {money:Math.floor(b.cost/2)});
     gameState.townBuildings.push(b.number);
     ui.update();
 }
 
 export async function cheat() {
-    gameState.players[gameState.currentPlayer].addResources({money:20,wood:20,clay:20,iron:20});
+    addResources(gameState.players[gameState.currentPlayer], {money:20,wood:20,clay:20,iron:20});
     ui.update();
 }
 
