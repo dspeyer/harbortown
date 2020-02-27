@@ -135,7 +135,7 @@ export async function useBuilding() {
         const entryres = await ui.pickPlayerResources(player, (res)=>{return resources[res].food>0}, "Pick resources for entry cost: "+JSON.stringify(building.entry));
         if ( ! satisfies(entryres, building.entry) ) throw "Insufficient Entry Resources";
     }
-    await building.action(player);
+    await building.action(player, building);
     ui.update();
 }
     

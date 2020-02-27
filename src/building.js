@@ -4,7 +4,7 @@ import {resources} from './data.js';
 const building_firm = {name: 'Building Firm',
                        symbols: ['🏠','🔨'],
                        text: 'Build 1 building',
-                       action: async (player, msg, is_sawmill) => {
+                       action: async (player, self, msg) => {
                            const plan = await ui.pickBuildingPlan(msg || 'Choose a building to build', player.resources);
                            let idx;
                            if ( (idx = checkDecks(plan.number)) != -1 ) {
@@ -13,7 +13,7 @@ const building_firm = {name: 'Building Firm',
                                throw "Not buildable";
                            }
                            let buildcost = safeCopy(plan.buildcost);
-                           if (is_sawmill && buildcost.wood > 0) { buildcost.wood -= 1; }
+                           if (self.name=='Sawmill' && buildcost.wood > 0) { buildcost.wood -= 1; }
                            subtractResources(player, buildcost);
                            player.buildings.push(plan.number);
                        }
@@ -28,19 +28,25 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                 setmodernized(x){ gameState.wharfModernization[this.number] = x; },
                 gettext(){ return this.modernized ? 'Build a ship' : 'Build wooden ship, or metal w/ modernization'; },
                 
-                action: async (player) => {
-                    let mightModernize = (this.name=='Wharf');
+                action: async (player, self) => {
                     let res = await ui.pickPlayerResources(player, (res)=>{return res=='wood' || res=='iron' || res=='steel' ||
-                                                                                  (mightModernize && res=='brick') ||
+                                                                                  (!self.modernized && res=='brick') ||
                                                                                   resources[res].energy > 0;});
                     if (res.brick > 1) throw "Only one brick needed to modernize";
-                    if ( ! this.modernized && res.brick>0) {
-                        this.modernized = true;
+                    if ( ! self.modernized && res.brick>0) {
+                        self.modernized = true;
                     }
-                    if (res.steel<2 && (res.iron+res.steel)<4) {
-                        if (res.wood < 5) throw "Not enough resources";
-                        res.wood -= 5;
+                    if ((res.steel>0 || res.iron>0) && ! self.modernized) {
+                        throw "Only modernized wharf can use metal";
                     }
+                    
+                    let ship_type;
+                    if (res.steel==3) ship_type='luxury';
+                    else if (res.steel==2) ship_type='steel';
+                    else if ( (res.steel||0) + (res.iron||0) == 4 ) ship_type='iron';
+                    else if (res.wood>=5) { res.wood -=5; ship_type='wood'; }
+                    else throw "Cannot deduce intended ship type";
+
                     //TODO: unify this?
                     let energy = 0;
                     for (let r in res) {
@@ -70,11 +76,11 @@ export const starting_buildings = [
       entry: {food: 2},
       cost: 8,
       number: 'b3',
-      action: async (player) => {
-          await building_firm.action(player);
+      action: async (player,self) => {
+          await building_firm.action(player,self);
           ui.update();
           try {
-              await building_firm.action(player,'Choose a second building to build');
+              await building_firm.action(player,self,'Choose a second building to build');
           } catch(e) {
               if (e!='canceled' && e!='nothing_to_choose') {
                   throw e;
@@ -370,7 +376,7 @@ export const buildings = [
      cost: 14,
      buildcost: {clay:1,iron:1},
      text: 'Build one building, save one wood',
-     action: async (player) => { await building_firm.action(player, "Choose building to saw", /*is_sawmill=*/true); }
+     action: async (player,self) => { await building_firm.action(player, self, "Choose building to saw"); }
     },
     
     {name: 'Clay Mound',
