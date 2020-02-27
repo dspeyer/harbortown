@@ -12,8 +12,8 @@ h1 {
 .grid {
     display: grid;
     width: 100%;
-    height: 100vh;
-    grid-template-rows: 1fr min-content 1fr;
+    height: 200vh;
+    grid-template-rows: 1fr min-content 1fr 1fr;
     grid-template-columns: 1fr min-content 1fr;
 }
 
@@ -66,4 +66,17 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 1; 
     grid-row-end: 4;
+}
+
+
+.dbg {
+    grid-column-start: 1; 
+    grid-column-end: 4; 
+    grid-row-start: 4; 
+    grid-row-end: 5;
+    white-space: pre;
+    font-family: monospace;
+    font-size: 8pt;
+    overflow-y: auto;
+    height: 100vh;
 }

@@ -52,7 +52,7 @@ export async function pickTownResource() {
             ui.townResources[res].setState({active: true});
         }
     }
-    const wfu = new Promise((resolve,reject) => { ui.resolve = resolve; } );
+    const wfu = new Promise((resolve,reject) => { ui.resolve = resolve; ui.reject = reject;} );
     const choice = await wfu; // invoked by the onClick of a ClickTarget
     clearAllClickTargets();
     ui.resolve = undefined;
@@ -67,17 +67,55 @@ export function showDialog(elem, elemobjwrap) {
     holder.className = 'dialogholder';
     dialogs.append(holder);
     ReactDOM.render(elem, holder);
-    const promise = new Promise((resolve) => { holder.resolve = ()=>{resolve(elemobjwrap[0].state);}; });
-    return promise;
+    if (elemobjwrap) {
+        const promise = new Promise((resolve,reject) => { holder.resolve = ()=>{resolve(elemobjwrap[0].state);};
+                                                          holder.reject = reject;});
+        return promise;
+    } else {
+        holder.resolve = ()=>{};
+    }
 }
 
 export function closeSelf(ev) {
     let holder;
     console.log(ev);
     for (holder=ev.target; holder.className!='dialogholder'; holder=holder.parentNode);
-    holder.resolve();
+    if (ev.target.value=='Cancel') {
+        holder.reject('Cancelled');
+    } else {
+        console.log('ev.target.value="'+ev.value+'"');
+        holder.resolve();
+    }
     ReactDOM.unmountComponentAtNode(holder);
     holder.parentNode.removeChild(holder);
+}
+
+class ErrorDialog extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state={opacity:1};
+        this.dom = React.createRef();
+        this.timeout = window.setTimeout(this.tick.bind(this), 2000);
+    }
+    render() {
+        return (<div className="errorMsg" ref={this.dom} style={ {opacity:this.state.opacity} }>
+                  <div className="close" onClick={this.close.bind(this)}>×</div>
+                  {this.props.msg}
+                </div>);
+    }
+    tick(){
+        this.setState({opacity: this.state.opacity-0.05});
+        this.timeout = window.setTimeout(this.tick.bind(this), 100);        
+        if (this.state.opacity<=0) this.close();
+    }
+    close(){
+        window.clearTimeout(this.timeout);
+        closeSelf({target:this.dom.current});
+    }
+}
+
+export function showError(msg) {
+    showDialog(<ErrorDialog msg={msg}/>);
 }
 
 class PickResourcesDialog extends React.Component {
@@ -119,6 +157,7 @@ class PickResourcesDialog extends React.Component {
                   <div className="prdstate">
                     { resourceElements }
                   </div>
+                  <input type="button" value="Cancel" onClick={closeSelf} />
                   <input type="button" value="Done" onClick={closeSelf}
                          disabled={this.props.n && Object.keys(this.state).length!=this.props.n} />
                 </div>);
@@ -169,7 +208,7 @@ export async function pickBuilding() {
             ui.buildings[b].setState({active:true});
         }
     }
-    let p = new Promise((resolve)=>{ ui.resolve=resolve; });
+    let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
     let bn = await p;
     clearAllClickTargets();
     return buildings_by_number[bn];
@@ -187,7 +226,7 @@ export async function pickBuildingPlan(msg, resource, includingTown) {
             ui.buildings[b].setState({active:true});
         }
     }
-    let p = new Promise((resolve)=>{ ui.resolve=resolve; });
+    let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
     let bn = await p;
     clearAllClickTargets();
     return buildings_by_number[bn];
@@ -198,7 +237,7 @@ export async function pickPlayerBuilding(msg, player) {
     for (let b of player.buildings) {
         ui.buildings[b].setState({active:true});
     }
-    let p = new Promise((resolve)=>{ ui.resolve=resolve; });
+    let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
     let bn = await p;
     clearAllClickTargets();
     return buildings_by_number[bn];
@@ -213,3 +252,18 @@ export function initUi(nplayers) {
     }
 }
         
+export class CancelButton extends React.Component {
+    constructor(props) {
+        super(props);
+        ui.cancelButton = this;
+        this.state = {active: false};
+    }
+    render() {
+        return <input type="button" value="Cancel" disabled={!this.state.active} onClick={this.clicked.bind(this)} />;
+    }
+    clicked() {
+        ui.reject("canceled");
+        clearAllClickTargets();
+        this.setState({active:false});
+    }
+}

@@ -1,8 +1,8 @@
 import React from 'react';
 import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
-import { Instructions } from './interaction.js';
-import { gameState, ui, safeCopy, nextTurn, takeResource, useBuilding, buy, cheat, sell } from './gamestate.js';
+import { Instructions, CancelButton } from './interaction.js';
+import { gameState, ui, safeCopy, nextTurn, takeResource, useBuilding, buy, cheat, sell, wrap } from './gamestate.js';
 import './town.css';
 
 export function AdvancerToken(props) {
@@ -39,12 +39,13 @@ export function Town(props) {
                       return <Building bn={bn} bn={bn}/>;
                   }) }</div>
                   <div className="buttonbar">
-                    <input type="button" value="Take Pile" onClick={takeResource} />
-                    <input type="button" value="Use Building" onClick={useBuilding} />
-                    <input type="button" value="Buy" onClick={buy} />
-                    <input type="button" value="Sell" onClick={sell} />
-                    <input type="button" value="Cheat" onClick={cheat} />
-                    <input type="button" value="Next Turn" onClick={nextTurn}/>
+                    <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} />
+                    <input type="button" value="Use Building" onClick={wrap.bind(null,useBuilding)} />
+                    <input type="button" value="Buy" onClick={wrap.bind(null,buy)} />
+                    <input type="button" value="Sell" onClick={wrap.bind(null,sell)} />
+                    <input type="button" value="Cheat" onClick={wrap.bind(null,cheat)} />
+                    <CancelButton/>
+                    <input type="button" value="Next Turn" onClick={wrap.bind(null,nextTurn)}/>
                   </div>
                 </div>
                 { props.plans.map((plan,i) => {

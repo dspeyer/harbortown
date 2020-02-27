@@ -128,22 +128,18 @@ function satisfies(provided, reqs) {
     
 
 export async function useBuilding() {
-//    try {
-        const player = gameState.players[gameState.currentPlayer];
-        const building = await ui.pickBuilding();
-        const pt = Object.keys(building.entry);
-        if (pt.length==1 && pt[0]==['money']) {
-            subtractResources(player, building.entry);
-            ui.update();
-        } else if (pt.length) {
-            const entryres = await ui.pickPlayerResources(player, (res)=>{return resources[res].food>0}, "Pick resources for entry cost: "+JSON.stringify(building.entry));
-            if ( ! satisfies(entryres, building.entry) ) throw "Insufficient Entry Resources";
-        }
-        await building.action(player);
+    const player = gameState.players[gameState.currentPlayer];
+    const building = await ui.pickBuilding();
+    const pt = Object.keys(building.entry);
+    if (pt.length==1 && pt[0]==['money']) {
+        subtractResources(player, building.entry);
         ui.update();
-//    } catch (e) {
-//        window.alert(e);
-//    }
+    } else if (pt.length) {
+        const entryres = await ui.pickPlayerResources(player, (res)=>{return resources[res].food>0}, "Pick resources for entry cost: "+JSON.stringify(building.entry));
+        if ( ! satisfies(entryres, building.entry) ) throw "Insufficient Entry Resources";
+    }
+    await building.action(player);
+    ui.update();
 }
     
 export function subtractResources(player, spend) {
@@ -209,23 +205,20 @@ export async function cheat() {
 export async function wrap(callback) {
     const backup = safeCopy(gameState);
     try {
+        if (ui.cancelButton) ui.cancelButton.setState({active:true});
         await callback();
     } catch (e) {
-        alert(e);
-//        restore(gameState, backup);
+        ui.showError(e+'');
+        restore(gameState, backup);
+        throw e;
+    } finally {
+        if (ui.cancelButton) ui.cancelButton.setState({active:false});
+        ui.update();
     }
-    ui.update();
 }
-/*
+
 function restore(active, canon) {
-    let keys = {};
-    for (let k in active) keys[k]=true;
-    for (let k in canon) keys[k]=true;
-    for (let k in keys) {
-        if (k in canon && k in active) {
-            if (typeof(canon[k]) != typeof(active[k])) throw "Cannot Restore "+k+JSON.stringify(canon[k],active[k]);
-            if (typeof(canon[k]==Object)) {
-                if (canon[k].isBuilding != active[k].isBuilding) throw "Cannot Restore "+k+JSON.stringify(canon[k],active[k]);
-                if (canon[k].isBuilding) {
-                    active[k] = gameState.buildingsByNumber[canon[k].number
-                */
+    for (let k in canon) {
+        active[k] = safeCopy(canon[k]);
+    }
+}

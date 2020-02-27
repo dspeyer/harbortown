@@ -52,3 +52,22 @@
     flex-wrap: wrap;
     width: 100%;
 }
+
+.errorMsg {
+    position: fixed;
+    width: 20vw;
+    left: 40vw;
+    top: -15px;
+    background: #fa0;
+    border: 5px #700 outset;
+    border-radius: 15px;
+    border-top: none;
+    padding: 20px;
+    z-index: 200;
+}
+
+.errorMsg .close {
+    float: right;
+    background: #aaa;
+    border: #999 outset 2px;
+}

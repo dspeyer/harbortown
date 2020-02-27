@@ -44,6 +44,7 @@ class App extends React.Component {
                     <Player player={player} idx={i}/>
                   </div>
               )})}
+              <div className="dbg">{JSON.stringify(gameState,null,2)}</div>
             </div>);
     }
 }
