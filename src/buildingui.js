@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import './building.css';
 import { resources } from './data.js';
 import { ClickTarget } from './interaction.js';
-import { gameState } from './gamestate.js';
+import { gameState, ui } from './gamestate.js';
+import { buildings_by_number } from './building.js';
 
 function bmd(ref){
     if (ref.current.parentNode.style.zIndex < 300) {
@@ -23,9 +24,10 @@ function gt(a,b) {
 }
 
 export function Building(props) {
-    const bd = props.data;
+    const bd = buildings_by_number[props.bn];
     let bref = React.createRef(), tref = React.createRef();
     useEffect(()=>{
+        if (bd === undefined) return;
         for (let i=14;i>6;i-=.5) {
             tref.current.style.fontSize = i+'pt';
             if (tref.current.getBoundingClientRect().height < 40) {
@@ -33,8 +35,9 @@ export function Building(props) {
             }
         }
     });
+    if (bd === undefined) return <span>Failed bn {props.bn}</span>;
     return (<div className="building" onMouseDown={()=>bmd(bref)} onMouseUp={()=>bmu(bref)} ref={bref}>
-              <ClickTarget holder={gameState.buildingsByNumber[bd.number]} data='ui' />
+              <ClickTarget holder={ui.buildings} data={bd.number} />
               <div className="entry">
                 {bd.entry.food && <span>{bd.entry.food}🍪</span>}
                 {bd.entry.money && <span>{bd.entry.money}€</span>}
@@ -69,7 +72,7 @@ export function BuildingStack(props) {
     return (<div className="buildingStack">
             {props.buildings.map((building,i)=>{
                 return ( <div className="buildingHolder" style={ {bottom:(n-i-1)*16+'px',zIndex:100-i} }>
-                           <Building data={building} key={building.number}/>
+                           <Building bn={building} key={building}/>
                          </div> );
             })}
             </div>);

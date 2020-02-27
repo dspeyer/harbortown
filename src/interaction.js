@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
-import { subtractResources, gameState } from './gamestate.js';
+import { subtractResources, gameState, ui } from './gamestate.js';
 import { ResourceStack, ResourceTile } from './resources.js';
+import { buildings_by_number } from './building.js';
 
 let allClickTargets = [];
 
@@ -17,7 +18,7 @@ export class ClickTarget extends React.Component {
         if ( ! this.state.active ) {
             return <span/>;
         }
-        return <div className="clickTarget" onClick={ ()=>{gameState.resolve([this.props.data,this.props.holder]);} } />
+        return <div className="clickTarget" onClick={ ()=>{ui.resolve(this.props.data);} } />
     }
 }
 
@@ -48,13 +49,13 @@ export async function pickTownResource() {
     allInstructions[0].setState({msg:'Take one pile of resources from the town'});
     for (let res in gameState.townResources) {
         if (gameState.townResources[res] > 0) {
-            gameState.townResourceUi[res].setState({active: true});
+            ui.townResources[res].setState({active: true});
         }
     }
-    const wfu = new Promise((resolve,reject) => { gameState.resolve = resolve; } );
-    const choice = (await wfu)[0]; // invoked by the onClick of a ClickTarget
+    const wfu = new Promise((resolve,reject) => { ui.resolve = resolve; } );
+    const choice = await wfu; // invoked by the onClick of a ClickTarget
     clearAllClickTargets();
-    gameState.resolve = undefined;
+    ui.resolve = undefined;
     console.log('returning',choice);
     return choice;
 }
@@ -142,14 +143,14 @@ export async function pickPlayerResources(player, filter, msg) {
     for (let r in player.resources) {
         console.log(r);
         if (player.resources[r]>0 && filter(r)) {
-            player.resourceUi[r].setState({active:true});
+            ui.playerResources[player.number][r].setState({active:true});
         }
     }
-    gameState.resolve = (res) => {
-        subtractResources(player, {[res[0]]:1} );
+    ui.resolve = (res) => {
+        subtractResources(player, {[res]:1} );
         console.log(dl);
-        dlobj[0].incr(res[0]);
-        gameState.ui.update();
+        dlobj[0].incr(res);
+        ui.update();
     };
     
     const picked = await dl;
@@ -161,44 +162,54 @@ export async function pickBuilding() {
     allInstructions[0].setState({msg:'Choose an existing building'});
     for (let b of gameState.townBuildings) {
         console.log(b);
-        b.ui.setState({active:true});
+        ui.buildings[b].setState({active:true});
     }
     for (let p of gameState.players) {
         for (let b of p.buildings) {
-            b.ui.setState({active:true});
+            ui.buildings[b].setState({active:true});
         }
     }
-    let p = new Promise((resolve)=>{ gameState.resolve=resolve; });
-    let ans = await p;
+    let p = new Promise((resolve)=>{ ui.resolve=resolve; });
+    let bn = await p;
     clearAllClickTargets();
-    return ans[1];
+    return buildings_by_number[bn];
 }
 
 export async function pickBuildingPlan(msg, resource, includingTown) {
     allInstructions[0].setState({msg});
     for (let deck of gameState.buildingPlans) {
         if (deck) {
-            deck[0].ui.setState({active:true});
+            ui.buildings[deck[0]].setState({active:true});
         }
     }
     if (includingTown) {
         for (let b of gameState.townBuildings) {
-            b.ui.setState({active:true});
+            ui.buildings[b].setState({active:true});
         }
     }
-    let p = new Promise((resolve)=>{ gameState.resolve=resolve; });
-    let ans = await p;
+    let p = new Promise((resolve)=>{ ui.resolve=resolve; });
+    let bn = await p;
     clearAllClickTargets();
-    return ans[1];
+    return buildings_by_number[bn];
 }
 
 export async function pickPlayerBuilding(msg, player) {
     allInstructions[0].setState({msg});
     for (let b of player.buildings) {
-        b.ui.setState({active:true});
+        ui.buildings[b].setState({active:true});
     }
-    let p = new Promise((resolve)=>{ gameState.resolve=resolve; });
-    let ans = await p;
+    let p = new Promise((resolve)=>{ ui.resolve=resolve; });
+    let bn = await p;
     clearAllClickTargets();
-    return ans[1];
+    return buildings_by_number[bn];
 }    
+
+export function initUi(nplayers) {
+    ui.buildings = {};
+    ui.townResources = {};
+    ui.playerResources = [];
+    for (let i=0; i<nplayers; i++){
+        ui.playerResources.push({});
+    }
+}
+        

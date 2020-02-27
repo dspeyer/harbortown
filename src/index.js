@@ -3,17 +3,20 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { gameState, endGame, newGame } from './gamestate.js';
-import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding } from './interaction.js';
-import { initBuildings } from './building.js';
+import { gameState, ui, buildingHelpers, endGame, newGame } from './gamestate.js';
+import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding, initUi } from './interaction.js';
+import { initBuildings, buildings_by_number } from './building.js';
 
-gameState.pickTownResource = pickTownResource;
-gameState.pickPlayerResources = pickPlayerResources;
-gameState.pickResources = pickResources;
-gameState.pickBuilding = pickBuilding;
-gameState.pickPlayerBuilding = pickPlayerBuilding;
-gameState.pickBuildingPlan = pickBuildingPlan;
-gameState.initBuildings = initBuildings;
+ui.pickTownResource = pickTownResource;
+ui.pickPlayerResources = pickPlayerResources;
+ui.pickResources = pickResources;
+ui.pickBuilding = pickBuilding;
+ui.pickPlayerBuilding = pickPlayerBuilding;
+ui.pickBuildingPlan = pickBuildingPlan;
+ui.initUi = initUi;
+
+buildingHelpers.initBuildings = initBuildings;
+buildingHelpers.buildings_by_number = buildings_by_number;
 
 newGame(4);
 

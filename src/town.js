@@ -2,7 +2,7 @@ import React from 'react';
 import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
 import { Instructions } from './interaction.js';
-import { gameState, safeCopy, nextTurn, takeResource, useBuilding, buy, cheat, sell } from './gamestate.js';
+import { gameState, ui, safeCopy, nextTurn, takeResource, useBuilding, buy, cheat, sell } from './gamestate.js';
 import './town.css';
 
 export function AdvancerToken(props) {
@@ -19,13 +19,11 @@ export function AdvancerToken(props) {
 }
 
 export function Town(props) {
-    if (gameState.townResourceUi == undefined) {
-        gameState.townResourceUi = {};
-    }
+    console.log(gameState);
     let resourceElements = [];
     for (let i in props.resources) {
         let v = props.resources[i];
-        resourceElements.push(<span><ResourceStack type={i} number={v} key={i} holder={gameState.townResourceUi} /></span>);
+        resourceElements.push(<span><ResourceStack type={i} number={v} key={i} holder={ui.townResources} /></span>);
     }
     let advancerElements = props.advancers.map(
         (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} active={i==props.current} key={i} />;}
@@ -37,8 +35,8 @@ export function Town(props) {
                 <div>
                   <div className="horiz">{advancerElements}</div>
                   <div className="horizw">{resourceElements}</div>
-                  <div className="horiz">{ props.buildings.map((bd)=>{  
-                      return <Building data={bd} key={bd.name+bd.number}/>;
+                  <div className="horiz">{ props.buildings.map((bn)=>{  
+                      return <Building bn={bn} bn={bn}/>;
                   }) }</div>
                   <div className="buttonbar">
                     <input type="button" value="Take Pile" onClick={takeResource} />

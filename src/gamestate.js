@@ -1,11 +1,15 @@
 import { resources, drop_tiles, player_colors } from './data.js';
 
-export let gameState = {};
+export const gameState = {};
+export const buildingHelpers = {};
+export const ui = {};
+ui.update = ()=>{}; // so it can be called before it's initialized
 
 export function endGame() {
     gameState.players = [];
     gameState.advancers = [];
     gameState.townResources = {};
+
 }
 
 export function shuffle(input) {
@@ -21,18 +25,18 @@ export function shuffle(input) {
 
 const example_names = ['Daniel', 'Nick', 'Eppilito', 'Pei-hsin', 'Bob'];
 
-
 class Player {
     constructor(i) {
         this.name = example_names[i];
         this.color = player_colors[i];
+        this.number = i;
         this.resources = {};
         this.buildings = [];
     }
     countSymbol(sym) {
         let cnt = 0;
         for (let b of this.buildings) {
-            for (let s of b.symbols) {
+            for (let s of buildingHelpers.buildings_by_number[b].symbols) {
                 if (sym==s) {
                     cnt += 1;
                 }
@@ -51,6 +55,7 @@ class Player {
 
 export function newGame(nplayers) {
     endGame();
+    ui.initUi(nplayers);
     for (let i=0; i<nplayers; i++) {
         gameState.players.push(new Player(i));
     }
@@ -63,7 +68,7 @@ export function newGame(nplayers) {
     }
     gameState.currentAdvancer = -1;
     gameState.currentPlayer = 0;
-    gameState.initBuildings();
+    buildingHelpers.initBuildings();
     nextTurn();
 }
 
@@ -96,19 +101,17 @@ export function nextTurn() {
     for (let res of gameState.advancers[gameState.currentAdvancer]) {
         gameState.townResources[res] += 1;
     }
-    if (gameState.ui) {
-        gameState.ui.update();
-    }
+    ui.update();
 }
 
 export async function takeResource() {
-    const resource = await gameState.pickTownResource();
+    const resource = await ui.pickTownResource();
     const player = gameState.players[gameState.currentPlayer];
     if ( ! ( gameState.townResources[resource] > 0 ) ) return false;
     if (player.resources[resource] == undefined) player.resources[resource] = 0;
     player.resources[resource] += gameState.townResources[resource];
     gameState.townResources[resource] = 0;
-    if (gameState.ui) gameState.ui.update();
+    ui.update();
 }
     
 function satisfies(provided, reqs) {
@@ -125,22 +128,22 @@ function satisfies(provided, reqs) {
     
 
 export async function useBuilding() {
-    try {
+//    try {
         const player = gameState.players[gameState.currentPlayer];
-        const building = await gameState.pickBuilding();
+        const building = await ui.pickBuilding();
         const pt = Object.keys(building.entry);
         if (pt.length==1 && pt[0]==['money']) {
             subtractResources(player, building.entry);
-            if (gameState.ui) gameState.ui.update();
+            ui.update();
         } else if (pt.length) {
-            const entryres = await gameState.pickPlayerResources(player, (res)=>{return resources[res].food>0}, "Pick resources for entry cost: "+JSON.stringify(building.entry));
+            const entryres = await ui.pickPlayerResources(player, (res)=>{return resources[res].food>0}, "Pick resources for entry cost: "+JSON.stringify(building.entry));
             if ( ! satisfies(entryres, building.entry) ) throw "Insufficient Entry Resources";
         }
         await building.action(player);
-        if (gameState.ui) gameState.ui.update();
-    } catch (e) {
-        window.alert(e);
-    }
+        ui.update();
+//    } catch (e) {
+//        window.alert(e);
+//    }
 }
     
 export function subtractResources(player, spend) {
@@ -162,36 +165,45 @@ export function subtractResources(player, spend) {
     }
 }
 
+export function checkDecks(bn) {
+    for (let i=0; i<gameState.buildingPlans.length; i++) {
+        if (gameState.buildingPlans[i] && gameState.buildingPlans[i][0]==bn) {
+            return i;
+        }
+    }
+    return -1;
+}
+
 export async function buy() {
     const player = gameState.players[gameState.currentPlayer];
-    const b = await gameState.pickBuildingPlan('Choose a building to buy', player.resources, true);
+    const b = await ui.pickBuildingPlan('Choose a building to buy', player.resources, true);
     subtractResources(player, {money:b.cost});
     let idx;
-    if (b._deck && b._deck[0]==b) {
-        b._deck.shift();
-    } else if ((idx = gameState.townBuildings.indexOf(b))!=-1) {
+    if ( (idx = checkDecks(b.number)) != -1 ) {
+        gameState.buildingPlans[idx].shift();
+    } else if ( (idx = gameState.townBuildings.indexOf(b.number)) != -1 ) {
         gameState.townBuildings.splice(idx,1);
     } else {
         throw "Not purchaseable";
     }
-    player.buildings.push(b);
-    if (gameState.ui) gameState.ui.update();
+    player.buildings.push(b.number);
+    ui.update();
 } 
 
 export async function sell() {
     const player = gameState.players[gameState.currentPlayer];
-    const b = await gameState.pickPlayerBuilding('Choose a building to sell', player);
-    const idx = player.buildings.indexOf(b);
+    const b = await ui.pickPlayerBuilding('Choose a building to sell', player);
+    const idx = player.buildings.indexOf(b.number);
     if (idx == -1) throw "Cannot sell";
     player.buildings.splice(idx,1);
     player.addResources({money:Math.floor(b.cost/2)});
-    gameState.townBuildings.push(b);
-    if (gameState.ui) gameState.ui.update();
+    gameState.townBuildings.push(b.number);
+    ui.update();
 }
 
 export async function cheat() {
     gameState.players[gameState.currentPlayer].addResources({money:20,wood:20,clay:20,iron:20});
-    if (gameState.ui) gameState.ui.update();
+    ui.update();
 }
 
 export async function wrap(callback) {
@@ -200,9 +212,9 @@ export async function wrap(callback) {
         await callback();
     } catch (e) {
         alert(e);
-        restore(gameState, backup);
+//        restore(gameState, backup);
     }
-    if (gameState.ui) gameState.ui.update();
+    ui.update();
 }
 /*
 function restore(active, canon) {
