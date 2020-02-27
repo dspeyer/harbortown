@@ -65,7 +65,7 @@ export function newGame(nplayers) {
         }
     }
     gameState.currentAdvancer = -1;
-    gameState.currentPlayer = 0;
+    gameState.currentPlayer = -1;
     buildingHelpers.initBuildings();
     nextTurn();
 }
@@ -98,6 +98,8 @@ export function nextTurn() {
     for (let res of gameState.advancers[gameState.currentAdvancer]) {
         gameState.townResources[res] += 1;
     }
+    gameState.currentPlayer += 1;
+    gameState.currentPlayer %= gameState.players.length;
     ui.update();
 }
 
@@ -124,16 +126,33 @@ function satisfies(provided, reqs) {
 }
     
 
+export function findOwner(bn) {
+    for (let p of gameState.players) {
+        if (p.buildings.indexOf(bn)!=-1) {
+            return p;
+        }
+    }
+    if (gameState.townBuildings.indexOf(bn)!=-1) {
+        return 'town';
+    }
+    throw "Building does not exist!";
+}
+
 export async function useBuilding() {
     const player = gameState.players[gameState.currentPlayer];
     const building = await ui.pickBuilding();
-    const pt = Object.keys(building.entry);
-    if (pt.length==1 && pt[0]==['money']) {
-        subtractResources(player, building.entry);
-        ui.update();
-    } else if (pt.length) {
-        const entryres = await ui.pickPlayerResources(player, (res)=>{return resources[res].food>0}, "Pick resources for entry cost: "+JSON.stringify(building.entry));
-        if ( ! satisfies(entryres, building.entry) ) throw "Insufficient Entry Resources";
+    const owner = findOwner(building.number);
+    if (owner != player) {
+        const pt = Object.keys(building.entry);
+        if (pt.length==1 && pt[0]==['money']) {
+            subtractResources(player, building.entry);
+            if (owner!='town') addResources(owner, building.entry);
+            ui.update();
+        } else if (pt.length) {
+            const entryres = await ui.pickPlayerResources(player, (res)=>{return resources[res].food>0}, "Pick resources for entry cost: "+JSON.stringify(building.entry));
+            if (owner!='town') addResources(owner, entryres);
+            if ( ! satisfies(entryres, building.entry) ) throw "Insufficient Entry Resources";
+        }
     }
     await building.action(player, building);
     ui.update();

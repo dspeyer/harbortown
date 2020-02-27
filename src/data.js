@@ -79,6 +79,6 @@ export const drop_tiles = [
     ['iron', 'money']
 ]
 
-export const player_colors = [ 'green', 'blue', 'red', 'khaki', 'purple' ];
+export const player_colors = [ 'green', 'darkblue', 'red', 'khaki', 'purple' ];
 
     

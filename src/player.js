@@ -11,7 +11,10 @@ export function Player(props) {
         let v = player.resources[i];
         if (v>0) resourceElements.push(<ResourceStack type={i} number={v} key={i} holder={ui.playerResources[player.number]} />);
     }
-    return <div className={'player' + (player.color!='khaki' ? ' darkbkg' : '') } style={ {background:player.color} }>
+    return <div className={'player' +
+                           (player.color!='khaki' ? ' darkbkg' : '') +
+                           (player.number==gameState.currentPlayer ? ' current' : '')}
+                style={ {backgroundColor:player.color} } >
              <h1>{player.name}</h1>
              <div className="stuff">
                { resourceElements }
