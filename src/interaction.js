@@ -15,6 +15,7 @@ export class ClickTarget extends React.Component {
         allClickTargets.push(this);
     }
     render() {
+        this.props.holder[this.props.data] = this;
         if ( ! this.state.active ) {
             return <span/>;
         }
