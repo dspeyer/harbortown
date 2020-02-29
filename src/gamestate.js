@@ -1,4 +1,4 @@
-import { resources, drop_tiles, player_colors, game_events } from './data.js';
+import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds } from './data.js';
 
 export const gameState = {};
 export const buildingHelpers = {};
@@ -55,6 +55,7 @@ export function newGame(nplayers) {
             number: i,
             resources: {},
             buildings: [],
+            ships: []
         });
     }
     gameState.advancers = shuffle(drop_tiles);
@@ -64,7 +65,9 @@ export function newGame(nplayers) {
             gameState.townResources[j] = 0;
         }
     }
-    gameState.ships = {'wood':[], 'iron': [], 'steel': [], 'luxury': []};
+    gameState.ships = {wood:[], iron: [], steel: [], luxury: []};
+    gameState.shipStats = {luxury: {feed: 0, ship: 0}};
+    for (let r of ['wood','iron','steel']) gameState.shipStats[r] = {feed: ship_feeds[r][nplayers], ship: ship_capacities[r] };
     gameState.events = game_events[nplayers];
     gameState.currentTurn = 0;
     gameState.currentAdvancer = -1;

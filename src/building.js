@@ -55,7 +55,9 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                         }
                     }
                     if (energy < 3) throw "Not enough energy";
-                    //TODO: Actually build the ship;
+
+                    if (gameState.ships[ship_type].length == 0) throw "No "+ship_type+" ships available to build";
+                    player.ships.push([ship_type,gameState.ships[ship_type].shift()]);
                 }
               };
 

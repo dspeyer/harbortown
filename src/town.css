@@ -103,18 +103,6 @@ div.horiz {
 
 }
 
-.miniship {
-    background: #77f;
-    border: 2px #227 outset;
-    white-space: nowrap;
-    color: black;
-}
-
-.miniship .cnt {
-    font-size: 8pt;
-    vertical-align: text-top;
-}
-
 .plans {
     grid-column-start: 3;
     grid-column-end: 4; 
@@ -134,21 +122,18 @@ div.horiz {
     border: 1px solid #333;
     text-align: center;
     border-radius: .5em;
+    height: 58px;
 }
 
 .endOfTurn img {
     height: 1em;
 }
 
-.shipStacks img {
-    height: 1em;
+.endOfTurn.dark {
+    background: #cba;
+    color: #222;
 }
 
-.cost {
-    background: #ff0;
-    height: 1.2em;
-    border-radius: 0.6em;
-    min-width: 1.2em;
-    display: inline-block;
-    text-align: center;
+.endOfTurn.dark .miniship {
+    background: #55c;
 }

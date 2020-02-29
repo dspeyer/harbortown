@@ -43,6 +43,7 @@ export function Building(props) {
                 {bd.entry.money && <span>{bd.entry.money}€</span>}
                 {bd.entry.unobtainium && <span>🔒</span>}
               </div>
+              {props.showNumber && <div className="number">{bd.number}</div>}
               <div className="name" style={ {textAlign:(gt(bd.name.length,8)?'left':'center')} }>{bd.name}</div>
               <div className="text" title={bd.text} ref={tref}>{
                   bd.text.split(' ').map((w) => {
@@ -56,12 +57,14 @@ export function Building(props) {
               <div className="footer">
                 <div className="cost">{bd.cost}</div>
                 <div className="smallname">{bd.name}</div>
-                <div className="symbols">{bd.symbols.join('')}</div>
-                <div className="build" title={JSON.stringify(bd.buildcost)}>
-                  {Object.entries(bd.buildcost || {}).map( (e) => {
-                      return <span>{e[1]}<img src={'images/'+e[0]+'.png'}/></span>
-                  })}
-                </div>
+                {bd.symbols.length>0 && <div className="symbols">{bd.symbols.join('')}</div>}
+                {bd.buildcost!=undefined &&
+                 <div className="build" title={JSON.stringify(bd.buildcost)}>
+                   {Object.entries(bd.buildcost || {}).map( (e) => {
+                       return <span>{e[1]}<img src={'images/'+e[0]+'.png'}/></span>
+                   })}
+                 </div>
+                }
               </div>
             </div>);
 }
@@ -71,8 +74,8 @@ export function BuildingStack(props) {
     const n = props.buildings.length;
     return (<div className="buildingStack">
             {props.buildings.map((building,i)=>{
-                return ( <div className="buildingHolder" style={ {bottom:(n-i-1)*19+'px',zIndex:100-i} }>
-                           <Building bn={building} key={building}/>
+                return ( <div className="buildingHolder" style={ {bottom:(n-i-1)*19+'px',zIndex:100-i} } key={building}>
+                           <Building bn={building} showNumber={true}/>
                          </div> );
             })}
             </div>);

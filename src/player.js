@@ -1,6 +1,7 @@
 import React from 'react';
 import { ResourceStack } from './resources.js';
 import { Building } from './buildingui.js';
+import { Ship } from './ships.js';
 import { safeCopy, gameState, ui } from './gamestate.js';
 import './player.css';
 
@@ -20,6 +21,9 @@ export function Player(props) {
                { resourceElements }
                { props.player.buildings.map( (bn)=>{
                    return <Building bn={bn} key={bn} />
+               } ) }
+               { props.player.ships.map( (s,i)=>{
+                   return <Ship ship={s} key={i} />
                } ) }
              </div>
            </div>;

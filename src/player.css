@@ -8,8 +8,9 @@
     flex-direction: column;
     flex-wrap: wrap;
     overflow-x: auto;
-    height: 100%;
-    width: 100%;
+    height: calc(100% - 20px);
+    width: calc(100% - 20px);
+    padding: 10px;
 }
       
 .current {
