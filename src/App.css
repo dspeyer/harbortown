@@ -22,8 +22,12 @@ h1 {
     grid-column-end: 3; 
     grid-row-start: 2; 
     grid-row-end: 3;
-    height: 240px;
+    height: 260px;
     position: relative;
+}
+
+.townbox > div {
+    height: 100%;
 }
 
 .playerbox {
@@ -43,7 +47,7 @@ h1 {
     grid-column-end: 3; 
     grid-row-start: 3; 
     grid-row-end: 4;
-    height: calc( ( 100vh - 240px ) / 2);
+    height: calc( ( 100vh - 260px ) / 2);
 }
 
 .player_1_of_4 {
@@ -58,7 +62,7 @@ h1 {
     grid-column-end: 3; 
     grid-row-start: 1; 
     grid-row-end: 2;
-    height: calc( ( 100vh - 240px ) / 2);
+    height: calc( ( 100vh - 260px ) / 2);
 }
 
 .player_3_of_4 {

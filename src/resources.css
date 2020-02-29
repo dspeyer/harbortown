@@ -67,7 +67,7 @@ div.stack {
 }
 
 div.stack > div.count {
-    min-width: 2em;
+    min-width: 1.5em;
     text-align: right;
 }
 

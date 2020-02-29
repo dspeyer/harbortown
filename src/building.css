@@ -3,7 +3,8 @@
     background: white;
     position: relative;
     border-radius: 3px;
-    width: 88px;
+    width: 100px;
+    min-width: 86px;
     height: 66px;
     font-size: 8pt;
     margin: 2px;
@@ -63,7 +64,7 @@
 
 .buildingStack {
     bottom: 0px;
-    width: 94px;
+    width: 106px;
     position: relative;
 }
 .buildingHolder {
