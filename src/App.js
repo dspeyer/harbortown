@@ -37,7 +37,9 @@ class App extends React.Component {
                       current={this.state.currentAdvancer}
                       resources={this.state.townResources}
                       buildings={this.state.townBuildings}
-                      plans={this.state.buildingPlans}/>
+                      plans={this.state.buildingPlans}
+                      ships={this.state.ships}
+                      eot={this.state.events[this.state.currentTurn]} />
               </div>
               { this.state.players.map( (player,i) => { return (
                   <div className={'playerbox player_'+i+'_of_'+this.state.players.length} key={i}>

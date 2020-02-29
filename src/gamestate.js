@@ -1,4 +1,4 @@
-import { resources, drop_tiles, player_colors } from './data.js';
+import { resources, drop_tiles, player_colors, game_events } from './data.js';
 
 export const gameState = {};
 export const buildingHelpers = {};
@@ -64,6 +64,9 @@ export function newGame(nplayers) {
             gameState.townResources[j] = 0;
         }
     }
+    gameState.ships = {'wood':[], 'iron': [], 'steel': [], 'luxury': []};
+    gameState.events = game_events[nplayers];
+    gameState.currentTurn = 0;
     gameState.currentAdvancer = -1;
     gameState.currentPlayer = -1;
     buildingHelpers.initBuildings();
@@ -94,7 +97,32 @@ export function safeCopy(x) {
 
 export function nextTurn() {
     gameState.currentAdvancer += 1;
-    gameState.currentAdvancer %= gameState.advancers.length;
+    if (gameState.currentAdvancer == gameState.advancers.length) {
+        const ev = gameState.events[gameState.currentTurn];
+        // TODO: feed
+        gameState.ships[ev.ship[0]].unshift(ev.ship[1]);
+        if (ev.building) {
+            let best=9999, bestdeck=null;
+            for (let deck of gameState.buildingPlans) {
+                if (deck.length>0 && deck[0]<best) {
+                    best=deck[0];
+                    bestdeck=deck;
+                }
+            }
+            if (bestdeck) {
+                gameState.townBuildings.push(bestdeck.shift());
+            }
+        }
+        // TODO: special
+        if ( ! ev.noharvest) {
+            for (let p of gameState.players) {
+                if (p.resources.wheat > 0) p.resources.wheat += 1;
+                if (p.resources.cattle > 1) p.resources.cattle += 1;
+            }
+        }
+        gameState.currentTurn += 1;
+        gameState.currentAdvancer = 0;
+    }
     for (let res of gameState.advancers[gameState.currentAdvancer]) {
         gameState.townResources[res] += 1;
     }

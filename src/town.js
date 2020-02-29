@@ -18,15 +18,15 @@ export function AdvancerToken(props) {
              </div> );
 }
 
-export function Town(props) {
+export function Town({advancers, current, resources, buildings, plans, ships, eot}) {
     console.log(gameState);
     let resourceElements = [];
-    for (let i in props.resources) {
-        let v = props.resources[i];
+    for (let i in resources) {
+        let v = resources[i];
         resourceElements.push(<span><ResourceStack type={i} number={v} key={i} holder={ui.townResources} /></span>);
     }
-    let advancerElements = props.advancers.map(
-        (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} active={i==props.current} key={i} />;}
+    let advancerElements = advancers.map(
+        (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} active={i==current} key={i} />;}
     );
     return (<div>
               <Instructions/>
@@ -35,32 +35,41 @@ export function Town(props) {
                 <div className="horiz advancers">
                   {advancerElements}
                   <div className="endOfTurn">
-                    ? 🍪<br/>
-                    <span className="miniship"><img src="images/wood.png"/> <span className="cost">4</span></span><br/>
-                    🏠
+                    {eot.feed} 🍪<br/>
+                    <div className="miniship">
+                      <img src={"images/"+eot.ship[0]+".png"}/>
+                      <span className="cost">{eot.ship[1]}</span>
+                    </div>
+                    {eot.building && '🏠'}
+                    {eot.special && '?'}
+                    {eot.noharvest && <strike>h</strike>}
                   </div>
                 </div>
                 <div className="horiz resource1">
-                  <ResourceStack type="money" number={props.resources.money} holder={ui.townResources} />
-                  <ResourceStack type="wood" number={props.resources.wood} holder={ui.townResources} />
-                  <ResourceStack type="iron" number={props.resources.iron} holder={ui.townResources} />
-                  <ResourceStack type="cattle" number={props.resources.cattle} holder={ui.townResources} />
+                  <ResourceStack type="money" number={resources.money} holder={ui.townResources} />
+                  <ResourceStack type="wood" number={resources.wood} holder={ui.townResources} />
+                  <ResourceStack type="iron" number={resources.iron} holder={ui.townResources} />
+                  <ResourceStack type="cattle" number={resources.cattle} holder={ui.townResources} />
                 </div>
                 <div className="horiz resource2">
-                  <ResourceStack type="fish" number={props.resources.fish} holder={ui.townResources} />
-                  <ResourceStack type="clay" number={props.resources.clay} holder={ui.townResources} />
-                  <ResourceStack type="wheat" number={props.resources.wheat} holder={ui.townResources} />
+                  <ResourceStack type="fish" number={resources.fish} holder={ui.townResources} />
+                  <ResourceStack type="clay" number={resources.clay} holder={ui.townResources} />
+                  <ResourceStack type="wheat" number={resources.wheat} holder={ui.townResources} />
                 </div>
                 <div className="shipStacks">
                   {['wood','iron','steel','luxury'].map((i)=>{
-                      return <span className="miniship">
-                               <img src={'images/'+i+'.png'}/>
-                               <span className="cost">?</span>
-                               <span className="cnt">(+?)</span>
-                             </span>
+                      if (ships[i].length) {
+                          return <span className="miniship" title={i+' ships available: '+ships[i].join(', ')}>
+                                   <img src={'images/'+i+'.png'}/>
+                                   <span className="cost">{ships[i][0]}</span>
+                                   <span className="cnt">(+{ships[i].length-1})</span>
+                                 </span>;
+                      } else {
+                          return false;
+                      }   
                   })}
                 </div>
-                <div className="horiz buildings">{ props.buildings.map((bn)=>{  
+                <div className="horiz buildings">{ buildings.map((bn)=>{  
                     return <Building bn={bn} bn={bn}/>;
                 }) }</div>
                 <div className="buttonbar">
@@ -73,7 +82,7 @@ export function Town(props) {
                   <input type="button" value="Next Turn" onClick={wrap.bind(null,nextTurn)}/>
                 </div>
                 <div className="plans">
-                  { props.plans.map((plan,i) => {
+                  { plans.map((plan,i) => {
                       return <BuildingStack buildings={plan} key={i} />
                   } ) }
                 </div>
