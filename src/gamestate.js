@@ -146,13 +146,7 @@ export async function takeResource() {
     
 function satisfies(provided, reqs) {
     if (('money' in reqs) && (provided.money >= reqs.money)) return true;
-    if ('food' in reqs) {
-        let food = 0;
-        for (let res in provided) {
-            food += provided[res] * resources[res].food;
-        }
-        if (food >= reqs.food) return true;
-    }
+    if (('food' in reqs) && (countPile(provided,'food') >= reqs.food)) return true;
     return false;
 }
     
@@ -268,4 +262,15 @@ function restore(active, canon) {
     for (let k in canon) {
         active[k] = safeCopy(canon[k]);
     }
+}
+
+export function countPile(res, aspect, fn) {
+    if (!fn) fn=(x)=>{return x;};
+    let out = 0;
+    for (let r in res) {
+        if (resources[r][aspect] > 0) {
+            out += fn(resources[r][aspect]) * res[r];
+        }
+    }
+    return out;
 }

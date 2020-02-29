@@ -1,4 +1,4 @@
-import {gameState, ui, shuffle, safeCopy, subtractResources, addResources, countSymbol, checkDecks} from './gamestate.js';
+import {gameState, ui, shuffle, safeCopy, subtractResources, addResources, countSymbol, checkDecks, countPile} from './gamestate.js';
 import {resources} from './data.js';
 
 const building_firm = {name: 'Building Firm',
@@ -48,13 +48,7 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                     else throw "Cannot deduce intended ship type";
 
                     //TODO: unify this?
-                    let energy = 0;
-                    for (let r in res) {
-                        if (resources[r].energy > 0) {
-                            energy += resources[r].energy * res[r];
-                        }
-                    }
-                    if (energy < 3) throw "Not enough energy";
+                    if (countPile(res,'energy') < 3) throw "Not enough energy";
 
                     if (gameState.ships[ship_type].length == 0) throw "No "+ship_type+" ships available to build";
                     player.ships.push([ship_type,gameState.ships[ship_type].shift()]);
@@ -121,14 +115,8 @@ export const buildings = [
      text: 'Sell adv for 1, basic for 1/3',
      action: async (player) => {
          const toSell = await ui.pickPlayerResources(player, (res)=>{return res!='money';});
-         let basic=0, adv=0;
-         for (let r in toSell) {
-             if (resources[r].advanced){
-                 adv += toSell[r];
-             } else {
-                 basic += toSell[r];
-             }
-         }
+         const adv = countPile(toSell,'advanced');
+         const basic = countPile(toSell,'value',(x)=>{return 1;}) - adv;
          if (basic%3 != 0) {
              //TODO: warning
          }
@@ -171,7 +159,7 @@ export const buildings = [
      buildcost: {unobtainium:1},
      text: '+2 each unavailable town resource',
      action: async (player) => {
-         for (let res of gameState.townResources) {
+         for (let res in gameState.townResources) {
              if (gameState.townResources[res]==0) {
                  addResources(player,{ [res]:2 });
              }
@@ -231,7 +219,7 @@ export const buildings = [
      text: 'hides ⮕ leather + money (max 4)',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='hides';});
-         let n = res.hides;
+         const n = res.hides;
          if (n > 4) throw "Too many hides";
          addResources(player,{leather:n,money:n});
      }
@@ -246,12 +234,7 @@ export const buildings = [
      text: '2 wheat + 1 ϟ ⮕ 2 bread + 1 money',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='wheat' || resources[res].energy>0;});
-         let energy = 0;
-         for (let r in res) {
-             if (resources[r].energy > 0) {
-                 energy += resources[r].energy * res[r];
-             }
-         }
+         const energy = countPile(res,'energy')
          if (2*energy < res.wheat) {
              throw "Not enough energy for that wheat";
          }
@@ -295,12 +278,7 @@ export const buildings = [
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='fish' || resources[res].energy>0;});
          if ( ! (res.fish > 0) ) throw "fish required";
-         let energytokens = 0;
-         for (let r in res) {
-             if (resources[r].energy > 0) {
-                 energytokens += res[r];
-             }
-         }
+         const energytokens = countPile(res,'energy',(x)=>{return 1;});
          if (energytokens == 0) throw "energy required";
          if (energytokens > 1) throw "too much energy: any at all will suffice";
          addResources(player,{lox:res.fish,money:Math.floor(res.fish/2)});
@@ -326,12 +304,7 @@ export const buildings = [
      text: '5 ϟ + 1 iron ⮕ steel',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='iron' || resources[res].energy>0;});
-         let energy = 0;
-         for (let r in res) {
-             if (resources[r].energy > 0) {
-                 energy += resources[r].energy * res[r];
-             }
-         }
+         const energy = countPile(res,'energy');
          if (energy < res.iron*5) {
              throw "Not enough energy for that iron";
          }
@@ -347,17 +320,16 @@ export const buildings = [
      buildcost: {wood:4,clay:1},
      text: '4 any ⮕ steel and/or 1 any ⮕ charcoal / brick / leather',
      action: async (player) => {
-         const res = await ui.pickPlayerResources(player, (res)=>{return true;});
-         let cnt = 0;
-         for (let r in res) {
-             cnt += res[r];
-         }
+         const res = await ui.pickPlayerResources(player, (res)=>{return res!='money';});
+         const cnt = countPile(res,'value',(x)=>{return 1;});
          if (cnt!=1 && cnt!=4 && cnt!=5) throw "Must select exactly one, four or five resources";
+         if (cnt >= 4) {
+             addResources(player,{steel:1});
+         }
          if (cnt==1 || cnt==5) {
              const goods = await ui.pickResources(['charcoal','brick','leather'],1);
              addResources(player,{[Object.keys(goods)[0]]:1});
          }
-         addResources(player,{steel:1});
      }
     },
 
@@ -413,12 +385,7 @@ export const buildings = [
      text: '3 iron (4 if 6ϟ)',
      action: async (player) => { 
          const res = await ui.pickPlayerResources(player, (res)=>{return resources[res].energy>0;});
-         let energy = 0;
-         for (let r in res) {
-             if (resources[r].energy > 0) {
-                 energy += resources[r].energy * res[r];
-             }
-         }
+         const energy = countPile(res, 'energy');
          addResources(player,{iron:3+(energy>6)});
      }
     },
@@ -432,12 +399,7 @@ export const buildings = [
      text: 'clay + 1/2 ϟ ⮕ brick + 1/2 money',
      action: async (player) => { 
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='clay' || res=='brick' || resources[res].energy>0;});
-         let energy = 0;
-         for (let r in res) {
-             if (resources[r].energy > 0) {
-                 energy += resources[r].energy * res[r];
-             }
-         }
+         const energy = countPile(res,'energy');
          const clay = (res.clay||0) + (res.brick||0);
          if (2*energy < clay) {
              throw "Not enough energy for that clay";
