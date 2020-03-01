@@ -116,7 +116,7 @@ export const buildings = [
          const energy = countPile(enres,'energy');
          const nship = Math.floor(energy/3);
          const cap = capOfShips(player.ships, nship);
-         const sres = await ui.pickPlayerResources(player, (x)=>{return resources[x].value;}, "Choose goods to ship (max "+cap+" on "+nship+" ships)");
+         const sres = await ui.pickPlayerResources(player, (x)=>{return resources[x].value;}, "Choose goods to ship (max "+cap+")");
          if (countPile(sres,'value',(x)=>{return 1;}) > cap) throw "Too many goods";
          const v = countPile(sres,'value');
          addResources(player,{money:v});
