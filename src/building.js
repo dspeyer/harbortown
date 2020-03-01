@@ -85,6 +85,24 @@ export const starting_buildings = [
       }},
 ];
 
+function capOfShips(ships,n) {
+    let rem = n;
+    let cap = 0;
+    for (let t of ['steel','iron','wood']) {
+        for (let s of ships) {
+            if (s[0]==t) {
+                cap += gameState.shipStats[t].ship;
+                rem -= 1;
+            }
+            if (rem==0) {
+                return cap;
+            }
+        }
+    }
+    return cap;
+}
+
+
 export const buildings = [
     {name: 'Shipping Line',
      number: 18,
@@ -93,7 +111,16 @@ export const buildings = [
      cost: 10,
      buildcost: {'wood':2, 'brick':2},
      text: '3 ϟ + boatload ⮕ value',
-     action: async (player) => { throw 'TODO'; }
+     action: async (player) => {
+         const enres = await ui.pickPlayerResources(player, (x)=>{return resources[x].energy;}, "Choose energy to load ships with 3/ship");
+         const energy = countPile(enres,'energy');
+         const nship = Math.floor(energy/3);
+         const cap = capOfShips(player.ships, nship);
+         const sres = await ui.pickPlayerResources(player, (x)=>{return resources[x].value;}, "Choose goods to ship (max "+cap+" on "+nship+" ships)");
+         if (countPile(sres,'value',(x)=>{return 1;}) > cap) throw "Too many goods";
+         const v = countPile(sres,'value');
+         addResources(player,{money:v});
+     }
     },
     
     {name: 'Grocery Market',
