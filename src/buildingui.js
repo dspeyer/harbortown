@@ -74,7 +74,9 @@ export function BuildingStack(props) {
     const n = props.buildings.length;
     return (<div className="buildingStack">
             {props.buildings.map((building,i)=>{
-                return ( <div className="buildingHolder" style={ {bottom:(n-i-1)*19+'px',zIndex:100-i} } key={building}>
+                return ( <div className="buildingHolder" key={building} style={ {bottom: (n-i-1)*19+'px',
+                                                                                 zIndex: 100-i,
+                                                                                 cursor: (i?'zoom-in':'unset') } } >
                            <Building bn={building} showNumber={true}/>
                          </div> );
             })}

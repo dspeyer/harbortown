@@ -59,7 +59,7 @@
 div.stack {
     display: flex;
     flex-direction: row;
-    height: 34px;
+    height: 42px;
     align-items: center;
     margin: 4px;
     position: relative;
@@ -73,7 +73,7 @@ div.stack > div.count {
 
 div.stack > div.tiles {
     width: 70px;
-    height: 34px;
+    height: 42px;
     position: relative;
 }
 

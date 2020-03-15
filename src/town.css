@@ -123,6 +123,7 @@ div.horiz {
     text-align: center;
     border-radius: .5em;
     height: 58px;
+    cursor: zoom-in;
 }
 
 .endOfTurn img {
