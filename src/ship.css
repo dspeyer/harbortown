@@ -1,0 +1,52 @@
+
+.miniship {
+    background: #77f;
+    border: 2px #227 outset;
+    white-space: nowrap;
+    color: black;
+}
+
+.miniship .cnt {
+    font-size: 8pt;
+    vertical-align: text-top;
+}
+
+.miniship img {
+    height: 1em;
+}
+
+.cost {
+    background: #ff0;
+    height: 1.2em;
+    border-radius: 0.6em;
+    min-width: 1.2em;
+    display: inline-block;
+    text-align: center;
+}
+
+.ship {
+    background: #77f;
+    border: 2px #227 outset;
+    color: black;
+    width: 100px;
+    height: 43px;
+    border-radius: 3px;
+}
+
+.ship > .name {
+    font-weight: bold;
+    font-size: 10pt;
+    text-transform: capitalize;
+    text-align: center;
+}
+
+.ship > .name > img {
+    height: 1.2em;
+}
+
+.ship > .capacity {
+    font-size: 12pt;
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
