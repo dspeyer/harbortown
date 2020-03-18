@@ -6,9 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import { gameState, ui, buildingHelpers, backend, endGame, newGame } from './gamestate.js';
 import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding, initUi, showError } from './interaction.js';
 import { initBuildings, buildings_by_number } from './building.js';
-import { init, prepare_log, abort_log, send_log } from './net.js';
-
-init(); // net
+import * as net from './net.js';
 
 ui.pickTownResource = pickTownResource;
 ui.pickPlayerResources = pickPlayerResources;
@@ -22,11 +20,12 @@ ui.showError = showError;
 buildingHelpers.initBuildings = initBuildings;
 buildingHelpers.buildings_by_number = buildings_by_number;
 
-backend.prepare_log = prepare_log;
-backend.send_log = send_log;
-backend.abort_log = abort_log;
+backend.prepare_log = net.prepare_log;
+backend.send_log = net.send_log;
+backend.abort_log = net.abort_log;
 
-newGame(4);
+initUi(5);
+net.init();
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

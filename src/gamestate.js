@@ -1,6 +1,6 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds } from './data.js';
 
-export const gameState = {};
+export const gameState = { players:[] };
 export const buildingHelpers = {};
 export const ui = {};
 ui.update = ()=>{}; // so it can be called before it's initialized
@@ -263,7 +263,7 @@ export async function wrap(callback) {
     }
 }
 
-function restore(active, canon) {
+export function restore(active, canon) {
     for (let k in canon) {
         active[k] = safeCopy(canon[k]);
     }
