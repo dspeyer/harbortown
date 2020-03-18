@@ -4,6 +4,7 @@ import './interaction.css';
 import { subtractResources, gameState, ui } from './gamestate.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { buildings_by_number } from './building.js';
+import { annotate_log } from './net.js';
 
 let allClickTargets = [];
 
@@ -57,7 +58,7 @@ export async function pickTownResource() {
     const choice = await wfu; // invoked by the onClick of a ClickTarget
     clearAllClickTargets();
     ui.resolve = undefined;
-    console.log('returning',choice);
+    annotate_log(choice);
     return choice;
 }
 
@@ -170,7 +171,9 @@ export async function pickResources(rl, n) {
     const msg = 'Pick '+n+' of the following resources';
     const dlelem = <PickResourcesDialog msg={msg} out={dlobj} offers={rl} n={n} />;
     const dl = showDialog(dlelem, dlobj);
-    return await dl;
+    const resources = await dl;
+    annotate_log(resources);
+    return resources;
 }
 
 export async function pickPlayerResources(player, filter, msg) {
@@ -195,6 +198,7 @@ export async function pickPlayerResources(player, filter, msg) {
     
     const picked = await dl;
     clearAllClickTargets();
+    annotate_log(picked);
     return picked;
 }
 
@@ -212,6 +216,7 @@ export async function pickBuilding() {
     let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
     let bn = await p;
     clearAllClickTargets();
+    annotate_log(bn);
     return buildings_by_number[bn];
 }
 
@@ -230,6 +235,7 @@ export async function pickBuildingPlan(msg, resource, includingTown) {
     let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
     let bn = await p;
     clearAllClickTargets();
+    annotate_log(bn);
     return buildings_by_number[bn];
 }
 
@@ -241,6 +247,7 @@ export async function pickPlayerBuilding(msg, player) {
     let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
     let bn = await p;
     clearAllClickTargets();
+    annotate_log(bn);
     return buildings_by_number[bn];
 }    
 

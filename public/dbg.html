@@ -1,0 +1,13 @@
+<html>
+    <body>
+        <script>
+         let hn = window.location.hostname;
+         let port = window.location.port;
+         let socket = new WebSocket('ws://'+hn+':'+port+'/dbgsocket');
+         socket.addEventListener('message', function (event) {
+             console.log('Message from server '+event.data);
+             document.write('Message from server '+event.data+'<br/>');
+         });
+        </script>
+    </body>
+</html>

@@ -4,6 +4,7 @@ export const gameState = {};
 export const buildingHelpers = {};
 export const ui = {};
 ui.update = ()=>{}; // so it can be called before it's initialized
+export const backend = {};
 
 export function endGame() {
     gameState.players = [];
@@ -246,9 +247,13 @@ export async function cheat() {
 export async function wrap(callback) {
     const backup = safeCopy(gameState);
     try {
+        console.log('callback',callback,' has name ',callback.name)
+        backend.prepare_log(callback.name);
         if (ui.cancelButton) ui.cancelButton.setState({active:true});
         await callback();
+        backend.send_log()
     } catch (e) {
+        backend.abort_log();
         ui.showError(e+'');
         restore(gameState, backup);
         throw e;

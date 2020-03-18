@@ -3,9 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { gameState, ui, buildingHelpers, endGame, newGame } from './gamestate.js';
+import { gameState, ui, buildingHelpers, backend, endGame, newGame } from './gamestate.js';
 import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding, initUi, showError } from './interaction.js';
 import { initBuildings, buildings_by_number } from './building.js';
+import { init, prepare_log, abort_log, send_log } from './net.js';
+
+init(); // net
 
 ui.pickTownResource = pickTownResource;
 ui.pickPlayerResources = pickPlayerResources;
@@ -18,6 +21,10 @@ ui.showError = showError;
 
 buildingHelpers.initBuildings = initBuildings;
 buildingHelpers.buildings_by_number = buildings_by_number;
+
+backend.prepare_log = prepare_log;
+backend.send_log = send_log;
+backend.abort_log = abort_log;
 
 newGame(4);
 
