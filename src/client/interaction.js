@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
-import { subtractResources, gameState, ui } from './gamestate.js';
+import { subtractResources, gameState, ui } from '../common/gamestate.js';
 import { ResourceStack, ResourceTile } from './resources.js';
-import { buildings_by_number } from './building.js';
+import { buildings_by_number } from '../common/building.js';
 import { annotate_log } from './net.js';
 
 let allClickTargets = [];

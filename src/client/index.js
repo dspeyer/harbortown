@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { gameState, ui, buildingHelpers, backend, endGame, newGame } from './gamestate.js';
+import { gameState, ui, buildingHelpers, backend, endGame, newGame } from '../common/gamestate.js';
 import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding, initUi, showError } from './interaction.js';
-import { initBuildings, buildings_by_number } from './building.js';
+import { initBuildings, buildings_by_number } from '../common/building.js';
 import * as net from './net.js';
 
 ui.pickTownResource = pickTownResource;
@@ -33,3 +33,5 @@ ReactDOM.render(<App />, document.getElementById('root'));
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
+
+export const setupdone = 1;

@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import './building.css';
-import { resources } from './data.js';
+import { resources } from '../common/data.js';
 import { ClickTarget } from './interaction.js';
-import { gameState, ui } from './gamestate.js';
-import { buildings_by_number } from './building.js';
+import { gameState, ui } from '../common/gamestate.js';
+import { buildings_by_number } from '../common/building.js';
 
 function bmd(ref){
     if (ref.current.parentNode.style.zIndex < 300) {

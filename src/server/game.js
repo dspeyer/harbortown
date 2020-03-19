@@ -1,6 +1,6 @@
 import { log_event } from './dbg.js';
-import * as gs from '../src/gamestate.js';
-import { initBuildings, buildings_by_number } from '../src/building.js';
+import * as gs from '../common/gamestate.js';
+import { initBuildings, buildings_by_number } from '../common/building.js';
 
 let sockets = [];
 

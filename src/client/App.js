@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { Town } from './town.js'
 import { Player } from './player.js'
-import { gameState, ui, newGame, safeCopy } from './gamestate.js'
+import { gameState, ui, newGame, safeCopy } from '../common/gamestate.js'
 
 class App extends React.Component {
     

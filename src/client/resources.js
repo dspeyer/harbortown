@@ -1,6 +1,6 @@
 import React from 'react';
 import './resources.css';
-import {resources} from './data.js';
+import {resources} from '../common/data.js';
 import { ClickTarget } from './interaction.js';
 
 export function ResourceTile(props) {

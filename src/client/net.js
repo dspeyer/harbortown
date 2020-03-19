@@ -1,4 +1,4 @@
-import { gameState, restore, ui } from './gamestate.js';
+import { gameState, restore, ui } from '../common/gamestate.js';
 import { showError } from './interaction.js';
 
 let log = [];

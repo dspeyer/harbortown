@@ -3,7 +3,7 @@ import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
 import { MiniShip } from './ships.js';
 import { Instructions, CancelButton } from './interaction.js';
-import { gameState, ui, safeCopy, nextTurn, takeResource, useBuilding, buy, cheat, sell, wrap } from './gamestate.js';
+import { gameState, ui, safeCopy, nextTurn, takeResource, useBuilding, buy, cheat, sell, wrap } from '../common/gamestate.js';
 import { showDialog, closeSelf } from './interaction.js';
 import './town.css';
 

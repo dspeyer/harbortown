@@ -1,5 +1,5 @@
 import React from 'react';
-import { gameState } from './gamestate.js';
+import { gameState } from '../common/gamestate.js';
 import './ship.css';
 
 export function MiniShip({ship,later}) {
