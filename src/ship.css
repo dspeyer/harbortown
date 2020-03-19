@@ -4,6 +4,7 @@
     border: 2px #227 outset;
     white-space: nowrap;
     color: black;
+    margin:2px;
 }
 
 .miniship .cnt {

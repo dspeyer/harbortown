@@ -106,7 +106,6 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
               <div className="townGrid">
                 <div className="horiz advancers">
                   {advancerElements}
-                  <EndOfTurn turn={turn} />
                 </div>
                 <div className="horiz resource1">
                   <ResourceStack type="money" number={resources.money} holder={ui.townResources} />
@@ -120,6 +119,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   <ResourceStack type="wheat" number={resources.wheat} holder={ui.townResources} />
                 </div>
                 <div className="shipStacks">
+                  <EndOfTurn turn={turn} />
                   {['wood','iron','steel','luxury'].map((i)=>{
                       return ships[i].length>0 && <MiniShip key={i} ship={[i,ships[i][0]]} later={ships[i].slice(1)}/>;
                   })}

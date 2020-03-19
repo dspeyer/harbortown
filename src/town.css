@@ -57,9 +57,10 @@ div.horiz {
 
 .advancers {
     grid-column-start: 1; 
-    grid-column-end: 3; 
+    grid-column-end: 2; 
     grid-row-start: 1; 
     grid-row-end: 2;
+    height: 60px;
 }
 
 .resource1 {
@@ -67,6 +68,7 @@ div.horiz {
     grid-column-end: 2; 
     grid-row-start: 2; 
     grid-row-end: 3;
+    height: 44px;
 }
 
 .resource2 {
@@ -74,6 +76,7 @@ div.horiz {
     grid-column-end: 2; 
     grid-row-start: 3; 
     grid-row-end: 4;
+    height: 44px;
 }
 
 .buildings {
@@ -96,7 +99,7 @@ div.horiz {
 .shipStacks {
     grid-column-start: 2;
     grid-column-end: 3; 
-    grid-row-start: 2; 
+    grid-row-start: 1; 
     grid-row-end: 4;
     font-size: 10.5pt;
     margin: 4px 0;
@@ -122,8 +125,9 @@ div.horiz {
     border: 1px solid #333;
     text-align: center;
     border-radius: .5em;
-    height: 58px;
+    height: 62px;
     cursor: zoom-in;
+    margin-bottom: 5px;
 }
 
 .endOfTurn img {
