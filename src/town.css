@@ -51,6 +51,7 @@ div.horiz {
 .townGrid {
     display: grid;
     grid-template-rows: min-content min-content min-content 1fr min-content;
+    grid-template-columns: 1fr min-content min-content min-content;
     height: 100%;
 }
 
@@ -80,7 +81,6 @@ div.horiz {
     grid-column-end: 3; 
     grid-row-start: 4; 
     grid-row-end: 5;
-    width: 500px;
     overflow-x: auto;
     align-items: flex-end;
     justify-content: left !important;
