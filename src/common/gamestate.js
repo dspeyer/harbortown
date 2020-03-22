@@ -46,21 +46,19 @@ export function addResources(player, gain) {
 }
 
 
-export function newGame(nplayers) {
-    endGame();
-    ui.initUi(nplayers);
-    for (let i=0; i<nplayers; i++) {
-        gameState.players.push({
-            name: example_names[i],
+export function newGame(players) {
+    gameState.players = players.map( (n,i)=> {
+        return {
+            name: n,
             color: player_colors[i],
             number: i,
-            resources: {},
+            resources: {money:5, coal:1},
             buildings: [],
             ships: []
-        });
-    }
+        };
+    } );
     gameState.advancers = shuffle(drop_tiles);
-    gameState.townResources = {};
+    gameState.townResources = {money:2, wood:2, fish:2, clay:1};
     for (let i of drop_tiles) {
         for (let j of i) {
             gameState.townResources[j] = 0;
@@ -68,17 +66,18 @@ export function newGame(nplayers) {
     }
     gameState.ships = {wood:[], iron: [], steel: [], luxury: []};
     gameState.shipStats = {luxury: {feed: 0, ship: 0}};
-    for (let r of ['wood','iron','steel']) gameState.shipStats[r] = {feed: ship_feeds[r][nplayers], ship: ship_capacities[r] };
-    gameState.events = game_events[nplayers];
+    for (let r of ['wood','iron','steel']) gameState.shipStats[r] = {feed: ship_feeds[r][players.length], ship: ship_capacities[r] };
+    gameState.events = game_events[players.length];
     gameState.currentTurn = 0;
     gameState.currentAdvancer = -1;
     gameState.currentPlayer = -1;
+    gameState.sockets = []; // Used by server
     buildingHelpers.initBuildings();
     nextTurn();
 }
 
 export function safeCopy(x) {
-    if (typeof(x)=='object') {
+    if (x && typeof(x)=='object') {
         if (Array.isArray(x)) {
             return x.map(safeCopy);
         } else if ((x.constructor==Object && x.prototype==undefined)) {

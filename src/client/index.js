@@ -24,8 +24,21 @@ backend.prepare_log = net.prepare_log;
 backend.send_log = net.send_log;
 backend.abort_log = net.abort_log;
 
+if (document.cookie) {
+    for (let crumb of document.cookie.split(';')) {
+        let words = crumb.split('=');
+        if (words.length==2 && words[0]=='name') {
+            gameState.whoami = unescape(words[1]);
+        }
+    }
+}
+
 initUi(5);
-net.init();
+if (window.location.search) {
+    net.init();
+} else {
+    newGame(['Daniel','Nick','Eppilito','Pei-hsin','Ken Horan']);
+}
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

@@ -1,3 +1,4 @@
+
 .player {
     width: 100%;
     height: 100%;
@@ -35,4 +36,9 @@
                     rgba(255,255,0,0) 20px,
                     rgba(255,255,0,0) calc(100% - 20px),
                     rgba(255,255,0,1) calc(100% - 7px));
+}
+
+h1.ismetrue {
+    font-family: serif;
+    transform: skew(-10deg, 0deg);
 }

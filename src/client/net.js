@@ -7,6 +7,7 @@ let socket;
 export function init() {
     let hn = window.location.hostname;
     let port = window.location.port;
+    let id = window.location.search.substr(1);
     socket = new WebSocket('ws://'+hn+':'+port+'/socket');
     socket.addEventListener('message', (raw) => {
         console.log('got message: '+raw.data)
@@ -19,7 +20,9 @@ export function init() {
             showError("Server Error: "+msg.error);
         }
     });
-    send_log();
+    socket.addEventListener('open', () => {
+        socket.send(JSON.stringify([['set_id',id]]));
+    });
 }
 
 export function prepare_log(txt) {

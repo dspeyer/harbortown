@@ -7,6 +7,7 @@ import './player.css';
 
 export function Player(props) {
     const player = props.player;
+    const isme = (player.name == gameState.whoami);
     let resourceElements = [];
     for (let i in player.resources) {
         let v = player.resources[i];
@@ -16,7 +17,7 @@ export function Player(props) {
                            (player.color!='khaki' ? ' darkbkg' : '') +
                            (player.number==gameState.currentPlayer ? ' current' : '')}
                 style={ {backgroundColor:player.color} } >
-             <h1>{player.name}</h1>
+             <h1 class={'isme'+isme}>{player.name}</h1>
              <div className="stuff">
                { resourceElements }
                { props.player.buildings.map( (bn)=>{

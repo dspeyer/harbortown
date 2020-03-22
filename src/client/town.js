@@ -100,6 +100,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
     let advancerElements = advancers.map(
         (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} active={i==current} key={i} />;}
     );
+    let myturn = ( gameState.whoami == gameState.players[gameState.currentPlayer].name );
     return (<div>
               <Instructions/>
               <h1>The Town</h1>
@@ -128,13 +129,13 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                     return <Building bn={bn} key={bn}/>;
                 }) }</div>
                 <div className="buttonbar">
-                  <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} />
-                  <input type="button" value="Use Building" onClick={wrap.bind(null,useBuilding)} />
-                  <input type="button" value="Buy" onClick={wrap.bind(null,buy)} />
-                  <input type="button" value="Sell" onClick={wrap.bind(null,sell)} />
-                  <input type="button" value="Cheat" onClick={wrap.bind(null,cheat)} />
+                  <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn} />
+                  <input type="button" value="Use Building" onClick={wrap.bind(null,useBuilding)} disabled={!myturn} />
+                  <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn} />
+                  <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn} />
+                  <input type="button" value="Cheat" onClick={wrap.bind(null,cheat)} disabled={!myturn} />
                   <CancelButton/>
-                  <input type="button" value="Next Turn" onClick={wrap.bind(null,nextTurn)}/>
+                  <input type="button" value="Next Turn" onClick={wrap.bind(null,nextTurn)} disabled={!myturn} />
                 </div>
                 <div className="plans">
                   { plans.map((plan,i) => {
