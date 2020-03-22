@@ -58,12 +58,7 @@ export function newGame(players) {
         };
     } );
     gameState.advancers = shuffle(drop_tiles);
-    gameState.townResources = {money:2, wood:2, fish:2, clay:1};
-    for (let i of drop_tiles) {
-        for (let j of i) {
-            gameState.townResources[j] = 0;
-        }
-    }
+    gameState.townResources = {money:2, wood:2, fish:2, clay:1, iron:0, wheat:0, cattle:0};
     gameState.ships = {wood:[], iron: [], steel: [], luxury: []};
     gameState.shipStats = {luxury: {feed: 0, ship: 0}};
     for (let r of ['wood','iron','steel']) gameState.shipStats[r] = {feed: ship_feeds[r][players.length], ship: ship_capacities[r] };
@@ -131,6 +126,7 @@ export function nextTurn() {
     }
     gameState.currentPlayer += 1;
     gameState.currentPlayer %= gameState.players.length;
+    gameState.bigActionTaken = false;
     ui.update();
 }
 
@@ -141,6 +137,7 @@ export async function takeResource() {
     if (player.resources[resource] == undefined) player.resources[resource] = 0;
     player.resources[resource] += gameState.townResources[resource];
     gameState.townResources[resource] = 0;
+    gameState.bigActionTaken = true;
     ui.update();
 }
     
@@ -180,6 +177,7 @@ export async function useBuilding() {
         }
     }
     await building.action(player, building);
+    gameState.bigActionTaken = false;
     ui.update();
 }
     

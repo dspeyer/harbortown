@@ -37,6 +37,7 @@ initUi(5);
 if (window.location.search) {
     net.init();
 } else {
+    gameState.whoami = false;
     newGame(['Daniel','Nick','Eppilito','Pei-hsin','Ken Horan']);
 }
 

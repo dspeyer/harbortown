@@ -64,7 +64,9 @@ export function game_socket_open(ws,req) {
         }
         for (let s of sockets_by_id[game.id]) {
             try {
-                s.send(JSON.stringify({newGameState:game}));
+                if (s.readyState != 3) { // CLOSED -- TODO: find the named constant
+                    s.send(JSON.stringify({newGameState:game}));
+                }
             }catch (e) {
                 console.log(e);
             }

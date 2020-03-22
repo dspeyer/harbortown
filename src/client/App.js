@@ -18,17 +18,7 @@ class App extends React.Component {
 
     render() {
         if (this.state.players.length==0) {
-            this.inputRef = React.createRef();
-            let self = this;
-            let callback = () => {
-                let n = self.inputRef.current.value;
-                newGame(n);
-                self.setState(safeCopy(gameState));
-            };
-            return (<form>
-                      Number of Players:<input ref={this.inputRef}/>
-                      <input type="button" value="start" onClick={callback}/>
-                    </form>);
+            return <div>Loading...</div>;
         }
         return (
             <div className="grid">
