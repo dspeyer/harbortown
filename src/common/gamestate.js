@@ -187,7 +187,19 @@ export function nextTurn() {
         }
     }
     for (let res of gameState.advancers[gameState.currentAdvancer]) {
-        gameState.townResources[res] += 1;
+        if (res != 'interest') {
+            gameState.townResources[res] += 1;
+        } else {
+            for (let p of gameState.players) {
+                if (p.resources.loans > 0) {
+                    try {
+                        subtractResources(p,{money:1});
+                    } catch {
+                        addResources(p,{loans:1,money:3});
+                    }
+                }
+            }
+        }
     }
     gameState.currentPlayer += 1;
     gameState.currentPlayer %= gameState.players.length;
@@ -242,7 +254,7 @@ export async function useBuilding() {
         }
     }
     await building.action(player, building);
-    gameState.bigActionTaken = false;
+    gameState.bigActionTaken = true;
     ui.update();
 }
     

@@ -17,6 +17,7 @@ export function AdvancerToken(props) {
                  <img src={'images/'+props.b+'.png'} />
                  {props.b}
                </div>
+               {props.i && <div className="interest">interest</div>}
              </div> );
 }
 
@@ -98,7 +99,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
         resourceElements.push(<span><ResourceStack type={i} number={v} key={i} holder={ui.townResources} /></span>);
     }
     let advancerElements = advancers.map(
-        (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} active={i==current} key={i} />;}
+        (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} i={av[2]} active={i==current} key={i} />;}
     );
     let myturn = ( ( ! gameState.whoami ) || (gameState.whoami == gameState.players[gameState.currentPlayer].name) );
     let bat = gameState.bigActionTaken;

@@ -73,14 +73,14 @@ export const resources = {
 
 
 export const drop_tiles = [
+    ['wheat', 'fish', 'interest'],
     ['wood','fish'],
     ['wood','cattle'],
     ['wood', 'money'],
     ['wood', 'clay'],
-    ['wheat', 'fish'],
     ['fish', 'clay'],
     ['iron', 'money']
-]
+];
 
 export const player_colors = [ 'green', 'darkblue', 'red', 'khaki', 'purple' ];
 

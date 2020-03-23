@@ -83,6 +83,7 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 1; 
     grid-row-end: 2;
+    height: calc( ( 100vh - 260px ) / 2);
 }
 
 /* 3 players */
