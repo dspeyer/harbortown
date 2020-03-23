@@ -73,8 +73,8 @@ export const resources = {
 
 
 export const drop_tiles = [
-    ['wheat', 'fish', 'interest'],
-    ['wood','fish'],
+    ['wheat', 'fish'],
+    ['wood','fish', 'interest'],
     ['wood','cattle'],
     ['wood', 'money'],
     ['wood', 'clay'],
@@ -87,7 +87,16 @@ export const player_colors = [ 'green', 'darkblue', 'red', 'khaki', 'purple' ];
 
 export const game_events = [
     [], //0 players
-    [], //1 player
+    [ //1 player
+        {feed: 5, ship:['wood',2], special:true},
+        {feed: 10, ship:['wood',2], building:true},
+        {feed: 15, ship:['iron',2], special:true},
+        {feed: 20, ship:['iron',2], building:true},
+        {feed: 25, ship:['steel',2], special:true},
+        {feed: 30, ship:['steel',2], building:true},
+        {feed: 35, ship:['luxury',2], noharvest:true},
+        
+    ],
     [ //2 players
         {feed: 3, ship:['wood',2]},
         {feed: 4, ship:['wood',2], building:true},
