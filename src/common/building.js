@@ -110,6 +110,7 @@ export const buildings = [
      entry: {food: 2},
      cost: 10,
      buildcost: {'wood':2, 'brick':2},
+     minplayers: 1,
      text: '3 ϟ + boatload ⮕ value',
      action: async (player) => {
          const enres = await ui.pickPlayerResources(player, (x)=>{return resources[x].energy;}, "Choose energy to load ships with 3/ship");
@@ -129,6 +130,7 @@ export const buildings = [
      entry: {'money': 1},
      cost: 10,
      buildcost: {'wood':1, 'brick':1},
+     minplayers: 3,
      text: 'Gain 1 of each food-related resource',
      action: async (player) => { addResources(player,{cattle:1,fish:1,wheat:1,meat:1,lox:1,bread:1}); }
     },
@@ -139,6 +141,7 @@ export const buildings = [
      entry: {'money':2},
      cost: 16,
      buildcost: {iron: 3},
+     minplayers: 3,
      text: 'Sell adv for 1, basic for 1/3',
      action: async (player) => {
          const toSell = await ui.pickPlayerResources(player, (res)=>{return res!='money' && res!='loans';});
@@ -157,6 +160,7 @@ export const buildings = [
      entry: {money: 1},
      cost: 18,
      buildcost: {brick:2, iron:2},
+     minplayers: 1,
      text: 'coal ⮕ coke + money',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='coal'});
@@ -171,6 +175,7 @@ export const buildings = [
      entry: {},
      cost: 26,
      buildcost: {wood:5, brick:3, iron:1},
+     minplayers: 2,
      text: '5 loaves 2 fish ⮕ 10 loaves 5 fish once',
      action: async (player) => {
          player.subtractResources({bread:5,fish:2});
@@ -184,6 +189,7 @@ export const buildings = [
      entry: {food:1},
      cost: 2,
      buildcost: {unobtainium:1},
+     minplayers: 3,
      text: '+2 each unavailable town resource',
      action: async (player) => {
          for (let res in gameState.townResources) {
@@ -200,6 +206,7 @@ export const buildings = [
      entry: {food:1},
      cost: 8,
      buildcost: {wood:3,clay:1},
+     minplayers: 3,
      text: '+1 wood brick iron',
      action: async (player) => { addResources(player,{wood:1,brick:1,iron:1});}
     },
@@ -209,12 +216,14 @@ export const buildings = [
      get text() { return this.gettext(); },
      get modernized() { return this.getmodernized(); },
      set modernized(x) { return this.setmodernized(x); },
+     minplayers: 1,
      number: 12},
     {...wharf,
      get name() { return this.getname(); },
      get text() { return this.gettext(); },
      get modernized() { return this.getmodernized(); },
      set modernized(x) { return this.setmodernized(x); },
+     minplayers: 3,
      number: 17},
     
     {name: 'Fishery',
@@ -223,6 +232,7 @@ export const buildings = [
      entry: {},
      cost: 10,
      buildcost: {wood:1,clay:1},
+     minplayers: 1,
      text: 'Take 3 + 🎣 fish',
      action: async (player) => { addResources(player,{fish:3+countSymbol(player,'🎣')}); }
     },
@@ -233,6 +243,7 @@ export const buildings = [
      entry: {unobtainium:1},
      cost: 30, //TODO: 6
      buildcost: {wood:4,brick:3},
+     minplayers: 2,
      text: 'Endgame bonus: 4/🏛 2/🏠',
      engameBonus: (player) => { return countSymbol(player,'🏛')*4+countSymbol(player,'🏠')*2; },
     },
@@ -243,6 +254,7 @@ export const buildings = [
      entry: {},
      cost: 12,
      buildcost: {wood:1,brick:1},
+     minplayers: 1,
      text: 'hides ⮕ leather + money (max 4)',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='hides';});
@@ -258,6 +270,7 @@ export const buildings = [
      entry: {food:1},
      cost: 8,
      buildcost: {clay:2},
+     minplayers: 1,
      text: '2 wheat + 1 ϟ ⮕ 2 bread + 1 money',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='wheat' || resources[res].energy>0;});
@@ -275,6 +288,7 @@ export const buildings = [
      entry: {},
      cost: 8,
      buildcost: {clay:1},
+     minplayers: 1,
      text: 'wood ⮕ charcoal',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='wood';});
@@ -288,6 +302,7 @@ export const buildings = [
      entry: {food:1},
      cost: 8,
      buildcost: {wood:3},
+     minplayers: 3,
      text: '1/2/3 wood ⮕ 5/6/7 money',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='wood';});
@@ -301,6 +316,7 @@ export const buildings = [
      entry: {food:2,money:1},
      cost: 6,
      buildcost: {wood:2,clay:1},
+     minplayers: 1,
      text: 'fish + any ϟ ⮕ lox 1/2 money (max 6)',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='fish' || resources[res].energy>0;});
@@ -318,6 +334,7 @@ export const buildings = [
      entry: {unobtainium:1},
      cost: 40,//TODO 16
      buildcost: {brick:4,steel:1},
+     minplayers: 2,
      text: 'Endgame bonus: 2/🏢 3/🏭',
      engameBonus: (player) => { return countSymbol(player,'🏢')*2+countSymbol(player,'🏭')*3; },
     },
@@ -328,6 +345,7 @@ export const buildings = [
      entry: {money:2},
      cost: 22,
      buildcost: {brick:4,iron:2},
+     minplayers: 1,
      text: '5 ϟ + 1 iron ⮕ steel',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='iron' || resources[res].energy>0;});
@@ -345,6 +363,7 @@ export const buildings = [
      entry: {money:1},
      cost: 12,
      buildcost: {wood:4,clay:1},
+     minplayers: 3,
      text: '4 any ⮕ steel and/or 1 any ⮕ charcoal / brick / leather',
      action: async (player) => {
          const res = await ui.pickPlayerResources(player, (res)=>{return res!='money' && res!='loans';});
@@ -366,6 +385,7 @@ export const buildings = [
      entry: {food:2},
      cost: 10,
      buildcost: {wood:1,clay:3},
+     minplayers: 1,
      text: '+3 coal (4 if 🔨)',
      action: async (player) => { addResources(player,{coal:3+(countSymbol(player,'🔨')>0)}); }
     },
@@ -376,6 +396,7 @@ export const buildings = [
      entry: {},
      cost: 14,
      buildcost: {clay:1,iron:1},
+     minplayers: 3,
      text: 'Build one building, save one wood',
      action: async (player,self) => { await building_firm.action(player, self, "Choose building to saw"); }
     },
@@ -386,6 +407,7 @@ export const buildings = [
      entry: {food:1},
      cost: 2,
      buildcost: {unobtainium:1},
+     minplayers: 1,
      text: '3+🔨 clay',
      action: async (player) => { addResources(player,{clay:3+countSymbol(player,'🔨')}); }
     },
@@ -396,6 +418,7 @@ export const buildings = [
      entry: {money:2},
      cost: 8,
      buildcost: {wood:1,clay:1,iron:1},
+     minplayers: 1,
      text: 'cattle ⮕ meat + 1/2 hides',
      action: async (player) => { 
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='cattle';});
@@ -409,6 +432,7 @@ export const buildings = [
      entry: {food:3,money:1},
      cost: 12,
      buildcost: {wood:3,brick:2},
+     minplayers: 1,
      text: '3 iron (4 if 6ϟ)',
      action: async (player) => { 
          const res = await ui.pickPlayerResources(player, (res)=>{return resources[res].energy>0;});
@@ -423,6 +447,7 @@ export const buildings = [
      entry: {food:1},
      cost: 14,
      buildcost: {wood:2,clay:1,iron:1},
+     minplayers: 1,
      text: 'clay + 1/2 ϟ ⮕ brick + 1/2 money',
      action: async (player) => { 
          const res = await ui.pickPlayerResources(player, (res)=>{return res=='clay' || res=='brick' || resources[res].energy>0;});
@@ -441,6 +466,7 @@ export const buildings = [
      entry: {food:2,money:1},
      cost: 6,
      buildcost: {wood:2},
+     minplayers: 1,
      text: '2+🏠 different standard goods',
      action: async (player) => {
          const goods = await ui.pickResources(['wood','clay','iron','fish','wheat','cattle','hides','coal'],
@@ -456,10 +482,56 @@ export const buildings = [
      entry: {},
      cost: 16,
      buildcost: {wood:3,clay:2},
+     minplayers: 3,
      text: 'Forgive 1/1.5/2 loans if you have 1/2/3+',
      action: async (player) => { } //TODO: loans
     },
 
+    {name: 'Arts Center',
+     number: 11,
+     symbols: ['🎣','🏛'],
+     entry: {food:1},
+     cost: 10,
+     buildcost: {wood:1,clay:2},
+     minplayers: 4,
+     text: '€4 for other player in your buildings',
+     action: async (player) => {
+         let cnt=0;
+         for (let b of player.buildings) {
+             if (b in gameState.disks_by_building) {
+                 const pid = gameState.disks_by_building[b];
+                 if (gameState.players[pid] != player) {
+                     cnt++;
+                 }
+             }
+         }
+         addResources(player, {money: cnt*4});
+     } 
+    },
+
+
+    {name: 'Dock',
+     number: 26,
+     symbols: ['🏭'],
+     entry: {unobtainium: 1},
+     cost: 10,
+     buildcost: {wood:1, brick:2, iron:2},
+     minplayers: 4,
+     text: 'Endgame €4 / ⛴',
+     endgameBonus: async (player) => { return player.ships.length * 4; } 
+    },
+
+    {name: 'Storehouse',
+     number: 24,
+     symbols: ['🔨','🏢'],
+     entry: {unobtanium: 1},
+     cost: 4,
+     buildcost: {wood:2,brick:2},
+     minplayers: 4,
+     text: 'Endgame: 1/2 per common 1 per advanced',
+     action: async (player) => { return countPile(player.resources, 'advanced', (a)=>{return a?1:0.5;}); } //TODO: loans
+    },
+        
 ]
 
 export const buildings_by_number = {};
@@ -467,9 +539,9 @@ for (let b of starting_buildings) buildings_by_number[b.number] = b;
 for (let b of buildings) buildings_by_number[b.number] = b;
 
 
-export function initBuildings(nplayers /*TODO: care*/) {
+export function initBuildings(nplayers) {
     gameState.townBuildings = starting_buildings.map((b)=>{return b.number});
-    let deck = buildings.map((b)=>{return b.number});
+    let deck = buildings.filter((b)=>{return nplayers>=b.minplayers;}).map((b)=>{return b.number});
     let n = Math.floor(deck.length/3)
     let decks = [deck.slice(0,n), deck.slice(n,2*n), deck.slice(2*n)];
     for (let deck of decks) {

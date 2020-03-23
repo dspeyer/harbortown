@@ -68,7 +68,7 @@ export function newGame(players) {
     gameState.currentAdvancer = -1;
     gameState.currentPlayer = -1;
     gameState.sockets = []; // Used by server
-    buildingHelpers.initBuildings();
+    buildingHelpers.initBuildings(players.length);
     nextTurn();
 }
 
