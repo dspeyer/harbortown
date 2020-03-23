@@ -306,6 +306,9 @@ export async function buy() {
     } else {
         throw "Not purchaseable";
     }
+    if (b.number in gameState.disks_by_building) {
+        delete gameState.disks_by_building[b.number];
+    }
     player.buildings.push(b.number);
     ui.update();
 } 
@@ -318,6 +321,9 @@ export async function sell() {
     player.buildings.splice(idx,1);
     addResources(player, {money:Math.floor(b.cost/2)});
     gameState.townBuildings.push(b.number);
+        if (b.number in gameState.disks_by_building) {
+        delete gameState.disks_by_building[b.number];
+    }
     ui.update();
 }
 
