@@ -93,20 +93,22 @@ export function safeCopy(x) {
     }
 }
 
-export function completeFeed(player, hunger, food) {
+export function completeFeed(player, food) {
+    if ( ! food ) return;
     const fed = countPile(food,'food');
-    if (fed < hunger) {
-        hunger -= fed;
+    if (fed < player.hunger) {
+        player.hunger -= fed;
         ui.pickPlayerResources(player,
                                (r)=>{return resources[r].food;},
-                               player.name+': that was '+fed+' food, now eat another *'+hunger+'* food').
-            then(completeFeed.bind(null, player, hunger));
-        return;
-    }
-    delete gameState.awaitingFeed[player.name];
-    ui.update();
-    if (Object.keys(gameState.awaitingFeed).length == 0) {
-        nextTurn();
+                               player.name+': that was '+fed+' food, now eat another '+player.hunger+' food',
+                               true).
+            then(completeFeed.bind(null, player));
+    } else {
+        delete player.hunger
+        ui.update();
+        if (gameState.players.filter((p)=>{return p.hunger>0;}).length == 0) {
+            nextTurn();
+        }
     }
 }
 
@@ -134,38 +136,50 @@ export function nextTurn() {
                 if (p.resources.cattle > 1) p.resources.cattle += 1;
             }
         }
-        gameState.awaitingFeed = {};
         for (let p of gameState.players){
-            let hunger = ev.feed;
+            p.hunger = ev.feed;
             for (let s of p.ships) {
-                hunger -= ship_feeds[s[0]][gameState.players.length];
+                p.hunger -= ship_feeds[s[0]][gameState.players.length];
             }
-            if (hunger <= 0) continue;
+            if (p.hunger <= 0) {
+                delete p.hunger;
+                continue;
+            }
             let available = countPile(p.resources,'food');
-            if (available <= hunger) {
+            if (available <= p.hunger) {
+                console.log('autofeeding ',p);
                 for (let r in p.resources) {
                     if (resources[r].food) {
                         p.resources[r] = 0;
                     }
                 }
-                hunger -= available;
-                const loans = Math.ceil(hunger/4);
-                const money = loans*4 - hunger;
+                p.hunger -= available;
+                const loans = Math.ceil(p.hunger/4);
+                const money = loans*4 - p.hunger;
                 addResources(p,{loans,money});
+                delete p.hunger
             } else {
                 const foodtypes = Object.entries(p.resources).filter((e)=>{return resources[e[0]].food>0 && e[1]>0;});
                 if (foodtypes.length == 1) {
-                    const n = Math.ceil(hunger / resources[foodtypes[0][0]].food);
+                    console.log('autofeeding ',p,'using',foodtypes);
+                    const n = Math.ceil(p.hunger / resources[foodtypes[0][0]].food);
                     subtractResources(p,{[foodtypes[0][0]]: n});
+                    delete p.hunger;
+                } else if ( ! ui.am_client_to_server ) {
+                    console.log('manual feeding ',p);
+                    ui.pickPlayerResources(p,
+                                           (r)=>{return resources[r].food;},
+                                           p.name+': eat '+p.hunger+' food',
+                                          true).
+                        then(completeFeed.bind(null,p));
                 } else {
-                    gameState.awaitingFeed[p.name]=1;
-                    ui.pickPlayerResources(p, (r)=>{return resources[r].food;}, p.name+': eat '+hunger+' food').
-                        then(completeFeed.bind(null,p,hunger));
+                    console.log('letting the server worry about feeding ',p);
                 }
+
             }
         }
         gameState.currentTurn += 1;
-        if (Object.keys(gameState.awaitingFeed).length) {
+        if (gameState.players.filter((p)=>{return p.hunger>0;}).length) {
             gameState.currentAdvancer = -1;
             return;
         } else {

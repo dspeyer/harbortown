@@ -18,6 +18,7 @@ export function Player(props) {
                            (player.number==gameState.currentPlayer ? ' current' : '')}
                 style={ {backgroundColor:player.color} } >
              <h1 class={'isme'+isme}>{player.name}</h1>
+             { player.hunger>0 && <h1 class="hunger">Awaiting {player.hunger} food</h1> }
              <div className="stuff">
                { resourceElements }
                { props.player.buildings.map( (bn)=>{

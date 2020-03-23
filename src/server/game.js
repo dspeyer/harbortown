@@ -9,8 +9,12 @@ let sockets_by_id = {};
 async function replay_event(e, game, playfrom) {
     let input = 1;
     gs.restore(gs.gameState, game);
-    const player = gs.gameState.players[gs.gameState.currentPlayer];
-    if (player.name != playfrom) throw "It's not your turn (you're ["+playfrom+"] but it's ["+player.name+"]'s turn)";
+    const player = gs.gameState.players.filter((p)=>{return p.name==playfrom;})[0];
+    const currentPlayer = gs.gameState.players[gs.gameState.currentPlayer];
+    console.log('Replaying ',e)
+    if (e[0]!='completeFeed' && player !== currentPlayer) {
+        throw "It's not your turn (you're ["+playfrom+"] but it's ["+currentPlayer.name+"]'s turn)";
+    }
     const rawget = () => { return e[input++]; };
     const bget = () => { return buildings_by_number[e[input++]]; };
     gs.ui.pickTownResource =
@@ -20,13 +24,36 @@ async function replay_event(e, game, playfrom) {
         gs.ui.pickPlayerBuilding =
         gs.ui.pickBuildingPlan =
         bget;
-    gs.ui.pickPlayerResources = () => {
-        let r = rawget();
-        gs.subtractResources(player, r);
-        return r;
+    if (e[0]=='nextTurn' || e[0]=='completeFeed') {
+        gs.ui.pickPlayerResources = async (player, filter, msg, feeding) => {
+            console.log(' PPR in fooddemand for '+JSON.stringify(player));
+            for (let s of sockets_by_id[game.id]) {
+                if (s.readyState==3) { //TODO: named constant
+                    console.log('  skipping closed socket for '+s.name);
+                    continue;
+                }
+                if (s.name == player.name) {
+                    console.log('  sending fooddemand to '+player.name);
+                    s.send(JSON.stringify({foodDemand:msg, newGameState: gs.gameState}));
+                } else {
+                    console.log('  Skipping socket for '+s.name);
+                }
+            }
+            return null;
+        };
+    } else {
+        gs.ui.pickPlayerResources = (player, filter, msg, feeding) => {
+            let r = rawget();
+            gs.subtractResources(player, r);
+            return r;
+        }
     };
 
-    const callback = gs[e[0]];
+    let callback = gs[e[0]];
+    if (e[0]=='completeFeed'){
+        callback = callback.bind(null, player, e[1]);
+        gs.subtractResources(player, e[1]);
+    }
     await callback();
     gs.restore(game, gs.gameState);
 }

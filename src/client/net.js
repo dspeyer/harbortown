@@ -1,5 +1,7 @@
 import { gameState, restore, ui } from '../common/gamestate.js';
-import { showError } from './interaction.js';
+import { resources } from '../common/data.js';
+import { showError, pickPlayerResources } from './interaction.js';
+
 
 let log = [];
 let socket;
@@ -19,9 +21,16 @@ export function init() {
         if (msg.error) {
             showError("Server Error: "+msg.error);
         }
+        if (msg.foodDemand) {
+            const p = gameState.players.filter((p)=>{return p.name==gameState.whoami;})[0];
+            pickPlayerResources(p, (r)=>{return resources[r].food>0;}, msg.foodDemand).
+                then((food)=>{
+                    socket.send(JSON.stringify([['completeFeed',food]]))});
+        }
     });
     socket.addEventListener('open', () => {
         socket.send(JSON.stringify([['set_id',id]]));
+        ui.am_client_to_server = true;
     });
 }
 
