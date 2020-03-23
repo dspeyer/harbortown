@@ -437,7 +437,7 @@ export const buildings = [
      action: async (player) => { 
          const res = await ui.pickPlayerResources(player, (res)=>{return resources[res].energy>0;});
          const energy = countPile(res, 'energy');
-         addResources(player,{iron:3+(energy>6)});
+         addResources(player,{iron:3+(energy>=6)});
      }
     },
 
@@ -469,10 +469,10 @@ export const buildings = [
      minplayers: 1,
      text: '2+🏠 different standard goods',
      action: async (player) => {
-         const goods = await ui.pickResources(['wood','clay','iron','fish','wheat','cattle','hides','coal'],
-                                              2+countSymbol(player,'🏠')
-                                             );
-         for( let good in goods ) addResources(player,{[good]:1});
+         const wanted = 2+countSymbol(player,'🏠');
+         const goods = await ui.pickResources(['wood','clay','iron','fish','wheat','cattle','hides','coal'], wanted);
+         if (Object.values(goods).reduce((a,b)=>a+b,0)!=wanted) throw "Wrong number of goods";
+         addResources(player, goods);
      }
     },
 

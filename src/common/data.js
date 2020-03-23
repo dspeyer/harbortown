@@ -89,12 +89,12 @@ export const game_events = [
     [], //0 players
     [ //1 player
         {feed: 5, ship:['wood',2], special:true},
-        {feed: 10, ship:['wood',2], building:true},
-        {feed: 15, ship:['iron',2], special:true},
-        {feed: 20, ship:['iron',2], building:true},
-        {feed: 25, ship:['steel',2], special:true},
-        {feed: 30, ship:['steel',2], building:true},
-        {feed: 35, ship:['luxury',2], noharvest:true},
+        {feed: 10, ship:['wood',4], building:true},
+        {feed: 15, ship:['iron',6], special:true},
+        {feed: 20, ship:['iron',10], building:true},
+        {feed: 25, ship:['steel',16], special:true},
+        {feed: 30, ship:['steel',20], building:true},
+        {feed: 35, ship:['luxury',30], noharvest:true},
         
     ],
     [ //2 players

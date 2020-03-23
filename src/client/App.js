@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { Town } from './town.js'
 import { Player } from './player.js'
-import { gameState, ui, newGame, safeCopy } from '../common/gamestate.js'
+import { gameState, ui, newGame, safeCopy, restore } from '../common/gamestate.js'
 
 class App extends React.Component {
     
@@ -37,7 +37,13 @@ class App extends React.Component {
                     <Player player={player} dbb={this.state.disks_by_building} idx={i}/>
                   </div>
               )})}
-              <div className="dbg">{JSON.stringify(gameState,null,2)}</div>
+              <div className="dbg">
+                {JSON.stringify(gameState,null,2)}
+                <textarea id="loadable" rows="20" cols="80" /><br/>
+                <input type="button" value="Restore"
+                       onClick={()=>{restore(gameState,JSON.parse(document.getElementById('loadable').value));
+                                     ui.update();}} />
+              </div>
             </div>);
     }
 }

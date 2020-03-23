@@ -145,7 +145,7 @@ class PickResourcesDialog extends React.Component {
         if (this.props.offers) {
             for (let i of this.props.offers) {
                 console.log(['offering ',i]);
-                resourceElements.push(<div className={'offer'+(i in this.state ? ' chosen' : '')}
+                resourceElements.push(<div className={'offer'+(this.state[i] ? ' chosen' : '')}
                                            onClick={this.toggleOffer.bind(this,i)}><ResourceTile type={i}/></div>);
             }
         } else {
@@ -161,7 +161,8 @@ class PickResourcesDialog extends React.Component {
                   </div>
                   <input type="button" value="Cancel" onClick={closeSelf} />
                   <input type="button" value="Done" onClick={closeSelf}
-                         disabled={this.props.n && Object.keys(this.state).length!=this.props.n} />
+                         disabled={this.props.n && Object.values(this.state).reduce((a,b)=>a+b,0)!=this.props.n} />
+                  {Object.values(this.state).reduce((a,b)=>a+b,0)}?={this.props.n}]
                 </div>);
     }
 }
@@ -173,6 +174,7 @@ export async function pickResources(rl, n) {
     const dl = showDialog(dlelem, dlobj);
     const resources = await dl;
     annotate_log(resources);
+    console.log('returning resources',resources);
     return resources;
 }
 
@@ -238,7 +240,7 @@ export async function pickBuilding() {
 export async function pickBuildingPlan(msg, resource, includingTown) {
     allInstructions[0].setState({msg});
     for (let deck of gameState.buildingPlans) {
-        if (deck) {
+        if (deck.length) {
             ui.buildings[deck[0]].setState({active:true});
         }
     }
