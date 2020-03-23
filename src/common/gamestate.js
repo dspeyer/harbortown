@@ -313,6 +313,11 @@ export async function buy() {
     ui.update();
 } 
 
+export async function repayLoan() {
+    const player = gameState.players[gameState.currentPlayer];
+    subtractResources(player,{loans:1,money:5});
+}
+
 export async function sell() {
     const player = gameState.players[gameState.currentPlayer];
     const b = await ui.pickPlayerBuilding('Choose a building to sell', player);
