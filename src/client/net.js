@@ -30,13 +30,17 @@ export function prepare_log(txt) {
 }
 
 export function annotate_log(obj) {
-    log[log.length-1].push(obj);
+    if (log.length) {
+        log[log.length-1].push(obj);
+    } // TODO: else
 }
 
 export function send_log() {
-    if (socket.readyState == WebSocket.OPEN) {
+    if (socket && socket.readyState == WebSocket.OPEN) {
         console.log(log);
         socket.send(JSON.stringify(log));
+    } else {
+        console.log('Unable to send', log);
     }
     log = [];
 }

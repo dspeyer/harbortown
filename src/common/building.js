@@ -116,7 +116,7 @@ export const buildings = [
          const energy = countPile(enres,'energy');
          const nship = Math.floor(energy/3);
          const cap = capOfShips(player.ships, nship);
-         const sres = await ui.pickPlayerResources(player, (x)=>{return resources[x].value;}, "Choose goods to ship (max "+cap+")");
+         const sres = await ui.pickPlayerResources(player, (x)=>{return resources[x].value>0;}, "Choose goods to ship (max "+cap+")");
          if (countPile(sres,'value',(x)=>{return 1;}) > cap) throw "Too many goods";
          const v = countPile(sres,'value');
          addResources(player,{money:v});
@@ -141,7 +141,7 @@ export const buildings = [
      buildcost: {iron: 3},
      text: 'Sell adv for 1, basic for 1/3',
      action: async (player) => {
-         const toSell = await ui.pickPlayerResources(player, (res)=>{return res!='money';});
+         const toSell = await ui.pickPlayerResources(player, (res)=>{return res!='money' && res!='loans';});
          const adv = countPile(toSell,'advanced');
          const basic = countPile(toSell,'value',(x)=>{return 1;}) - adv;
          if (basic%3 != 0) {
@@ -347,7 +347,7 @@ export const buildings = [
      buildcost: {wood:4,clay:1},
      text: '4 any ⮕ steel and/or 1 any ⮕ charcoal / brick / leather',
      action: async (player) => {
-         const res = await ui.pickPlayerResources(player, (res)=>{return res!='money';});
+         const res = await ui.pickPlayerResources(player, (res)=>{return res!='money' && res!='loans';});
          const cnt = countPile(res,'value',(x)=>{return 1;});
          if (cnt!=1 && cnt!=4 && cnt!=5) throw "Must select exactly one, four or five resources";
          if (cnt >= 4) {

@@ -93,11 +93,27 @@ export function safeCopy(x) {
     }
 }
 
+export function completeFeed(player, hunger, food) {
+    const fed = countPile(food,'food');
+    if (fed < hunger) {
+        hunger -= fed;
+        ui.pickPlayerResources(player,
+                               (r)=>{return resources[r].food;},
+                               player.name+': that was '+fed+' food, now eat another *'+hunger+'* food').
+            then(completeFeed.bind(null, player, hunger));
+        return;
+    }
+    delete gameState.awaitingFeed[player.name];
+    ui.update();
+    if (Object.keys(gameState.awaitingFeed).length == 0) {
+        nextTurn();
+    }
+}
+
 export function nextTurn() {
     gameState.currentAdvancer += 1;
     if (gameState.currentAdvancer == gameState.advancers.length) {
         const ev = gameState.events[gameState.currentTurn];
-        // TODO: feed
         gameState.ships[ev.ship[0]].unshift(ev.ship[1]);
         if (ev.building) {
             let best=9999, bestdeck=null;
@@ -118,8 +134,43 @@ export function nextTurn() {
                 if (p.resources.cattle > 1) p.resources.cattle += 1;
             }
         }
+        gameState.awaitingFeed = {};
+        for (let p of gameState.players){
+            let hunger = ev.feed;
+            for (let s of p.ships) {
+                hunger -= ship_feeds[s[0]][gameState.players.length];
+            }
+            if (hunger <= 0) continue;
+            let available = countPile(p.resources,'food');
+            if (available <= hunger) {
+                for (let r in p.resources) {
+                    if (resources[r].food) {
+                        p.resources[r] = 0;
+                    }
+                }
+                hunger -= available;
+                const loans = Math.ceil(hunger/4);
+                const money = loans*4 - hunger;
+                addResources(p,{loans,money});
+            } else {
+                const foodtypes = Object.entries(p.resources).filter((e)=>{return resources[e[0]].food>0 && e[1]>0;});
+                if (foodtypes.length == 1) {
+                    const n = Math.ceil(hunger / resources[foodtypes[0][0]].food);
+                    subtractResources(p,{[foodtypes[0][0]]: n});
+                } else {
+                    gameState.awaitingFeed[p.name]=1;
+                    ui.pickPlayerResources(p, (r)=>{return resources[r].food;}, p.name+': eat '+hunger+' food').
+                        then(completeFeed.bind(null,p,hunger));
+                }
+            }
+        }
         gameState.currentTurn += 1;
-        gameState.currentAdvancer = 0;
+        if (Object.keys(gameState.awaitingFeed).length) {
+            gameState.currentAdvancer = -1;
+            return;
+        } else {
+            gameState.currentAdvancer = 0;
+        }
     }
     for (let res of gameState.advancers[gameState.currentAdvancer]) {
         gameState.townResources[res] += 1;

@@ -176,7 +176,16 @@ export async function pickResources(rl, n) {
     return resources;
 }
 
+let pickPlayerResourcesWaiting = [];
+let pickPlayerResourcesLocked = false;
+
 export async function pickPlayerResources(player, filter, msg) {
+    if (pickPlayerResourcesLocked) {
+        let p = new Promise((resolve) => { pickPlayerResourcesWaiting.push(resolve); });
+        await p;
+    }
+    pickPlayerResourcesLocked = true;
+    
     if (!msg) msg="Choose resources to send";
     let dlobj=[];
     const dlelem = <PickResourcesDialog msg={msg} out={dlobj} />;
@@ -199,6 +208,12 @@ export async function pickPlayerResources(player, filter, msg) {
     const picked = await dl;
     clearAllClickTargets();
     annotate_log(picked);
+
+    pickPlayerResourcesLocked = false;
+    if (pickPlayerResourcesWaiting.length) {
+        pickPlayerResourcesWaiting.shift()();
+    }
+
     return picked;
 }
 
