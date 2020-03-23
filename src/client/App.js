@@ -29,11 +29,12 @@ class App extends React.Component {
                       buildings={this.state.townBuildings}
                       plans={this.state.buildingPlans}
                       ships={this.state.ships}
-                      turn={this.state.currentTurn} />
+                      turn={this.state.currentTurn}
+                      dbb={this.state.disks_by_building} />
               </div>
               { this.state.players.map( (player,i) => { return (
                   <div className={'playerbox player_'+i+'_of_'+this.state.players.length} key={i}>
-                    <Player player={player} idx={i}/>
+                    <Player player={player} dbb={this.state.disks_by_building} idx={i}/>
                   </div>
               )})}
               <div className="dbg">{JSON.stringify(gameState,null,2)}</div>

@@ -25,6 +25,7 @@ function gt(a,b) {
 
 export function Building(props) {
     const bd = buildings_by_number[props.bn];
+    const player = props.player!==undefined && gameState.players[props.player];
     let bref = React.createRef(), tref = React.createRef();
     useEffect(()=>{
         if (bd === undefined) return;
@@ -38,6 +39,10 @@ export function Building(props) {
     if (bd === undefined) return <span>Failed bn {props.bn}</span>;
     return (<div className="building" onMouseDown={()=>bmd(bref)} onMouseUp={()=>bmu(bref)} ref={bref}>
               <ClickTarget holder={ui.buildings} data={bd.number} />
+              { player!==false && <div>
+                                    <div className="disk" style={ {background: player.color} }></div>
+                                    <div className="diskname">{player.name}</div>
+                                  </div> }
               <div className="entry">
                 {bd.entry.food && <span>{bd.entry.food}🍪</span>}
                 {bd.entry.money && <span>{bd.entry.money}€</span>}

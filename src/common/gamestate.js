@@ -63,6 +63,7 @@ export function newGame(players) {
     gameState.shipStats = {luxury: {feed: 0, ship: 0}};
     for (let r of ['wood','iron','steel']) gameState.shipStats[r] = {feed: ship_feeds[r][players.length], ship: ship_capacities[r] };
     gameState.events = game_events[players.length];
+    gameState.disks_by_building = {};
     gameState.currentTurn = 0;
     gameState.currentAdvancer = -1;
     gameState.currentPlayer = -1;
@@ -240,6 +241,13 @@ export function findOwner(bn) {
 export async function useBuilding() {
     const player = gameState.players[gameState.currentPlayer];
     const building = await ui.pickBuilding();
+    if (gameState.disks_by_building[building.number] > -1) throw "Building Occupied";
+    for (let b in gameState.disks_by_building) {
+        if (gameState.disks_by_building[b] == gameState.currentPlayer) {
+            delete gameState.disks_by_building[b];
+        }
+    }
+    gameState.disks_by_building[building.number] = gameState.currentPlayer;
     const owner = findOwner(building.number);
     if (owner != player) {
         const pt = Object.keys(building.entry);

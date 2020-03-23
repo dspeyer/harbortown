@@ -91,7 +91,7 @@ export class EndOfTurn extends React.Component {
 
 
 
-export function Town({advancers, current, resources, buildings, plans, ships, turn}) {
+export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb}) {
     console.log(gameState);
     let resourceElements = [];
     for (let i in resources) {
@@ -128,7 +128,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   })}
                 </div>
                 <div className="horiz buildings">{ buildings.map((bn)=>{  
-                    return <Building bn={bn} key={bn}/>;
+                    return <Building bn={bn} key={bn} player={dbb[bn]} />;
                 }) }</div>
                 <div className="buttonbar">
                   <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
