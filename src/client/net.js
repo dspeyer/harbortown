@@ -1,4 +1,4 @@
-import { gameState, restore, ui } from '../common/gamestate.js';
+import { gameState, restore, ui, safeCopy } from '../common/gamestate.js';
 import { resources } from '../common/data.js';
 import { showError, pickPlayerResources } from './interaction.js';
 
@@ -40,7 +40,7 @@ export function prepare_log(txt) {
 
 export function annotate_log(obj) {
     if (log.length) {
-        log[log.length-1].push(obj);
+        log[log.length-1].push(safeCopy(obj));
     } // TODO: else
 }
 
