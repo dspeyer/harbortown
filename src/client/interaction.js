@@ -5,6 +5,7 @@ import { subtractResources, gameState, ui } from '../common/gamestate.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { buildings_by_number } from '../common/building.js';
 import { annotate_log } from './net.js';
+import { Building } from './buildingui.js';
 
 let allClickTargets = [];
 
@@ -218,6 +219,43 @@ export async function pickPlayerResources(player, filter, msg) {
 
     return picked;
 }
+
+class PickSpecialBuildingDialog extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state={choice:props.bs[0]};
+        this.clickTargets={};
+        props.out.push(this);
+    }
+
+    toggleOffer(b) {
+        this.setState({choice:b});
+    }
+
+    render(){
+        return (<div className="pickResourcesDialog">
+                  <h2>Which Special Building Should Come Up Next?</h2>
+                  <div className="prdstate">
+                    {this.props.bs.map((bn)=>{
+                        return <div className={bn==this.state.choice?'chosen':''} onClick={this.toggleOffer.bind(this,bn)} >
+                                 <Building bn={bn}/>
+                               </div>;
+                    })
+                    }
+                  </div>
+                  <input type="button" value="Cancel" onClick={closeSelf} />
+                  <input type="button" value="Done" onClick={closeSelf} />
+                </div>);
+    }
+}
+
+export async function pickNextSpecialBuilding() {
+    let dlobj=[];
+    const dlelem = <PickSpecialBuildingDialog bs={gameState.specialBuildings.slice(0,2)} out={dlobj} />;
+    const ans = await showDialog(dlelem, dlobj);
+    return ans.choice;
+}
+
 
 export async function pickBuilding() {
     allInstructions[0].setState({msg:'Choose an existing building'});

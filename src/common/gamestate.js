@@ -130,7 +130,9 @@ export function nextTurn() {
                 gameState.townBuildings.push(bestdeck.shift());
             }
         }
-        // TODO: special
+        if (ev.special) {
+            gameState.townBuildings.push(gameState.specialBuildings.shift());
+        }
         if ( ! ev.noharvest) {
             for (let p of gameState.players) {
                 if (p.resources.wheat > 0) p.resources.wheat += 1;
@@ -238,9 +240,11 @@ export function findOwner(bn) {
     throw "Building does not exist!";
 }
 
-export async function useBuilding() {
+export async function utilizeBuilding(building) {
     const player = gameState.players[gameState.currentPlayer];
-    const building = await ui.pickBuilding();
+    if (building === undefined) {
+        building = await ui.pickBuilding();
+    }
     if (gameState.disks_by_building[building.number] > -1) throw "Building Occupied";
     for (let b in gameState.disks_by_building) {
         if (gameState.disks_by_building[b] == gameState.currentPlayer) {
@@ -333,7 +337,7 @@ export async function sell() {
 }
 
 export async function cheat() {
-    addResources(gameState.players[gameState.currentPlayer], {money:20,wood:20,clay:20,iron:20});
+    addResources(gameState.players[gameState.currentPlayer], {money:20,wood:20,clay:20,iron:20,wheat:20,coal:20,bread:20,meat:20,lox:20,fish:10,cattle:10});
     ui.update();
 }
 

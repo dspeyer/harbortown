@@ -3,7 +3,7 @@ import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
 import { MiniShip } from './ships.js';
 import { Instructions, CancelButton } from './interaction.js';
-import { gameState, ui, safeCopy, nextTurn, takeResource, useBuilding, buy, cheat, sell, wrap, repayLoan } from '../common/gamestate.js';
+import { gameState, ui, safeCopy, nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, wrap, repayLoan } from '../common/gamestate.js';
 import { showDialog, closeSelf } from './interaction.js';
 import './town.css';
 
@@ -132,7 +132,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                 }) }</div>
                 <div className="buttonbar">
                   <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
-                  <input type="button" value="Use Building" onClick={wrap.bind(null,useBuilding)} disabled={!myturn || bat} />
+                  <input type="button" value="Use Building" onClick={wrap.bind(null,utilizeBuilding)} disabled={!myturn || bat} />
                   <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn} />
                   <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn} />
                   <input type="button" value="Repay Loan" onClick={wrap.bind(null,repayLoan)} disabled={!myturn} />

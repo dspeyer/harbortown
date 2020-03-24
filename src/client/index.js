@@ -4,7 +4,8 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { gameState, ui, buildingHelpers, backend, endGame, newGame } from '../common/gamestate.js';
-import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding, initUi, showError } from './interaction.js';
+import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding,
+         pickNextSpecialBuilding, initUi, showError } from './interaction.js';
 import { initBuildings, buildings_by_number } from '../common/building.js';
 import * as net from './net.js';
 
@@ -13,6 +14,7 @@ ui.pickPlayerResources = pickPlayerResources;
 ui.pickResources = pickResources;
 ui.pickBuilding = pickBuilding;
 ui.pickPlayerBuilding = pickPlayerBuilding;
+ui.pickNextSpecialBuilding = pickNextSpecialBuilding;
 ui.pickBuildingPlan = pickBuildingPlan;
 ui.initUi = initUi;
 ui.showError = showError;

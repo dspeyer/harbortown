@@ -1,4 +1,5 @@
-import {gameState, ui, shuffle, safeCopy, subtractResources, addResources, countSymbol, checkDecks, countPile} from './gamestate.js';
+import {gameState, ui, shuffle, safeCopy, subtractResources,
+        addResources, countSymbol, checkDecks, countPile, utilizeBuilding } from './gamestate.js';
 import {resources} from './data.js';
 
 const building_firm = {name: 'Building Firm',
@@ -473,6 +474,12 @@ export const buildings = [
          const goods = await ui.pickResources(['wood','clay','iron','fish','wheat','cattle','hides','coal'], wanted);
          if (Object.values(goods).reduce((a,b)=>a+b,0)!=wanted) throw "Wrong number of goods";
          addResources(player, goods);
+         const nsb = await ui.pickNextSpecialBuilding();
+         if (nsb != gameState.specialBuildings[0]) {
+             const tmp = gameState.specialBuildings[0];
+             gameState.specialBuildings[0] = gameState.specialBuildings[1];
+             gameState.specialBuildings[1] = tmp;
+         }
      }
     },
 
@@ -509,7 +516,6 @@ export const buildings = [
      } 
     },
 
-
     {name: 'Dock',
      number: 26,
      symbols: ['🏭'],
@@ -531,17 +537,203 @@ export const buildings = [
      text: 'Endgame: 1/2 per common 1 per advanced',
      action: async (player) => { return countPile(player.resources, 'advanced', (a)=>{return a?1:0.5;}); } //TODO: loans
     },
-        
 ]
 
+const special_buildings = [
+    {name: 'Plant Nursery',
+     number: 's011',
+     symbols: ['🔨','🏠'],
+     entry: {food:1},
+     cost: 6,
+     buildcost: {},
+     text: '3 money + 4 wood',
+     action: async (player) => { addResources(player,{money:3,wood:4}); }
+    },
+
+    {name: 'Baguette Shop',
+     number: 'S003',
+     symbols: ['🏢'],
+     entry: {food:1},
+     cost: 4,
+     buildcost: {},
+     text: 'bread + meat ⮕ 6 money (4x)',
+     action: async (player) => {
+         const resources = await ui.pickPlayerResources(player, (r)=>(r=='bread'||r=='meat'));
+         if (!resources.bread) throw "No baguettes!";
+         if (resources.bread != resources.meat) throw "Mismatched ingredients";
+         if (resources.bread > 4) throw "Too much food (max 4 sandwiches)";
+         addResources(player,{money:6*resources.bread});
+     }
+    },
+
+    {name: 'Steelworks',
+     number: 'S031',
+     symbols: ['🔨','🏭'],
+     entry: {food:2,money:1},
+     cost: 8,
+     buildcost: {},
+     text: 'iron + 15 ϟ ⮕ 2 steel (once)',
+     action: async (player) => {
+         const res = await ui.pickPlayerResources(player, (r)=>(r=='iron'||resources[r].energy));
+         if (countPile(res,'energy') < 15) throw "Insufficient Energy";
+         if (res.iron!=1) throw "Should have exactly one iron";
+         addResources(player,{steel:2});
+     }
+    },
+
+    {name: 'Scnapps Distillery',
+     number: 'S030',
+     symbols: ['🏠'],
+     entry: {food:1},
+     cost: 6,
+     buildcost: {},
+     text: 'wheat ⮕ 2 money (max 4)',
+     action: async (player) => {
+         const res = await ui.pickPlayerResources(player, (r)=>(r=='wheat'));
+         if (res.wheat>4) throw "Too much wheat";
+         if (!res.wheat) throw "Must have wheat";
+         addResources(player,{money:res.wheat*2});
+     }
+    },
+
+    {name: 'Leather Industry',
+     number: 'S021',
+     symbols: ['🏭'],
+     entry: {food:2},
+     cost: 8,
+     buildcost: {},
+     text: '3 leather + 14 money ⮕ 30 money (once)',
+     action: async (player) => {
+         const res = await ui.pickPlayerResources(player, (r)=>(r=='leather'||r=='money'));
+         if (res.leather!=3 || res.money!=14) throw "Wrong resources";
+         addResources(player, {money:30});
+     }
+    },
+
+    {name: 'Iron/Coal Mine',
+     number: 'S006',
+     symbols: ['🔨'],
+     entry: {food:1},
+     cost: 6,
+     buildcost: {},
+     text: '2 iron + 1 coal',
+     action: async (player) => { addResources(player,{iron:2,coal:1})}
+    },
+
+    {name: 'Labour Exchange',
+     number: 'S001',
+     symbols: ['🏛','🎣'],
+     entry: {},
+     cost: 6,
+     buildcost: {},
+     text: 'fish per 🎣, coal per 🔨',
+     action: async (player) => {
+         addResources(player, {fish: countSymbol(player,'🎣'), coal:countSymbol(player,'🔨')});
+     }
+    },
+
+    {name: 'Diner',
+     number: 'S016',
+     symbols: ['🎣','🏢'],
+     entry: {food:1},
+     cost: 6,
+     buildcost: {},
+     text: 'wood bread lox ⮕ 8 money (max 3x)',
+     action: async (player) => {
+         const r = await ui.pickPlayerResources(player, (r)=>(r=='bread'||r=='lox'||r=='wood'));
+         if (r.bread!=r.lox || r.bread!=r.wood) throw "Mismatched ingredients";
+         if (!r.bread) throw "No resourced!";
+         if (r.bread > 3) throw "Too much food (max 3)";
+         addResources(player,{money:8*r.bread});
+     }
+    },
+
+    {name: 'Zoo',
+     number: 'S035',
+     symbols: ['🎣','🏛'],
+     entry: {money:1},
+     cost: 8,
+     buildcost: {},
+     text: '1 money for every 3 fish or cattle you have',
+     action: async (player) => {
+         const f = Math.floor( (player.resources.fish || 0) / 3 );
+         const c = Math.floor( (player.resources.cattle || 0) / 3 );
+         addResources(player, {money: f+c});
+     }
+    },
+
+    {name: 'Coal Trader',
+     number: 'S018',
+     symbols: ['🏢'],
+     entry: {food:1},
+     cost: 4,
+     buildcost: {},
+     text: '🍪 ⮕ charcoal (1x), 2🍪 ⮕ coal (5x)',
+     action: async (player) => {
+         const res = await ui.pickPlayerResources(player, (r)=>resources[r].food);
+         let food = countPile(res,'food');
+         if (food>13) throw "Too much food: Only 11 can be used";
+         if (food>11) food=11;
+         addResources(player,{coal:Math.floor(food/2),charcoal:food%2});
+     }
+    },
+
+    {name: 'Town Square',
+     number: 'S027',
+     symbols: [],
+     entry: {money:1},
+     cost: 6,
+     buildcost: {},
+     text: 'nonsteel adv per 🏠',
+     action: async (player) => {
+         const wanted = countSymbol(player,'🏠');
+         const goods = await ui.pickResources(['charcoal','brick','lox','bread','meat','leather','coke'], wanted);
+         if (Object.values(goods).reduce((a,b)=>a+b,0)!=wanted) throw "Wrong number of goods";
+         addResources(player, goods);
+     }
+    },
+
+    {name: 'Fish Restaurant',
+     number: 'S008',
+     symbols: ['🏢','🎣'],
+     entry: {food:1},
+     cost: 6,
+     buildcost: {},
+     text: 'lox ⮕ 3 money',
+     action: async (player) => {
+         const res = await ui.pickPlayerResources(player, (r)=>r=='lox');
+         if (!res.lox) throw "No Lox";
+         addResources(player,{money:3*res.lox});
+     }
+    },
+
+    {name: 'Harbor Watch',
+     number: 'S014',
+     symbols: ['🏛'],
+     entry: {food:1},
+     cost: 6,
+     buildcost: {},
+     text: 'Use in use building, pay player 1 money',
+     action: async (player) => {
+         const building = await ui.pickBuilding();
+         if (gameState.disks_by_building[building.number] === undefined) throw "Building must be occupied by an opponent";
+         subtractResources(player,{money:1});
+         addResources(gameState.players[gameState.disks_by_building[building.number]],{money:1});
+         await utilizeBuilding(building);
+     }
+    },
+]
+    
 export const buildings_by_number = {};
 for (let b of starting_buildings) buildings_by_number[b.number] = b;
+for (let b of special_buildings) buildings_by_number[b.number] = b;
 for (let b of buildings) buildings_by_number[b.number] = b;
 
 
 export function initBuildings(nplayers) {
     gameState.townBuildings = starting_buildings.map((b)=>{return b.number});
     let deck = buildings.filter((b)=>{return nplayers>=b.minplayers;}).map((b)=>{return b.number});
+    deck = shuffle(deck);
     let n = Math.floor(deck.length/3)
     let decks = [deck.slice(0,n), deck.slice(n,2*n), deck.slice(2*n)];
     for (let deck of decks) {
@@ -549,4 +741,5 @@ export function initBuildings(nplayers) {
     }
     gameState.buildingPlans = decks;
     gameState.wharfModernization = {};
+    gameState.specialBuildings = shuffle(special_buildings.map((b)=>b.number));
 }
