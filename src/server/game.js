@@ -23,6 +23,7 @@ async function replay_event(e, game, playfrom) {
     gs.ui.pickBuilding =
         gs.ui.pickPlayerBuilding =
         gs.ui.pickBuildingPlan =
+        gs.ui.pickNextSpecialBuilding =
         bget;
     if (e[0]=='nextTurn' || e[0]=='completeFeed') {
         gs.ui.pickPlayerResources = async (player, filter, msg, feeding) => {

@@ -253,6 +253,7 @@ export async function pickNextSpecialBuilding() {
     let dlobj=[];
     const dlelem = <PickSpecialBuildingDialog bs={gameState.specialBuildings.slice(0,2)} out={dlobj} />;
     const ans = await showDialog(dlelem, dlobj);
+    annotate_log(ans.choice);
     return ans.choice;
 }
 
