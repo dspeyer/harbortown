@@ -332,7 +332,7 @@ export class CancelButton extends React.Component {
     }
 }
 
-export function score(extras) {
+export function score() {
     const syms = ['🔨','🎣','🏠','🏢','🏭','🏛'];
     showDialog(
         <div className="score">

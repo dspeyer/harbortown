@@ -107,3 +107,7 @@ export function init_game() {
     gs.buildingHelpers.initBuildings = initBuildings;
     gs.buildingHelpers.buildings_by_number = buildings_by_number;
 }
+
+gs.ui.endGame = function() {
+    gs.gameState.ended = Date.now();
+}

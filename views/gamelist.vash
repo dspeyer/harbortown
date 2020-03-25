@@ -25,6 +25,7 @@
     </head>
     <body>
         <h2>@model.msg</h2>
+
         <h1>Your Games</h1>
         <table>
             <tr>
@@ -38,28 +39,15 @@
                 <td><a href="/game?@g.id">@g.id</a></td>
                 <td>@g.desc</td>
                 <td>@g.players.map((p)=>{return p.name;}).join(', ')</td>
-                <td>@g.players[g.currentPlayer].name</td>
+                @if (g.ended) {
+                  <td>Over</td>
+                } else {
+                  <td>@g.players[g.currentPlayer].name</td>
+                }
             </tr>
             })
         </table>
-        <h1>Your Games</h1>
-        <table>
-            <tr>
-                <th>#</th>
-                <th>Description</th>
-                <th>Players</th>
-                <th>Turn</th>
-            </tr>
-            @model.mygames.forEach((g)=>{
-            <tr>
-                <td><a href="/game?@g.id">@g.id</a></td>
-                <td>@g.desc</td>
-                <td>@g.players.map((p)=>{return p.name;}).join(', ')</td>
-                <td> x @g.players[g.currentPlayer].name</td>
-                </td>
-            </tr>
-            })
-        </table>
+
         <h1>Open Games</h1>
         <table>
             <tr>

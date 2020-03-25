@@ -1,6 +1,6 @@
 import { gameState, restore, ui, safeCopy } from '../common/gamestate.js';
 import { resources } from '../common/data.js';
-import { showError, pickPlayerResources } from './interaction.js';
+import { showError, pickPlayerResources, score } from './interaction.js';
 
 
 let log = [];
@@ -16,6 +16,7 @@ export function init() {
         const msg = JSON.parse(raw.data);
         if (msg.newGameState) {
             restore(gameState, msg.newGameState);
+            if (gameState.ended) score();
             ui.update();
         }
         if (msg.error) {

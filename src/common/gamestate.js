@@ -115,6 +115,10 @@ export function completeFeed(player, food) {
 
 export function nextTurn() {
     gameState.currentAdvancer += 1;
+    if ((gameState.currentTurn >= gameState.events.length) && (gameState.currentAdvancer >= gameState.players.length)) {
+        ui.endGame();
+        return;
+    }
     if (gameState.currentAdvancer == gameState.advancers.length) {
         const ev = gameState.events[gameState.currentTurn];
         gameState.ships[ev.ship[0]].unshift(ev.ship[1]);
@@ -245,7 +249,9 @@ export async function utilizeBuilding(building) {
     if (building === undefined) {
         building = await ui.pickBuilding();
     }
-    if (gameState.disks_by_building[building.number] > -1) throw "Building Occupied";
+    if (gameState.currentTurn < gameState.events.length) {
+        if (gameState.disks_by_building[building.number] > -1) throw "Building Occupied";
+    }
     for (let b in gameState.disks_by_building) {
         if (gameState.disks_by_building[b] == gameState.currentPlayer) {
             delete gameState.disks_by_building[b];

@@ -61,12 +61,15 @@ export class EndOfTurn extends React.Component {
         this.state={mousedown:false};
         const n = gameState.events.length;
         this.w = Math.ceil(Math.sqrt(n));
-        while (this.w > Math.sqrt(n/2)) {
+        while (this.w > Math.ceil(Math.sqrt(n/2))) {
             if (mod(n,this.w)==0) break;
             this.w--;
         }
     }
     render(){
+        if (this.props.turn >= gameState.events.length) {
+            return <div className="endOfTurn">Final<br/>Actions</div>;
+        }
         const cx = mod(this.props.turn, this.w), cy = Math.floor(this.props.turn / this.w);
         const self = this;
         return (<div style={ {position:'relative'} }
