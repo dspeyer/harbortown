@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import { dbg_socket_open } from './dbg.js';
 import { game_socket_open, init_game } from './game.js';
 import { requireLogin, handleLogin, showLogin } from './login.js';
-import { showGameList, join, createSeed } from './gamelist.js';
+import { showGameList, join, createSeed, mkGame } from './gamelist.js';
 
 const port = 3000
 const app = express()
@@ -30,6 +30,7 @@ app.post('/login', handleLogin);
 app.get('/', showGameList);
 app.post('/join', join);
 app.post('/new', createSeed);
+app.post('/mkGame', mkGame);
 
 init_game();
 

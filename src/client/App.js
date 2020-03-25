@@ -30,7 +30,8 @@ class App extends React.Component {
                       plans={this.state.buildingPlans}
                       ships={this.state.ships}
                       turn={this.state.currentTurn}
-                      dbb={this.state.disks_by_building} />
+                      dbb={this.state.disks_by_building}
+                      curp={this.state.players[this.state.currentPlayer].name} />
               </div>
               { this.state.players.map( (player,i) => { return (
                   <div className={'playerbox player_'+i+'_of_'+this.state.players.length} key={i}>

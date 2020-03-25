@@ -719,6 +719,8 @@ const special_buildings = [
          if (gameState.disks_by_building[building.number] === undefined) throw "Building must be occupied by an opponent";
          subtractResources(player,{money:1});
          addResources(gameState.players[gameState.disks_by_building[building.number]],{money:1});
+         delete gameState.disks_by_building[building.number];
+         ui.update();
          await utilizeBuilding(building);
      }
     },

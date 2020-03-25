@@ -91,7 +91,7 @@ export class EndOfTurn extends React.Component {
 
 
 
-export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb}) {
+export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb, curp}) {
     console.log(gameState);
     let resourceElements = [];
     for (let i in resources) {
@@ -101,11 +101,12 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
     let advancerElements = advancers.map(
         (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} i={av[2]} active={i==current} key={i} />;}
     );
-    let myturn = ( ( ! gameState.whoami ) || (gameState.whoami == gameState.players[gameState.currentPlayer].name) );
+    let myturn = ( ( ! gameState.whoami ) || (gameState.whoami == curp) );
     let bat = gameState.bigActionTaken;
     return (<div>
               <Instructions/>
               <h1>The Town</h1>
+
               <div className="townGrid">
                 <div className="horiz advancers">
                   {advancerElements}
@@ -136,7 +137,6 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn} />
                   <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn} />
                   <input type="button" value="Repay Loan" onClick={wrap.bind(null,repayLoan)} disabled={!myturn} />
-                  <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn} />
                   <input type="button" value="Cheat" onClick={wrap.bind(null,cheat)} disabled={!myturn} />
                   <CancelButton/>
                   <input type="button" value="Next Turn" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
