@@ -337,7 +337,7 @@ export const buildings = [
      buildcost: {brick:4,steel:1},
      minplayers: 2,
      text: 'Endgame bonus: 2/🏢 3/🏭',
-     engameBonus: (player) => { return countSymbol(player,'🏢')*2+countSymbol(player,'🏭')*3; },
+     endgameBonus: (player) => { return countSymbol(player,'🏢')*2+countSymbol(player,'🏭')*3; },
     },
 
     {name: 'Steel Mill',

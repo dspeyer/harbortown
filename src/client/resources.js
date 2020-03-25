@@ -9,9 +9,14 @@ export function ResourceTile(props) {
         return (<div className="tile money">
                   €
                 </div>);
+    } else if (props.type == 'loans') {
+        return (<div className="tile loan">
+                  LOAN<br/>
+                  -€5/7
+                </div>);
     } else {
         return (<div>
-                  <div className="tile adv{{attrs.advanced}}">
+                  <div className={"tile adv"+attrs.advanced}>
                     <div className={'name'+(props.type.length>=7?' small':'')}>{props.type}</div>
                     <img src={'images/'+props.type+'.png'} />
                     { attrs.food && <div className="use">{attrs.food}🍪</div> }

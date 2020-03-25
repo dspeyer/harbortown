@@ -18,7 +18,7 @@
 }
 
 .advtrue {
-    background: linear-gradient(-45deg, #ccc, #ccc 20%, #ffb 50%, #ccc 90%);
+    background: linear-gradient(-45deg, #aaa, #aaa 20%, #ffb 50%, #aaa 90%);
 }
 
 .tile > img {
@@ -55,6 +55,16 @@
     font-size: 26px;
 }
 
+.loan {
+    background: #eff;
+    color: #700;
+    text-shadow: 1px 1px #fcc, 1px -1px #fcc, -1px 1px #fcc, -1px -1px #fcc;    
+    text-align: center;
+    font-weight: bold;
+    height: 28px;
+    border-radius: 4px;
+    margin-top: 7px;
+}
 
 div.stack {
     display: flex;

@@ -67,7 +67,6 @@ export const resources = {
         "advanced": true,
     },
     "loans": {
-        "value": -5
     }
 };
 

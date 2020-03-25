@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
-import { subtractResources, gameState, ui } from '../common/gamestate.js';
+import { subtractResources, gameState, ui, countPile, countSymbol } from '../common/gamestate.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { buildings_by_number } from '../common/building.js';
 import { annotate_log } from './net.js';
@@ -330,4 +330,54 @@ export class CancelButton extends React.Component {
         clearAllClickTargets();
         this.setState({active:false});
     }
+}
+
+export function score(extras) {
+    const syms = ['🔨','🎣','🏠','🏢','🏭','🏛'];
+    showDialog(
+        <div className="score">
+          <table>
+            <tr>
+              <th rowspan="2">Player</th>
+              <th colspan="5" className="upper">Points</th>
+              <th rowspan="2">Total<br/>Score</th>
+              <th colspan="2" className="upper usr">Unshipped</th>
+              <th colspan={syms.length} className="upper syms">Symbols</th>
+            </tr>
+            <tr>
+              <th title="Money">€</th>
+              <th title="Buildings">🏠</th>
+              <th title="Ships">⛴</th>
+              <th title="Bonuses">B</th>
+              <th title="Loans">L</th>
+              <th className="usr" title="Shipping value of resources">Res</th>
+              <th className="usr" title="Added to score">Sum</th>
+              {syms.map((s)=>{
+                  return <th className="syms">{s}</th>;
+              })}
+            </tr>
+            {gameState.players.map((p)=>{
+                let buildings = p.buildings.map((x)=>buildings_by_number[x]);
+                let scoreCols = [
+                    p.resources.money || 0,
+                    buildings.map((x)=>x.cost).reduce((a,b)=>a+b,0),
+                    p.ships.map((x)=>x[1]).reduce((a,b)=>a+b,0),
+                    buildings.map((x)=>x.endgameBonus?x.endgameBonus(p):0).reduce((a,b)=>a+b,0),
+                    -7 * (p.resources.loans||0)
+                ];
+                let ts = scoreCols.reduce((a,b)=>a+b, 0);
+                let usr = countPile(p.resources,'value');
+                return (<tr>
+                          <td>{p.name}</td>
+                          { scoreCols.map((v) => <td>{v}</td>) }
+                          <td>{ts}</td>
+                          <td className="usr">{usr}</td>
+                          <td className="usr">{usr+ts}</td>
+                          {syms.map((s)=>{ return (<td className="syms">{countSymbol(p,s)}</td>);})}
+                        </tr>);
+            })}
+          </table>
+          <input type="button" value="OK" onClick={closeSelf} />
+        </div>
+    );
 }

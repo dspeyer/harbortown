@@ -2,7 +2,7 @@ import React from 'react';
 import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
 import { MiniShip } from './ships.js';
-import { Instructions, CancelButton } from './interaction.js';
+import { Instructions, CancelButton, score } from './interaction.js';
 import { gameState, ui, safeCopy, nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, wrap, repayLoan } from '../common/gamestate.js';
 import { showDialog, closeSelf } from './interaction.js';
 import './town.css';
@@ -138,6 +138,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn} />
                   <input type="button" value="Repay Loan" onClick={wrap.bind(null,repayLoan)} disabled={!myturn} />
                   <input type="button" value="Cheat" onClick={wrap.bind(null,cheat)} disabled={!myturn} />
+                  <input type="button" value="Status" onClick={score} />
                   <CancelButton/>
                   <input type="button" value="Next Turn" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
                 </div>
