@@ -3,7 +3,6 @@ import fs from 'fs';
 
 let key;
 fs.readFile('private-key.pem','ascii',(err,keyData)=> {
-    console.log({keyData,err});
     key = new NodeRSA(keyData);
 });
 

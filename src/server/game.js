@@ -9,7 +9,7 @@ let sockets_by_id = {};
 async function replay_event(e, game, playfrom) {
     let input = 1;
     gs.restore(gs.gameState, game);
-    const player = gs.gameState.players.filter((p)=>{return p.name==playfrom;})[0];
+    const player = gs.gameState.players.filter((p)=>(p.name==playfrom))[0];
     const currentPlayer = gs.gameState.players[gs.gameState.currentPlayer];
     console.log('Replaying ',e)
     if (e[0]!='completeFeed' && player !== currentPlayer) {
@@ -64,7 +64,7 @@ function set_id(id, ws) {
     const game = games[id];
     if ( ! (id in sockets_by_id) ) sockets_by_id[id] = [];
     sockets_by_id[id].push(ws);
-    ws.send(JSON.stringify({newGameState:game}));
+    ws.send(JSON.stringify({newGameState:game,init:true}));
 }
 
 export function game_socket_open(ws,req) {

@@ -100,14 +100,14 @@ export function completeFeed(player, food) {
     if (fed < player.hunger) {
         player.hunger -= fed;
         ui.pickPlayerResources(player,
-                               (r)=>{return resources[r].food;},
+                               (r)=>resources[r].food,
                                player.name+': that was '+fed+' food, now eat another '+player.hunger+' food',
                                true).
             then(completeFeed.bind(null, player));
     } else {
         delete player.hunger
         ui.update();
-        if (gameState.players.filter((p)=>{return p.hunger>0;}).length == 0) {
+        if (gameState.players.filter((p)=>(p.hunger>0)).length == 0) {
             nextTurn();
         }
     }
@@ -166,7 +166,7 @@ export function nextTurn() {
                 addResources(p,{loans,money});
                 delete p.hunger
             } else {
-                const foodtypes = Object.entries(p.resources).filter((e)=>{return resources[e[0]].food>0 && e[1]>0;});
+                const foodtypes = Object.entries(p.resources).filter((e)=>(resources[e[0]].food>0 && e[1]>0));
                 if (foodtypes.length == 1) {
                     console.log('autofeeding ',p,'using',foodtypes);
                     const n = Math.ceil(p.hunger / resources[foodtypes[0][0]].food);
@@ -175,7 +175,7 @@ export function nextTurn() {
                 } else if ( ! ui.am_client_to_server ) {
                     console.log('manual feeding ',p);
                     ui.pickPlayerResources(p,
-                                           (r)=>{return resources[r].food;},
+                                           (r)=>resources[r].food,
                                            p.name+': eat '+p.hunger+' food',
                                           true).
                         then(completeFeed.bind(null,p));
@@ -186,7 +186,7 @@ export function nextTurn() {
             }
         }
         gameState.currentTurn += 1;
-        if (gameState.players.filter((p)=>{return p.hunger>0;}).length) {
+        if (gameState.players.filter((p)=>(p.hunger>0)).length) {
             gameState.currentAdvancer = -1;
             return;
         } else {
@@ -266,7 +266,8 @@ export async function utilizeBuilding(building) {
             if (owner!='town') addResources(owner, building.entry);
             ui.update();
         } else if (pt.length) {
-            const entryres = await ui.pickPlayerResources(player, (res)=>{return resources[res].food>0}, "Pick resources for entry cost: "+JSON.stringify(building.entry));
+            const entryres = await ui.pickPlayerResources(player, (res)=>resources[res].food,
+                                                          "Pick resources for entry cost: "+JSON.stringify(building.entry));
             if (owner!='town') addResources(owner, entryres);
             if ( ! satisfies(entryres, building.entry) ) throw "Insufficient Entry Resources";
         }
@@ -373,7 +374,7 @@ export function restore(active, canon) {
 }
 
 export function countPile(res, aspect, fn) {
-    if (!fn) fn=(x)=>{return x;};
+    if (!fn) fn=((x)=>x);
     let out = 0;
     for (let r in res) {
         if (resources[r][aspect] > 0) {
