@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <title>Login Required</title>
+        <style>
+         form {
+             width: 16.8em;
+             height: 10em;
+             margin: calc( 50vh - 5em) auto;
+             border: 3px #888 outset;
+             background: white;
+             text-align: center;
+         }
+         body {
+             background: #ccc;
+         }
+         h3 {
+             position: absolute;
+             width: 100vw;
+             text-align:center;
+             color: red;
+             top: calc( 25vh - 2em );
+             text-shadow: 0 0 2px white;
+             font-size: 19pt;
+         }
+         input.text {
+             width: 95%;
+             display: block;
+             margin: 1em auto;
+         }
+        </style>
+    </head>
+    <body>
+        <div>
+            @if (model.trouble) {
+              <h3>Something went wrong with your login</h3>
+            }
+        </div>
+        <form method="post" action="/login">
+            <h1>Who Are You?</h1>
+            <input name="name" class="text">
+            <input type="submit" >
+        </form>
+    </body>
+</html>
