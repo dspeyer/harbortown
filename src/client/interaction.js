@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
-import { subtractResources, gameState, ui, countPile, countSymbol } from '../common/gamestate.js';
+import { addResources,subtractResources, gameState, ui, countPile, countSymbol } from '../common/gamestate.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { buildings_by_number } from '../common/building.js';
 import { annotate_log } from './net.js';
@@ -133,6 +133,15 @@ class PickResourcesDialog extends React.Component {
         this.setState({ [res]: (this.state[res] || 0) + 1 });
     }
 
+    decr(res) {
+        if (this.props.player && this.state[res] > 0) {
+            this.setState({ [res]: this.state[res] - 1 });
+            addResources(this.props.player, { [res]: 1 });
+            ui.update();
+        }
+    }
+            
+    
     toggleOffer(res) {
         if (this.state[res] > 0) {
             this.setState({ [res]: 0 });
@@ -152,7 +161,11 @@ class PickResourcesDialog extends React.Component {
         } else {
             for (let i in this.state) {
                 let v = this.state[i];
-                if (v>0) resourceElements.push(<ResourceStack type={i} number={v} key={i} holder={this.clickTargets} />);
+                if (v>0) resourceElements.push(
+                    <div style={ {cursor:'pointer'} } onClick={this.decr.bind(this,i)}>
+                      <ResourceStack type={i} number={v} key={i} holder={this.clickTargets} />
+                    </div>
+                );
             }
         }
         return (<div className="pickResourcesDialog">
@@ -190,7 +203,7 @@ export async function pickPlayerResources(player, filter, msg) {
     
     if (!msg) msg="Choose resources to send";
     let dlobj=[];
-    const dlelem = <PickResourcesDialog msg={msg} out={dlobj} />;
+    const dlelem = <PickResourcesDialog msg={msg} out={dlobj} player={player} />;
     const dl = showDialog(dlelem, dlobj);
     
     console.log(player);
