@@ -39,7 +39,9 @@ class App extends React.Component {
                   </div>
               )})}
               <div className="dbg">
-                {JSON.stringify(gameState,null,2)}
+                <div className="scrolling">
+                  {JSON.stringify(gameState,null,2)}
+                </div>
                 <textarea id="loadable" rows="20" cols="80" /><br/>
                 <input type="button" value="Restore"
                        onClick={()=>{restore(gameState,JSON.parse(document.getElementById('loadable').value));

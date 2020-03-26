@@ -163,7 +163,6 @@ class PickResourcesDialog extends React.Component {
                   <input type="button" value="Cancel" onClick={closeSelf} />
                   <input type="button" value="Done" onClick={closeSelf}
                          disabled={this.props.n && Object.values(this.state).reduce((a,b)=>a+b,0)!=this.props.n} />
-                  {Object.values(this.state).reduce((a,b)=>a+b,0)}?={this.props.n}]
                 </div>);
     }
 }

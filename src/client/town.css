@@ -150,3 +150,7 @@ div.horiz {
 .endOfTurn.dark .miniship {
     background: #55c;
 }
+
+.endOfTurn .miniship {
+    display: inline;
+}

@@ -48,11 +48,16 @@ h1 {
     grid-column-end: 5; 
     grid-row-start: 4; 
     grid-row-end: 5;
+}
+.dbg .scrolling {
     white-space: pre;
     font-family: monospace;
     font-size: 8pt;
     overflow-y: auto;
-    height: 100vh;
+    height: 40vh;
+    width: 90vw;
+    border: 1px solid black;
+    margin: 1em;
 }
 
 

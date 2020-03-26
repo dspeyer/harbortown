@@ -9,7 +9,17 @@ export function Player(props) {
     const player = props.player;
     const isme = (player.name == gameState.whoami);
     let resourceElements = [];
+    let order = ['money','loans',
+                 'fish','lox','bread','meat',
+                 'wood','clay','iron','brick','steel',
+                 'charcoal','coal','coke',
+                 'wheat','cattle'];
     for (let i in player.resources) {
+        if (order.indexOf(i) == -1) { // I don't *think* this will ever happen, but I want to be safe
+            order.push(i);
+        }
+    }
+    for (let i of order) {
         let v = player.resources[i];
         if (v>0) resourceElements.push(<ResourceStack type={i} number={v} key={i} holder={ui.playerResources[player.number]} />);
     }
