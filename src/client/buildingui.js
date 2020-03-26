@@ -4,6 +4,7 @@ import { resources } from '../common/data.js';
 import { ClickTarget } from './interaction.js';
 import { gameState, ui } from '../common/gamestate.js';
 import { buildings_by_number } from '../common/building.js';
+import { sym_names } from '../common/data.js';
 
 function bmd(ref){
     if (ref.current.parentNode.style.zIndex < 300) {
@@ -21,6 +22,13 @@ function bmu(ref){
 
 function gt(a,b) {
     return a>b;
+}
+
+function nameSymbols(txt) {
+    for (let s in sym_names) {
+        txt = txt.replace(s, s+' ('+sym_names[s]+') ');
+    }
+    return txt;
 }
 
 export function Building(props) {
@@ -50,7 +58,7 @@ export function Building(props) {
               </div>
               {props.showNumber && <div className="number">{bd.number}</div>}
               <div className="name" style={ {textAlign:(gt(bd.name.length,8)?'left':'center')} }>{bd.name}</div>
-              <div className="text" title={bd.text} ref={tref}>{
+              <div className="text" title={nameSymbols(bd.text)} ref={tref}>{
                   bd.text.split(' ').map((w) => {
                       if (resources[w]) {
                           return <img src={'images/'+w+'.png'}/>;
@@ -62,7 +70,8 @@ export function Building(props) {
               <div className="footer">
                 <div className="cost">{bd.cost}</div>
                 <div className="smallname">{bd.name}</div>
-                {bd.symbols.length>0 && <div className="symbols">{bd.symbols.join('')}</div>}
+                { bd.symbols.length>0 &&
+                  <div className="symbols" title={bd.symbols.map((x)=>sym_names[x]).join(' / ')}>{bd.symbols.join('')}</div> }
                 {bd.buildcost!=undefined &&
                  <div className="build" title={JSON.stringify(bd.buildcost)}>
                    {Object.entries(bd.buildcost || {}).map( (e) => {
