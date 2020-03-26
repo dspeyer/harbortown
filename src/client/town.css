@@ -154,3 +154,11 @@ div.horiz {
 .endOfTurn .miniship {
     display: inline;
 }
+
+.townGrid input[type="button"] {
+    appearance: none;
+    padding: 2px;
+    margin: 1px;
+    font-size: 10pt;
+    font-family: times;
+}
