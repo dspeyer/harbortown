@@ -110,6 +110,11 @@
 }
 
 .score .syms {
-    background: #7ff;
+    background: #afc;
+    font-size: smaller;
+}
+
+.score .shipping {
+    background: #acf;
     font-size: smaller;
 }

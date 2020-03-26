@@ -181,7 +181,7 @@ export const game_events = [
     ]
 ]
 
-export const ship_capacities = {wood: 2, iron: 3, steel: 4};
+export const ship_capacities = {wood: 2, iron: 3, steel: 4, luxury: 0};
 export const ship_feeds = {wood: [-1,5,4,3,2,1],
                            iron: [-1,7,5,4,3,2],
                            steel: [-1,10,7,6,5,3],

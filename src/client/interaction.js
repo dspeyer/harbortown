@@ -6,6 +6,7 @@ import { ResourceStack, ResourceTile } from './resources.js';
 import { buildings_by_number } from '../common/building.js';
 import { annotate_log } from './net.js';
 import { Building } from './buildingui.js';
+import { ship_feeds, ship_capacities } from '../common/data.js';
 
 let allClickTargets = [];
 
@@ -355,6 +356,7 @@ export function score() {
               <th rowspan="2">Total<br/>Score</th>
               <th colspan="2" className="upper usr">Unshipped</th>
               <th colspan={syms.length} className="upper syms">Symbols</th>
+              <th colspan="2" className="upper shipping">Ships</th>
             </tr>
             <tr>
               <th title="Money">€</th>
@@ -367,6 +369,8 @@ export function score() {
               {syms.map((s)=>{
                   return <th className="syms">{s}</th>;
               })}
+              <th className="shipping" title="Feed per turn">🍪</th>
+              <th className="shipping" title="Goods shippable">⛴</th>
             </tr>
             {gameState.players.map((p)=>{
                 let buildings = p.buildings.map((x)=>buildings_by_number[x]);
@@ -386,6 +390,12 @@ export function score() {
                           <td className="usr">{usr}</td>
                           <td className="usr">{usr+ts}</td>
                           {syms.map((s)=>{ return (<td className="syms">{countSymbol(p,s)}</td>);})}
+                          <td className="shipping">
+                            { p.ships. map((x)=>ship_feeds[x[0]][gameState.players.length]). reduce((a,b)=>a+b,0) }
+                          </td>
+                          <td className="shipping">
+                            { p.ships. map((x)=>ship_capacities[x[0]]). reduce((a,b)=>a+b,0) }
+                          </td>
                         </tr>);
             })}
           </table>
