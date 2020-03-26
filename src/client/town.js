@@ -20,26 +20,6 @@ export function AdvancerToken(props) {
                {props.i && <div className="interest">interest</div>}
              </div> );
 }
-
-export function AllEots(props) {
-    const n = gameState.events.length;
-    let w = Math.ceil(Math.sqrt(n));
-    while (w>Math.sqrt(n/2)) {
-        if (n%w==0) break;
-        w--;
-    }
-    return <div className="allEots" style={ {width:w*50+'px'} }>
-             {gameState.events.map((ev,i)=>{
-                 return <EndOfTurn eot={ev} inAll={true} hl={i==gameState.currentTurn} key={i}/>
-             })}
-             <input type="button" value="Close" onClick={closeSelf}/>
-           </div>;
-}
-
-export function showAllEots() {
-    showDialog(<AllEots/>);
-}
-
 export function OneEndOfTurn(props) {
     return <div className={"endOfTurn"+(props.dark?' dark':'')}>
              {props.eot.feed} 🍪<br/>
