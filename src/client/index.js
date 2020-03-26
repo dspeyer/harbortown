@@ -41,7 +41,7 @@ if (window.location.search) {
     net.init();
 } else {
     gameState.whoami = false;
-    newGame(['Daniel']);//,'Nick']);//,'Eppilito','Pei-hsin','Ken Horan']);
+    newGame(['Daniel']);//,'Nick','Eppilito','Pei-hsin','Ken Horan']);
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));

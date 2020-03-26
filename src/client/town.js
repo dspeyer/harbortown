@@ -40,8 +40,8 @@ export class EndOfTurn extends React.Component {
         super(props);
         this.state={mousedown:false};
         const n = gameState.events.length;
-        this.w = Math.ceil(Math.sqrt(n));
-        while (this.w > Math.ceil(Math.sqrt(n/2))) {
+        this.w = Math.floor(Math.sqrt(n));
+        while (this.w > 3) {
             if (mod(n,this.w)==0) break;
             this.w--;
         }
@@ -54,7 +54,7 @@ export class EndOfTurn extends React.Component {
         const self = this;
         return (<div style={ {position:'relative'} }
                      onMouseDown={()=>{self.setState({mousedown:true})}}
-                     onMouseUp={()=>{self.setState({mousedown:false})}}>
+                     onMouseUp={()=>{self.setState({mousedown:false})}} >
                   { gameState.events.map((eot,i)=>{
                       const x = mod(i,self.w) - cx;
                       const y = Math.floor(i/self.w) - cy;
