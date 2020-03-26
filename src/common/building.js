@@ -491,7 +491,16 @@ export const buildings = [
      buildcost: {wood:3,clay:2},
      minplayers: 3,
      text: 'Forgive 1/1.5/2 loans if you have 1/2/3+',
-     action: async (player) => { } //TODO: loans
+     action: async (player) => {
+         if (player.resources.loans >= 3) {
+             subtractResources(player, {loans:2});
+         } else if (player.resources.loans == 2) {
+             subtractResources(player, {loans:1});
+             addResources(player, {money: 2});
+         } else if (player.resources.loans == 1) {
+             subtractResources(player, {loans:1});
+         }
+     }
     },
 
     {name: 'Arts Center',
