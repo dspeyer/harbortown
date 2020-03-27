@@ -134,13 +134,13 @@ export function nextTurn() {
             if (bestdeck) {
                 gameState.townBuildings.push(bestdeck.shift());
                 let b = buildings_by_number[ gameState.townBuildings[gameState.townBuildings.length-1] ];
-                ui.showError('Town built '+b.name+' ('+b.text+')');
+                ui.showMessage('Town built '+b.name);
             }
         }
         if (ev.special) {
             gameState.townBuildings.push(gameState.specialBuildings.shift());
             let b = buildings_by_number[ gameState.townBuildings[gameState.townBuildings.length-1] ];
-            ui.showError('Town built '+b.name+' ('+b.text+')');
+            ui.showMessage('Town built '+b.name+' ('+b.text+')');
         }
         if ( ! ev.noharvest) {
             for (let p of gameState.players) {

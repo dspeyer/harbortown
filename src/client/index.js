@@ -5,7 +5,7 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { gameState, ui, buildingHelpers, backend, endGame, newGame } from '../common/gamestate.js';
 import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding,
-         pickNextSpecialBuilding, initUi, showError, score } from './interaction.js';
+         pickNextSpecialBuilding, initUi, showError, showMessage, score } from './interaction.js';
 import { initBuildings, buildings_by_number } from '../common/building.js';
 import * as net from './net.js';
 
@@ -18,6 +18,7 @@ ui.pickNextSpecialBuilding = pickNextSpecialBuilding;
 ui.pickBuildingPlan = pickBuildingPlan;
 ui.initUi = initUi;
 ui.showError = showError;
+ui.showMessage = (msg) => { if ( ! ui.am_client_to_server) showMessage(msg); };
 ui.endGame = score;
 
 buildingHelpers.initBuildings = initBuildings;

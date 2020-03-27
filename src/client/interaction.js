@@ -99,7 +99,7 @@ export function closeSelf(ev) {
     holder.parentNode.removeChild(holder);
 }
 
-class ErrorDialog extends React.Component {
+class MessageDialog extends React.Component {
     constructor(props) {
         super(props);
         this.state={opacity:1};
@@ -107,7 +107,8 @@ class ErrorDialog extends React.Component {
         this.timeout = window.setTimeout(this.tick.bind(this), 5000);
     }
     render() {
-        return (<div className="errorMsg" ref={this.dom} style={ {opacity:this.state.opacity} }>
+        return (<div className="msgDialog" ref={this.dom} style={ {opacity: this.state.opacity,
+                                                                   background: this.props.color || '#ddd' } }>
                   <div className="close" onClick={this.close.bind(this)}>×</div>
                   {this.props.msg}
                 </div>);
@@ -124,7 +125,11 @@ class ErrorDialog extends React.Component {
 }
 
 export function showError(msg) {
-    showDialog(<ErrorDialog msg={msg}/>);
+    showDialog(<MessageDialog msg={msg} color="#fa0" />);
+}
+
+export function showMessage(msg) {
+    showDialog(<MessageDialog msg={msg} color="#ff7" />);
 }
 
 class PickResourcesDialog extends React.Component {

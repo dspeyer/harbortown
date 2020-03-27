@@ -63,12 +63,11 @@
     width: 100%;
 }
 
-.errorMsg {
+.msgDialog {
     position: fixed;
     width: 20vw;
     left: 40vw;
     top: -15px;
-    background: #fa0;
     border: 5px #700 outset;
     border-radius: 15px;
     border-top: none;
@@ -77,7 +76,7 @@
     white-space: pre-wrap;
 }
 
-.errorMsg .close {
+.msgDialog .close {
     float: right;
     background: #aaa;
     border: #999 outset 2px;

@@ -1,6 +1,6 @@
 import { gameState, restore, ui, safeCopy } from '../common/gamestate.js';
 import { resources } from '../common/data.js';
-import { showError, pickPlayerResources, score } from './interaction.js';
+import { showMessage, pickPlayerResources, score } from './interaction.js';
 
 
 let log = [];
@@ -18,8 +18,8 @@ export function init() {
             if (gameState.ended) score();
             ui.update();
         }
-        if (msg.error) {
-            showError("Server Error: "+msg.error);
+        if (msg.msg) {
+            showMessage(msg.msg);
         }
         if (msg.init && ! msg.foodDemand) {
             const p = gameState.players.filter((p)=> p.name==gameState.whoami)[0];

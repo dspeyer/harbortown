@@ -50,7 +50,7 @@ async function replay_event(e, game, playfrom) {
             return r;
         }
     };
-    gs.ui.showError = ((msg) => {broadcastMessages.push(msg);});
+    gs.ui.showMessage = ((msg) => {broadcastMessages.push(msg);});
     
     let callback = gs[e[0]];
     if (e[0]=='completeFeed'){
@@ -88,7 +88,7 @@ export function game_socket_open(ws,req) {
                 }
             } catch (e) {
                 log_event(['ERROR',e]);
-                ws.send(JSON.stringify({newGameState:backup,error:e}));
+                ws.send(JSON.stringify({newGameState:backup,msg:'ERROR '+e}));
                 gs.restore(gs.gameState, gs.backup);
                 return;
             }
@@ -96,7 +96,7 @@ export function game_socket_open(ws,req) {
         for (let s of sockets_by_id[game.id]) {
             try {
                 if (s.readyState != 3) { // CLOSED -- TODO: find the named constant
-                    s.send(JSON.stringify({newGameState:game, error:broadcastMessages.join('\n\n')}));
+                    s.send(JSON.stringify({newGameState:game, msg:broadcastMessages.join('\n\n')}));
                 }
             }catch (e) {
                 console.log(e);
