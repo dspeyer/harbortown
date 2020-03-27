@@ -1,4 +1,4 @@
-import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds } from './data.js';
+import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
 
 export const gameState = { players:[] };
 export const buildingHelpers = {};
@@ -307,22 +307,27 @@ export function checkDecks(bn) {
 
 export async function buy() {
     const player = gameState.players[gameState.currentPlayer];
-    const b = await ui.pickBuildingPlan('Choose a building to buy', player.resources, true);
-    subtractResources(player, {money:(b.price||b.value)});
-    let idx;
-    if ( (idx = checkDecks(b.number)) != -1 ) {
-        gameState.buildingPlans[idx].shift();
-    } else if ( (idx = gameState.townBuildings.indexOf(b.number)) != -1 ) {
-        gameState.townBuildings.splice(idx,1);
+    const b = await ui.pickBuildingPlan('Choose a building or ship to buy', player.resources, true);
+    if (b.is_ship) {
+        subtractResources(player, { money: ship_prices[b.material] });
+        player.ships.push([b.material,gameState.ships[b.material].shift()]);
     } else {
-        throw "Not purchaseable";
-    }
-    if (b.number in gameState.disks_by_building) {
-        delete gameState.disks_by_building[b.number];
-    }
-    player.buildings.push(b.number);
+        subtractResources(player, {money:(b.price||b.value)});
+        let idx;
+        if ( (idx = checkDecks(b.number)) != -1 ) {
+            gameState.buildingPlans[idx].shift();
+        } else if ( (idx = gameState.townBuildings.indexOf(b.number)) != -1 ) {
+            gameState.townBuildings.splice(idx,1);
+        } else {
+            throw "Not purchaseable";
+        }
+        if (b.number in gameState.disks_by_building) {
+            delete gameState.disks_by_building[b.number];
+        }
+        player.buildings.push(b.number);
+    } 
     ui.update();
-} 
+}
 
 export async function repayLoan() {
     const player = gameState.players[gameState.currentPlayer];

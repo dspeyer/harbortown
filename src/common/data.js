@@ -186,7 +186,10 @@ export const ship_feeds = {wood: [-1,5,4,3,2,1],
                            iron: [-1,7,5,4,3,2],
                            steel: [-1,10,7,6,5,3],
                            luxury: [-1,0,0,0,0,0]};
-                   
+export const ship_prices = { wood: 14,
+                             iron: 20,
+                             steel: 30,
+                             luxury: 999 };
         
 export const sym_names = {
     '🔨': 'hammer',

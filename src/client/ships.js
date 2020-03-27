@@ -1,12 +1,15 @@
 import React from 'react';
-import { gameState } from '../common/gamestate.js';
+import { gameState, ui } from '../common/gamestate.js';
+import { ClickTarget } from './interaction.js';
 import './ship.css';
 
 export function MiniShip({ship,later}) {
     const [mat, value] = ship;
     let title = mat+" ship (feeds "+gameState.shipStats[mat].feed+", ships "+gameState.shipStats[mat].ship+") €"+value;
     if (later) title += "; then "+later.map((x)=>"€"+x).join(", ");
+    if ( ! ui.miniships ) ui.miniships = {};
     return <span className="miniship" title={title} >
+             {later && <ClickTarget holder={ui.miniships} data={mat} />}
              <img src={'images/'+mat+'.png'}/>
              <span className="cost">{value}</span>
              {later && <span className="cnt">(+{later.length})</span> }

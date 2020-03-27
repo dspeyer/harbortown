@@ -5,6 +5,7 @@
     white-space: nowrap;
     color: black;
     display:block;
+    position: relative;
 }
 
 .miniship .cnt {

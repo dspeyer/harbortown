@@ -6,7 +6,7 @@ import { ResourceStack, ResourceTile } from './resources.js';
 import { buildings_by_number } from '../common/building.js';
 import { annotate_log } from './net.js';
 import { Building } from './buildingui.js';
-import { ship_feeds, ship_capacities } from '../common/data.js';
+import { ship_feeds, ship_capacities, ship_prices } from '../common/data.js';
 
 let allClickTargets = [];
 
@@ -304,12 +304,23 @@ export async function pickBuildingPlan(msg, resource, for_buy) {
         for (let b of gameState.townBuildings) {
             ui.buildings[b].show(for_buy && buildings_by_number[b].price);
         }
+        for (let m in gameState.ships) {
+            if (gameState.ships[m].length) {
+                ui.miniships[m].show(ship_prices[m]);
+            }
+        }
     }
     let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
     let bn = await p;
     clearAllClickTargets();
     annotate_log(bn);
-    return buildings_by_number[bn];
+    if (bn in buildings_by_number) {
+        return buildings_by_number[bn];
+    }
+    if (bn in gameState.ships) {
+        return {is_ship: true, material: bn};
+    }
+    throw "What did you click on?"
 }
 
 export async function pickPlayerBuilding(msg, player) {
