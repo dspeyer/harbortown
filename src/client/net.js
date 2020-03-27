@@ -12,7 +12,6 @@ export function init() {
     let id = window.location.search.substr(1);
     socket = new WebSocket('ws://'+hn+':'+port+'/socket');
     socket.addEventListener('message', (raw) => {
-        console.log('got message: '+raw.data)
         const msg = JSON.parse(raw.data);
         if (msg.newGameState) {
             restore(gameState, msg.newGameState);
@@ -51,7 +50,7 @@ export function annotate_log(obj) {
 
 export function send_log() {
     if (socket && socket.readyState == WebSocket.OPEN) {
-        console.log(log);
+        console.log('Sending', log);
         socket.send(JSON.stringify(log));
     } else {
         console.log('Unable to send', log);

@@ -75,7 +75,6 @@ export class EndOfTurn extends React.Component {
 
 
 export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb, curp}) {
-    console.log(gameState);
     let resourceElements = [];
     for (let i in resources) {
         let v = resources[i];

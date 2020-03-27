@@ -49,7 +49,6 @@ function clearAllClickTargets() {
 
 
 export async function pickTownResource() {
-    console.log('res',gameState.townResources,'ui',gameState.townResourceUi);
     allInstructions[0].setState({msg:'Take one pile of resources from the town'});
     for (let res in gameState.townResources) {
         if (gameState.townResources[res] > 0) {
@@ -82,12 +81,10 @@ export function showDialog(elem, elemobjwrap) {
 
 export function closeSelf(ev) {
     let holder;
-    console.log(ev);
     for (holder=ev.target; holder.className!='dialogholder'; holder=holder.parentNode);
     if (ev.target.value=='Cancel') {
         holder.reject('Cancelled');
     } else {
-        console.log('ev.target.value="'+ev.value+'"');
         holder.resolve();
     }
     ReactDOM.unmountComponentAtNode(holder);
@@ -155,7 +152,6 @@ class PickResourcesDialog extends React.Component {
         let resourceElements=[];
         if (this.props.offers) {
             for (let i of this.props.offers) {
-                console.log(['offering ',i]);
                 resourceElements.push(<div className={'offer'+(this.state[i] ? ' chosen' : '')}
                                            onClick={this.toggleOffer.bind(this,i)}><ResourceTile type={i}/></div>);
             }
@@ -188,7 +184,6 @@ export async function pickResources(rl, n) {
     const dl = showDialog(dlelem, dlobj);
     const resources = await dl;
     annotate_log(resources);
-    console.log('returning resources',resources);
     return resources;
 }
 
@@ -207,30 +202,32 @@ export async function pickPlayerResources(player, filter, msg) {
     const dlelem = <PickResourcesDialog msg={msg} out={dlobj} player={player} />;
     const dl = showDialog(dlelem, dlobj);
     
-    console.log(player);
     for (let r in player.resources) {
-        console.log(r);
         if (player.resources[r]>0 && filter(r)) {
             ui.playerResources[player.number][r].setState({active:true});
         }
     }
     ui.resolve = (res) => {
         subtractResources(player, {[res]:1} );
-        console.log(dl);
         dlobj[0].incr(res);
         ui.update();
     };
     
-    const picked = await dl;
-    clearAllClickTargets();
-    annotate_log(picked);
 
-    pickPlayerResourcesLocked = false;
-    if (pickPlayerResourcesWaiting.length) {
-        pickPlayerResourcesWaiting.shift()();
+    try  {
+        
+        const picked = await dl;
+        clearAllClickTargets();
+        annotate_log(picked);
+
+        return picked;
+        
+    } finally {
+        pickPlayerResourcesLocked = false;
+        if (pickPlayerResourcesWaiting.length) {
+            pickPlayerResourcesWaiting.shift()();
+        }
     }
-
-    return picked;
 }
 
 class PickSpecialBuildingDialog extends React.Component {
@@ -274,7 +271,6 @@ export async function pickNextSpecialBuilding() {
 export async function pickBuilding() {
     allInstructions[0].setState({msg:'Choose an existing building'});
     for (let b of gameState.townBuildings) {
-        console.log(b);
         ui.buildings[b].setState({active:true});
     }
     for (let p of gameState.players) {
