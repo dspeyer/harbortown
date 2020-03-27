@@ -1,4 +1,5 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
+import { buildings_by_number } from './building.js';
 
 export const gameState = { players:[] };
 export const buildingHelpers = {};
@@ -132,10 +133,14 @@ export function nextTurn() {
             }
             if (bestdeck) {
                 gameState.townBuildings.push(bestdeck.shift());
+                let b = buildings_by_number[ gameState.townBuildings[gameState.townBuildings.length-1] ];
+                ui.showError('Town built '+b.name+' ('+b.text+')');
             }
         }
         if (ev.special) {
             gameState.townBuildings.push(gameState.specialBuildings.shift());
+            let b = buildings_by_number[ gameState.townBuildings[gameState.townBuildings.length-1] ];
+            ui.showError('Town built '+b.name+' ('+b.text+')');
         }
         if ( ! ev.noharvest) {
             for (let p of gameState.players) {

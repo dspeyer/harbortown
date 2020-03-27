@@ -74,6 +74,7 @@
     border-top: none;
     padding: 20px;
     z-index: 200;
+    white-space: pre-wrap;
 }
 
 .errorMsg .close {

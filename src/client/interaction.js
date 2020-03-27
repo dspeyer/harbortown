@@ -104,7 +104,7 @@ class ErrorDialog extends React.Component {
         super(props);
         this.state={opacity:1};
         this.dom = React.createRef();
-        this.timeout = window.setTimeout(this.tick.bind(this), 2000);
+        this.timeout = window.setTimeout(this.tick.bind(this), 5000);
     }
     render() {
         return (<div className="errorMsg" ref={this.dom} style={ {opacity:this.state.opacity} }>

@@ -5,6 +5,7 @@ import { games } from './gamelist.js';
 
 let sockets_by_id = {};
 
+let broadcastMessages = [];
 
 async function replay_event(e, game, playfrom) {
     let input = 1;
@@ -49,7 +50,8 @@ async function replay_event(e, game, playfrom) {
             return r;
         }
     };
-
+    gs.ui.showError = ((msg) => {broadcastMessages.push(msg);});
+    
     let callback = gs[e[0]];
     if (e[0]=='completeFeed'){
         callback = callback.bind(null, player, e[1]);
@@ -71,6 +73,7 @@ export function game_socket_open(ws,req) {
     ws.name = req.cookies.name;
     console.log('socket',ws.name,req.path);
     ws.on('message', async (msg) => {
+        broadcastMessages = [];
         const pmsg = JSON.parse(msg);
         const backup = gs.safeCopy(gs.gameState);
         const game = games[ws.gameid];
@@ -93,7 +96,7 @@ export function game_socket_open(ws,req) {
         for (let s of sockets_by_id[game.id]) {
             try {
                 if (s.readyState != 3) { // CLOSED -- TODO: find the named constant
-                    s.send(JSON.stringify({newGameState:game}));
+                    s.send(JSON.stringify({newGameState:game, error:broadcastMessages.join('\n\n')}));
                 }
             }catch (e) {
                 console.log(e);
