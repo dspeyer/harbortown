@@ -365,7 +365,9 @@ export async function wrap(callback) {
         backend.prepare_log(callback.name);
         if (ui.cancelButton) ui.cancelButton.setState({active:true});
         await callback();
-        backend.send_log()
+        if (callback == nextTurn) {
+            backend.send_log()
+        }
     } catch (e) {
         backend.abort_log();
         ui.showError(e+'');
