@@ -68,7 +68,9 @@ export function Building(props) {
                   })
               }</div>
               <div className="footer">
-                <div className="cost">{bd.cost}</div>
+                <div className="cost" title={bd.price && bd.price+' to buy'}>
+                  {bd.value}{bd.price && '*'}
+                </div>
                 <div className="smallname">{bd.name}</div>
                 { bd.symbols.length>0 &&
                   <div className="symbols" title={bd.symbols.map((x)=>sym_names[x]).join(' / ')}>{bd.symbols.join('')}</div> }

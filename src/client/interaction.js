@@ -14,7 +14,7 @@ export class ClickTarget extends React.Component {
     constructor(props) {
         super(props);
         props.holder[props.data] = this;
-        this.state = {active: false};
+        this.state = { active: false, msg: false };
         allClickTargets.push(this);
     }
     render() {
@@ -22,7 +22,15 @@ export class ClickTarget extends React.Component {
         if ( ! this.state.active ) {
             return <span/>;
         }
-        return <div className="clickTarget" onClick={ ()=>{ui.resolve(this.props.data);} } />
+        return <div className="clickTarget" onClick={ ()=>{ui.resolve(this.props.data);} }>
+                 { this.state.msg && <div className="ctMsg">{this.state.msg}</div> }
+               </div>;
+    }
+    show(msg) {
+        this.setState({active:true, msg});
+    }
+    hide() {
+        this.setState({active:false, msg:false});
     }
 }
 
@@ -43,7 +51,7 @@ export class Instructions extends React.Component {
 }
 
 function clearAllClickTargets() {
-    for (let ct of allClickTargets) ct.setState({active:false});
+    for (let ct of allClickTargets) ct.hide();
     for (let i of allInstructions) i.setState({msg:''});
 }
 
@@ -52,7 +60,7 @@ export async function pickTownResource() {
     allInstructions[0].setState({msg:'Take one pile of resources from the town'});
     for (let res in gameState.townResources) {
         if (gameState.townResources[res] > 0) {
-            ui.townResources[res].setState({active: true});
+            ui.townResources[res].show();
         }
     }
     const wfu = new Promise((resolve,reject) => { ui.resolve = resolve; ui.reject = reject;} );
@@ -204,7 +212,7 @@ export async function pickPlayerResources(player, filter, msg) {
     
     for (let r in player.resources) {
         if (player.resources[r]>0 && filter(r)) {
-            ui.playerResources[player.number][r].setState({active:true});
+            ui.playerResources[player.number][r].show();
         }
     }
     ui.resolve = (res) => {
@@ -275,7 +283,7 @@ export async function pickBuilding() {
     }
     for (let p of gameState.players) {
         for (let b of p.buildings) {
-            ui.buildings[b].setState({active:true});
+            ui.buildings[b].show();
         }
     }
     let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
@@ -285,16 +293,16 @@ export async function pickBuilding() {
     return buildings_by_number[bn];
 }
 
-export async function pickBuildingPlan(msg, resource, includingTown) {
+export async function pickBuildingPlan(msg, resource, for_buy) {
     allInstructions[0].setState({msg});
     for (let deck of gameState.buildingPlans) {
         if (deck.length) {
-            ui.buildings[deck[0]].setState({active:true});
+            ui.buildings[deck[0]].show(for_buy && buildings_by_number[deck[0]].price);
         }
     }
-    if (includingTown) {
+    if (for_buy) {
         for (let b of gameState.townBuildings) {
-            ui.buildings[b].setState({active:true});
+            ui.buildings[b].show(for_buy && buildings_by_number[b].price);
         }
     }
     let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
@@ -307,7 +315,7 @@ export async function pickBuildingPlan(msg, resource, includingTown) {
 export async function pickPlayerBuilding(msg, player) {
     allInstructions[0].setState({msg});
     for (let b of player.buildings) {
-        ui.buildings[b].setState({active:true});
+        ui.buildings[b].show();
     }
     let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
     let bn = await p;
@@ -372,7 +380,7 @@ export function score() {
                 let buildings = p.buildings.map((x)=>buildings_by_number[x]);
                 let scoreCols = [
                     p.resources.money || 0,
-                    buildings.map((x)=>x.cost).reduce((a,b)=>a+b,0),
+                    buildings.map((x)=>x.value).reduce((a,b)=>a+b,0),
                     p.ships.map((x)=>x[1]).reduce((a,b)=>a+b,0),
                     buildings.map((x)=>x.endgameBonus?x.endgameBonus(p):0).reduce((a,b)=>a+b,0),
                     -7 * (p.resources.loans||0)

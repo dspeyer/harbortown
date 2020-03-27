@@ -15,6 +15,16 @@
                                 transparent 100%);
 }
 
+.ctMsg {
+    position: absolute;
+    left: -1em;
+    top: calc( 50% - 0.5em );
+    background: rgba(255,255,0,0.5);
+    border: solid 1px #700;
+    border-radius: .3em;
+    font-size: 15pt;
+}
+
 .msg {
     position: fixed;
     width: 80vw;

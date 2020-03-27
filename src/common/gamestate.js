@@ -308,7 +308,7 @@ export function checkDecks(bn) {
 export async function buy() {
     const player = gameState.players[gameState.currentPlayer];
     const b = await ui.pickBuildingPlan('Choose a building to buy', player.resources, true);
-    subtractResources(player, {money:b.cost});
+    subtractResources(player, {money:(b.price||b.value)});
     let idx;
     if ( (idx = checkDecks(b.number)) != -1 ) {
         gameState.buildingPlans[idx].shift();
@@ -335,7 +335,7 @@ export async function sell() {
     const idx = player.buildings.indexOf(b.number);
     if (idx == -1) throw "Cannot sell";
     player.buildings.splice(idx,1);
-    addResources(player, {money:Math.floor(b.cost/2)});
+    addResources(player, {money:Math.floor(b.value/2)});
     gameState.townBuildings.push(b.number);
         if (b.number in gameState.disks_by_building) {
         delete gameState.disks_by_building[b.number];
