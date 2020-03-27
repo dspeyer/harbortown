@@ -116,10 +116,10 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                 <div className="buttonbar">
                   <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
                   <input type="button" value="Use Building" onClick={wrap.bind(null,utilizeBuilding)} disabled={!myturn || bat} />
-                  <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn} />
-                  <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn} />
-                  <input type="button" value="Repay Loan" onClick={wrap.bind(null,repayLoan)} disabled={!myturn} />
-                  <input type="button" value="Cheat" onClick={wrap.bind(null,cheat)} disabled={!myturn} />
+                  <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn || current==-1} />
+                  <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn || current==-1} />
+                  <input type="button" value="Repay Loan" onClick={wrap.bind(null,repayLoan)} disabled={!myturn || current==-1} />
+                  <input type="button" value="Cheat" onClick={wrap.bind(null,cheat)} />
                   <input type="button" value="Status" onClick={score} />
                   <CancelButton/>
                   <input type="button" value="Next Turn" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
