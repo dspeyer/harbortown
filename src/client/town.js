@@ -5,8 +5,7 @@ import { MiniShip } from './ships.js';
 import { Instructions, CancelButton, score } from './interaction.js';
 import { gameState, ui, safeCopy, restore,
          nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan, resumeConstruction } from '../common/gamestate.js';
-import { showDialog, closeSelf, showError, resumeButtonCallback } from './interaction.js';
-import { prepare_log, abort_log, send_log, clear_log } from './net.js';
+import { showDialog, closeSelf, showError, wrap, revert, canRevert } from './interaction.js';
 import './town.css';
 
 export function AdvancerToken(props) {
@@ -74,45 +73,7 @@ export class EndOfTurn extends React.Component {
     }
 }
 
-let turnBackup = null;
-
-async function wrap(callback) {
-    const backup = safeCopy(gameState);
-    if ( ! turnBackup ) turnBackup = safeCopy(gameState);
-    try {
-        console.log('callback',callback,' has name ',callback.name)
-        prepare_log(callback.name);
-        if (ui.cancelButton) ui.cancelButton.setState({active:true});
-        await callback();
-        if (callback.name == 'nextTurn') {
-            turnBackup = null
-            send_log()
-        }
-    } catch (e) {
-        abort_log();
-        showError(e+'');
-        restore(gameState, backup);
-        throw e;
-    } finally {
-        if (ui.cancelButton) ui.cancelButton.setState({active:false});
-        ui.update();
-    }
-}
-
-async function revert() {
-    if (turnBackup) {
-        restore(gameState, turnBackup);
-        turnBackup = null;
-        clear_log();
-    }
-    ui.update();
-}
-
-export function Town(obj) {
-    return RealTown({turnBackup, ...obj});
-}
-
-export function RealTown({advancers, current, resources, buildings, plans, ships, turn, dbb, curp, turnBackup}) {
+export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb, curp}) {
     let resourceElements = [];
     for (let i in resources) {
         let v = resources[i];
@@ -164,7 +125,7 @@ export function RealTown({advancers, current, resources, buildings, plans, ships
                   🌊
                   <input type="button" value="Score" onClick={score} />
                   🌊
-                  <input type="button" value="Revert" onClick={revert} disabled={!myturn || !turnBackup} />
+                  <input type="button" value="Revert" onClick={revert} disabled={!myturn || !canRevert()} />
                   <input type="button" value="Done" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
                   🌊
                 </div>
@@ -177,4 +138,3 @@ export function RealTown({advancers, current, resources, buildings, plans, ships
             </div>);
 }
         
-resumeButtonCallback.push(wrap.bind(null,resumeConstruction));

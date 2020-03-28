@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
-import { addResources,subtractResources, gameState, ui, countPile, countSymbol } from '../common/gamestate.js';
+import { safeCopy, restore, resumeConstruction, addResources, subtractResources, gameState, ui, countPile, countSymbol } from '../common/gamestate.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { buildings_by_number } from '../common/building.js';
 import { annotate_log } from './net.js';
 import { Building } from './buildingui.js';
 import { ship_feeds, ship_capacities, ship_prices } from '../common/data.js';
+import { prepare_log, abort_log, send_log, clear_log } from './net.js';
 
 let allClickTargets = [];
 
@@ -431,12 +432,50 @@ export function score() {
     );
 }
 
-export let resumeButtonCallback = [];
+
+let turnBackup = null;
+
+export async function wrap(callback) {
+    const backup = safeCopy(gameState);
+    if ( ! turnBackup ) turnBackup = safeCopy(gameState);
+    try {
+        console.log('callback',callback,' has name ',callback.name)
+        prepare_log(callback.name);
+        if (ui.cancelButton) ui.cancelButton.setState({active:true});
+        await callback();
+        if (callback.name == 'nextTurn') {
+            turnBackup = null
+            send_log()
+        }
+    } catch (e) {
+        abort_log();
+        showError(e+'');
+        restore(gameState, backup);
+        throw e;
+    } finally {
+        if (ui.cancelButton) ui.cancelButton.setState({active:false});
+        ui.update();
+    }
+}
+
+export async function revert() {
+    if (turnBackup) {
+        restore(gameState, turnBackup);
+        turnBackup = null;
+        clear_log();
+    }
+    ui.update();
+}
+
+export function canRevert() {
+    return !! turnBackup;
+}
+
 export function showResumeConstruction(){
     const town = document.getElementsByClassName('townGrid')[0];
     const rect = town.getBoundingClientRect();
     showDialog(<input type="button" value="Resume Construction"
                       style={ {position:'absolute', left:rect.left, top:rect.top} }
-                      onClick={(ev)=>{resumeButtonCallback[0](); closeSelf(ev);}}
+                      onClick={(ev)=>{wrap(resumeConstruction); closeSelf(ev);}}
                />);
 }
