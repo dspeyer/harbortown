@@ -152,16 +152,20 @@ export function RealTown({advancers, current, resources, buildings, plans, ships
                     return <Building bn={bn} key={bn} player={dbb[bn]} />;
                 }) }</div>
                 <div className="buttonbar">
-                  <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
-                  <input type="button" value="Use Building" onClick={wrap.bind(null,utilizeBuilding)} disabled={!myturn || bat} />
+                  <input type="button" value="Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
+                  <input type="button" value="Building" onClick={wrap.bind(null,utilizeBuilding)} disabled={!myturn || bat} />
+                  🌊
                   <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn || current==-1} />
                   <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn || current==-1} />
-                  <input type="button" value="Repay Loan" onClick={wrap.bind(null,repayLoan)} disabled={!myturn || current==-1} />
+                  <input type="button" value="Repay" onClick={wrap.bind(null,repayLoan)} disabled={!myturn || current==-1} />
                   <input type="button" value="Cheat" onClick={wrap.bind(null,cheat)} />
-                  <input type="button" value="Status" onClick={score} />
+                  🌊
+                  <input type="button" value="Score" onClick={score} />
+                  🌊
                   <CancelButton/>
                   <input type="button" value="Revert" onClick={revert} disabled={!myturn || !turnBackup} />
-                  <input type="button" value="Next Turn" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
+                  🌊
+                  <input type="button" value="Done" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
                 </div>
                 <div className="plans">
                   { plans.map((plan,i) => {
