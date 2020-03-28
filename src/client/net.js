@@ -61,3 +61,7 @@ export function send_log() {
 export function abort_log() {
     log.pop();
 }
+
+export function clear_log() {
+    log = [];
+}

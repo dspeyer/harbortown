@@ -6,7 +6,7 @@ import { Instructions, CancelButton, score } from './interaction.js';
 import { gameState, ui, safeCopy, restore,
          nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan } from '../common/gamestate.js';
 import { showDialog, closeSelf, showError } from './interaction.js';
-import { prepare_log, abort_log, send_log } from './net.js';
+import { prepare_log, abort_log, send_log, clear_log } from './net.js';
 import './town.css';
 
 export function AdvancerToken(props) {
@@ -74,14 +74,18 @@ export class EndOfTurn extends React.Component {
     }
 }
 
+let turnBackup = null;
+
 async function wrap(callback) {
     const backup = safeCopy(gameState);
+    if ( ! turnBackup ) turnBackup = safeCopy(gameState);
     try {
         console.log('callback',callback,' has name ',callback.name)
         prepare_log(callback.name);
         if (ui.cancelButton) ui.cancelButton.setState({active:true});
         await callback();
         if (callback.name == 'nextTurn') {
+            turnBackup = null
             send_log()
         }
     } catch (e) {
@@ -95,8 +99,20 @@ async function wrap(callback) {
     }
 }
 
+async function revert() {
+    if (turnBackup) {
+        restore(gameState, turnBackup);
+        turnBackup = null;
+        clear_log();
+    }
+    ui.update();
+}
 
-export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb, curp}) {
+export function Town(obj) {
+    return RealTown({turnBackup, ...obj});
+}
+
+export function RealTown({advancers, current, resources, buildings, plans, ships, turn, dbb, curp, turnBackup}) {
     let resourceElements = [];
     for (let i in resources) {
         let v = resources[i];
@@ -144,6 +160,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   <input type="button" value="Cheat" onClick={wrap.bind(null,cheat)} />
                   <input type="button" value="Status" onClick={score} />
                   <CancelButton/>
+                  <input type="button" value="Revert" onClick={revert} disabled={!myturn || !turnBackup} />
                   <input type="button" value="Next Turn" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
                 </div>
                 <div className="plans">
