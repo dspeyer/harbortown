@@ -3,8 +3,10 @@ import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
 import { MiniShip } from './ships.js';
 import { Instructions, CancelButton, score } from './interaction.js';
-import { gameState, ui, safeCopy, nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, wrap, repayLoan } from '../common/gamestate.js';
-import { showDialog, closeSelf } from './interaction.js';
+import { gameState, ui, safeCopy, restore,
+         nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan } from '../common/gamestate.js';
+import { showDialog, closeSelf, showError } from './interaction.js';
+import { prepare_log, abort_log, send_log } from './net.js';
 import './town.css';
 
 export function AdvancerToken(props) {
@@ -72,6 +74,26 @@ export class EndOfTurn extends React.Component {
     }
 }
 
+async function wrap(callback) {
+    const backup = safeCopy(gameState);
+    try {
+        console.log('callback',callback,' has name ',callback.name)
+        prepare_log(callback.name);
+        if (ui.cancelButton) ui.cancelButton.setState({active:true});
+        await callback();
+        if (callback.name == 'nextTurn') {
+            send_log()
+        }
+    } catch (e) {
+        abort_log();
+        showError(e+'');
+        restore(gameState, backup);
+        throw e;
+    } finally {
+        if (ui.cancelButton) ui.cancelButton.setState({active:false});
+        ui.update();
+    }
+}
 
 
 export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb, curp}) {

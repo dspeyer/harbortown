@@ -358,27 +358,6 @@ export async function cheat() {
     ui.update();
 }
 
-export async function wrap(callback) {
-    const backup = safeCopy(gameState);
-    try {
-        console.log('callback',callback,' has name ',callback.name)
-        backend.prepare_log(callback.name);
-        if (ui.cancelButton) ui.cancelButton.setState({active:true});
-        await callback();
-        if (callback == nextTurn) {
-            backend.send_log()
-        }
-    } catch (e) {
-        backend.abort_log();
-        ui.showError(e+'');
-        restore(gameState, backup);
-        throw e;
-    } finally {
-        if (ui.cancelButton) ui.cancelButton.setState({active:false});
-        ui.update();
-    }
-}
-
 export function restore(active, canon) {
     for (let k in canon) {
         active[k] = safeCopy(canon[k]);
