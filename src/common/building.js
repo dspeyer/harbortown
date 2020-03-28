@@ -2,16 +2,18 @@ import {gameState, ui, shuffle, safeCopy, subtractResources,
         addResources, countSymbol, checkDecks, countPile, utilizeBuilding } from './gamestate.js';
 import {resources} from './data.js';
 
-const building_firm = {name: 'Building Firm',
+export const building_firm = {name: 'Building Firm',
                        symbols: ['🏠','🔨'],
                        text: 'Build 1 building',
                        action: async (player, self, msg) => {
                            const plan = await ui.pickBuildingPlan(msg || 'Choose a building to build', player.resources);
+                           if (plan=='pause') throw "Paused";
+                           if (plan.is_ship) throw "Trying to build a ship at the building firm";
                            let idx;
                            if ( (idx = checkDecks(plan.number)) != -1 ) {
                                gameState.buildingPlans[idx].shift();
                            } else {
-                               throw "Not buildable";
+                               throw "Not buildable ";
                            }
                            let buildcost = safeCopy(plan.buildcost);
                            if (self.name=='Sawmill' && buildcost.wood > 0) { buildcost.wood -= 1; }
@@ -77,11 +79,16 @@ export const starting_buildings = [
           await building_firm.action(player,self);
           ui.update();
           try {
-              await building_firm.action(player,self,'Choose a second building to build');
+              await building_firm.action(player,self,'Choose a second building to build or ');
           } catch(e) {
-              if (e!='canceled' && e!='nothing_to_choose') {
-                  throw e;
+              if (e=='canceled' || e=='nothing_to_choose') {
+                  return;
               }
+              if (e=='Paused') {
+                  ui.showResumeConstruction()
+                  return;
+              }
+              throw e;
           }
       }},
 ];

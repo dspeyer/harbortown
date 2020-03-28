@@ -128,3 +128,9 @@
     background: #acf;
     font-size: smaller;
 }
+
+.entireBar {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+}

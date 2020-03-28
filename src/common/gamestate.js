@@ -1,5 +1,5 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
-import { buildings_by_number } from './building.js';
+import { buildings_by_number, building_firm } from './building.js';
 
 export const gameState = { players:[] };
 export const buildingHelpers = {};
@@ -281,7 +281,12 @@ export async function utilizeBuilding(building) {
     gameState.bigActionTaken = true;
     ui.update();
 }
-    
+
+export async function resumeConstruction() {
+    const player = gameState.players[gameState.currentPlayer];
+    await building_firm.action(player,{},'Choose a second building');
+}
+
 export function subtractResources(player, spend) {
     for (let r in spend) {
         if (player.resources[r] == undefined) player.resources[r]=0;

@@ -102,6 +102,7 @@ div.horiz {
     grid-column-end: 3; 
     grid-row-start: 5; 
     grid-row-end: 6;
+    position: relative;
 }
 
 .shipStacks {
@@ -161,4 +162,5 @@ div.horiz {
     margin: 1px;
     font-size: 10pt;
     font-family: times;
+    background: #ddd;
 }

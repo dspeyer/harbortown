@@ -4,8 +4,8 @@ import { Building, BuildingStack } from './buildingui.js';
 import { MiniShip } from './ships.js';
 import { Instructions, CancelButton, score } from './interaction.js';
 import { gameState, ui, safeCopy, restore,
-         nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan } from '../common/gamestate.js';
-import { showDialog, closeSelf, showError } from './interaction.js';
+         nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan, resumeConstruction } from '../common/gamestate.js';
+import { showDialog, closeSelf, showError, resumeButtonCallback } from './interaction.js';
 import { prepare_log, abort_log, send_log, clear_log } from './net.js';
 import './town.css';
 
@@ -152,20 +152,21 @@ export function RealTown({advancers, current, resources, buildings, plans, ships
                     return <Building bn={bn} key={bn} player={dbb[bn]} />;
                 }) }</div>
                 <div className="buttonbar">
-                  <input type="button" value="Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
-                  <input type="button" value="Building" onClick={wrap.bind(null,utilizeBuilding)} disabled={!myturn || bat} />
+                  <CancelButton/>
+                  🌊
+                  <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
+                  <input type="button" value="Use Building" onClick={wrap.bind(null,utilizeBuilding)} disabled={!myturn || bat} />
                   🌊
                   <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn || current==-1} />
                   <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn || current==-1} />
                   <input type="button" value="Repay" onClick={wrap.bind(null,repayLoan)} disabled={!myturn || current==-1} />
-                  <input type="button" value="Cheat" onClick={wrap.bind(null,cheat)} />
+                  <input type="button" value="C" onClick={wrap.bind(null,cheat)} />
                   🌊
                   <input type="button" value="Score" onClick={score} />
                   🌊
-                  <CancelButton/>
                   <input type="button" value="Revert" onClick={revert} disabled={!myturn || !turnBackup} />
-                  🌊
                   <input type="button" value="Done" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
+                  🌊
                 </div>
                 <div className="plans">
                   { plans.map((plan,i) => {
@@ -176,3 +177,4 @@ export function RealTown({advancers, current, resources, buildings, plans, ships
             </div>);
 }
         
+resumeButtonCallback.push(wrap.bind(null,resumeConstruction));

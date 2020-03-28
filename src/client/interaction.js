@@ -43,7 +43,10 @@ export class Instructions extends React.Component {
     }
     render() {
         if (this.state.msg) {
-            return <div className="instructions">{this.state.msg}</div>;
+            return <div className="instructions">
+                     {this.state.msg}
+                     {this.state.msg.endsWith(' or ') && <a onClick={()=>ui.resolve('pause')}>pause</a>}
+                   </div>;
         } else {
             return <span/>
         }
@@ -325,7 +328,7 @@ export async function pickBuildingPlan(msg, resource, for_buy) {
     if (bn in gameState.ships) {
         return {is_ship: true, material: bn};
     }
-    throw "What did you click on?"
+    return bn;
 }
 
 export async function pickPlayerBuilding(msg, player) {
@@ -356,7 +359,11 @@ export class CancelButton extends React.Component {
         this.state = {active: false};
     }
     render() {
-        return <input type="button" value="Cancel" disabled={!this.state.active} onClick={this.clicked.bind(this)} />;
+        if (this.state.active) {
+            return <input type="button" value="Cancel" onClick={this.clicked.bind(this)} className="entireBar" />;
+        } else {
+            return <span/>;
+        }
     }
     clicked() {
         ui.reject("canceled");
@@ -422,4 +429,14 @@ export function score() {
           <input type="button" value="OK" onClick={closeSelf} />
         </div>
     );
+}
+
+export let resumeButtonCallback = [];
+export function showResumeConstruction(){
+    const town = document.getElementsByClassName('townGrid')[0];
+    const rect = town.getBoundingClientRect();
+    showDialog(<input type="button" value="Resume Construction"
+                      style={ {position:'absolute', left:rect.left, top:rect.top} }
+                      onClick={(ev)=>{resumeButtonCallback[0](); closeSelf(ev);}}
+               />);
 }
