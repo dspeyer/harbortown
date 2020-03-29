@@ -46,7 +46,7 @@ export class Instructions extends React.Component {
         if (this.state.msg) {
             return <div className="instructions">
                      {this.state.msg}
-                     {this.state.msg.endsWith(' or ') && <a onClick={()=>ui.resolve('pause')}>pause</a>}
+                     {this.state.msg.endsWith(' or ') && <input type="button" onClick={()=>ui.resolve('pause')} value="pause" />}
                    </div>;
         } else {
             return <span/>
@@ -475,7 +475,7 @@ export function showResumeConstruction(){
     const town = document.getElementsByClassName('townGrid')[0];
     const rect = town.getBoundingClientRect();
     showDialog(<input type="button" value="Resume Construction"
-                      style={ {position:'absolute', left:rect.left, top:rect.top} }
+                      style={ {position:'absolute', zIndex:999, left:rect.left, top:rect.top} }
                       onClick={(ev)=>{wrap(resumeConstruction); closeSelf(ev);}}
                />);
 }

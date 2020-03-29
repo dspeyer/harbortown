@@ -115,8 +115,13 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                 <div className="buttonbar">
                   <CancelButton/>
                   🌊
-                  <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
-                  <input type="button" value="Use Building" onClick={wrap.bind(null,utilizeBuilding)} disabled={!myturn || bat} />
+                  { bat==0.5 ?
+                    <input type="button" value="Resume Construction" onClick={wrap.bind(null,resumeConstruction)} />
+                    : <span>
+                        <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
+                        <input type="button" value="Use Building" onClick={wrap.bind(null,utilizeBuilding)} disabled={!myturn || bat} />
+                    </span>
+                  }
                   🌊
                   <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn || current==-1} />
                   <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn || current==-1} />

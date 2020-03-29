@@ -215,18 +215,19 @@ export function nextTurn() {
     }
     gameState.currentPlayer += 1;
     gameState.currentPlayer %= gameState.players.length;
-    gameState.bigActionTaken = false;
+    gameState.bigActionTaken = 0;
     ui.update();
 }
 
 export async function takeResource() {
+    if (gameState.bigActionTaken) throw "You already took your turn";
     const resource = await ui.pickTownResource();
     const player = gameState.players[gameState.currentPlayer];
     if ( ! ( gameState.townResources[resource] > 0 ) ) return false;
     if (player.resources[resource] == undefined) player.resources[resource] = 0;
     player.resources[resource] += gameState.townResources[resource];
     gameState.townResources[resource] = 0;
-    gameState.bigActionTaken = true;
+    gameState.bigActionTaken = 1;
     ui.update();
 }
     
@@ -251,6 +252,7 @@ export function findOwner(bn) {
 
 export async function utilizeBuilding(building) {
     const player = gameState.players[gameState.currentPlayer];
+    if (gameState.bigActionTaken) throw "You already took your turn";
     if (building === undefined) {
         building = await ui.pickBuilding();
     }
@@ -278,13 +280,15 @@ export async function utilizeBuilding(building) {
         }
     }
     await building.action(player, building);
-    gameState.bigActionTaken = true;
+    gameState.bigActionTaken += 1;
     ui.update();
 }
 
 export async function resumeConstruction() {
+    if (gameState.bigActionTaken != 0.5) throw "Construction isn't paused";
     const player = gameState.players[gameState.currentPlayer];
     await building_firm.action(player,{},'Choose a second building');
+    gameState.bigActionTaken += 0.5;
 }
 
 export function subtractResources(player, spend) {

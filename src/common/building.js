@@ -13,7 +13,7 @@ export const building_firm = {name: 'Building Firm',
                            if ( (idx = checkDecks(plan.number)) != -1 ) {
                                gameState.buildingPlans[idx].shift();
                            } else {
-                               throw "Not buildable ";
+                               throw "Not buildable "+JSON.stringify(plan);
                            }
                            let buildcost = safeCopy(plan.buildcost);
                            if (self.name=='Sawmill' && buildcost.wood > 0) { buildcost.wood -= 1; }
@@ -85,7 +85,7 @@ export const starting_buildings = [
                   return;
               }
               if (e=='Paused') {
-                  ui.showResumeConstruction()
+                  gameState.bigActionTaken -= 0.5;
                   return;
               }
               throw e;

@@ -17,7 +17,7 @@ async function replay_event(e, game, playfrom) {
         throw "It's not your turn (you're ["+playfrom+"] but it's ["+currentPlayer.name+"]'s turn)";
     }
     const rawget = () => { return e[input++]; };
-    const bget = () => { return buildings_by_number[e[input++]]; };
+    const bget = () => { let tmp = rawget(); return buildings_by_number[tmp] || tmp; };
     gs.ui.pickTownResource =
         gs.ui.pickResources =
         rawget;
