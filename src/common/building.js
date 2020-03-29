@@ -5,9 +5,10 @@ import {resources} from './data.js';
 export const building_firm = {name: 'Building Firm',
                        symbols: ['🏠','🔨'],
                        text: 'Build 1 building',
-                       action: async (player, self, msg) => {
-                           const plan = await ui.pickBuildingPlan(msg || 'Choose a building to build', player.resources);
-                           if (plan=='pause') throw "Paused";
+                       action: async (player, self, msg, pausable) => {
+                           if (!msg) msg = 'Choose a building to build';
+                           const plan = await ui.pickBuildingPlan(msg, player.resources, false, pausable);
+                           if (pausable && plan=='pause') throw "Paused";
                            if (plan.is_ship) throw "Trying to build a ship at the building firm";
                            let idx;
                            if ( (idx = checkDecks(plan.number)) != -1 ) {
@@ -16,7 +17,7 @@ export const building_firm = {name: 'Building Firm',
                                throw "Not buildable "+JSON.stringify(plan);
                            }
                            let buildcost = safeCopy(plan.buildcost);
-                           if (self.name=='Sawmill' && buildcost.wood > 0) { buildcost.wood -= 1; }
+                           if (self && self.name=='Sawmill' && buildcost.wood > 0) { buildcost.wood -= 1; }
                            subtractResources(player, buildcost);
                            player.buildings.push(plan.number);
                        }
@@ -79,7 +80,7 @@ export const starting_buildings = [
           await building_firm.action(player,self);
           ui.update();
           try {
-              await building_firm.action(player,self,'Choose a second building to build or ');
+              await building_firm.action(player,self,'Choose a second building to build or ', true);
           } catch(e) {
               if (e=='canceled' || e=='nothing_to_choose') {
                   return;

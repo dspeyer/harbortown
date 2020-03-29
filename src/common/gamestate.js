@@ -287,7 +287,7 @@ export async function utilizeBuilding(building) {
 export async function resumeConstruction() {
     if (gameState.bigActionTaken != 0.5) throw "Construction isn't paused";
     const player = gameState.players[gameState.currentPlayer];
-    await building_firm.action(player,{},'Choose a second building');
+    await building_firm.action(player,{},'Choose a second building or ',true);
     gameState.bigActionTaken += 0.5;
 }
 

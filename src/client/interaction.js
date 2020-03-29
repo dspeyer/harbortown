@@ -39,14 +39,18 @@ let allInstructions = [];
 export class Instructions extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {msg: ''};
+        this.state = {msg: '', pausable: false};
         allInstructions.push(this);
+    }
+    set(msg,pausable) {
+        this.setState({msg,pausable});
     }
     render() {
         if (this.state.msg) {
             return <div className="instructions">
                      {this.state.msg}
-                     {this.state.msg.endsWith(' or ') && <input type="button" onClick={()=>ui.resolve('pause')} value="pause" />}
+                     { this.state.pausable &&
+                       <input type="button" value="pause" onClick={() => {ui.resolve('pause');}} /> }
                    </div>;
         } else {
             return <span/>
@@ -56,12 +60,11 @@ export class Instructions extends React.Component {
 
 function clearAllClickTargets() {
     for (let ct of allClickTargets) ct.hide();
-    for (let i of allInstructions) i.setState({msg:''});
+    for (let i of allInstructions) i.set('');
 }
 
-
 export async function pickTownResource() {
-    allInstructions[0].setState({msg:'Take one pile of resources from the town'});
+    allInstructions[0].set('Take one pile of resources from the town');
     for (let res in gameState.townResources) {
         if (gameState.townResources[res] > 0) {
             ui.townResources[res].show();
@@ -286,7 +289,7 @@ export async function pickNextSpecialBuilding() {
 
 
 export async function pickBuilding() {
-    allInstructions[0].setState({msg:'Choose an existing building'});
+    allInstructions[0].set('Choose an existing building');
     for (let b of gameState.townBuildings) {
         ui.buildings[b].setState({active:true});
     }
@@ -302,8 +305,8 @@ export async function pickBuilding() {
     return buildings_by_number[bn];
 }
 
-export async function pickBuildingPlan(msg, resource, for_buy) {
-    allInstructions[0].setState({msg});
+export async function pickBuildingPlan(msg, resource, for_buy, pausable) {
+    allInstructions[0].set(msg, pausable);
     for (let deck of gameState.buildingPlans) {
         if (deck.length) {
             ui.buildings[deck[0]].show(for_buy && buildings_by_number[deck[0]].price);
@@ -333,7 +336,7 @@ export async function pickBuildingPlan(msg, resource, for_buy) {
 }
 
 export async function pickPlayerBuilding(msg, player) {
-    allInstructions[0].setState({msg});
+    allInstructions[0].set(msg);
     for (let b of player.buildings) {
         ui.buildings[b].show();
     }
