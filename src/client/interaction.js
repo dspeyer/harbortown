@@ -446,7 +446,8 @@ export async function wrap(callback) {
         }
     } catch (e) {
         abort_log();
-        showError(e+'');
+        console.log(['error',e]);
+        showError(e+' *st:'+e.stack);
         restore(gameState, backup);
         throw e;
     } finally {

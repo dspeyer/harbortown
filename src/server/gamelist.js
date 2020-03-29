@@ -43,7 +43,7 @@ export function createSeed(req, res) {
     const wanted = req.body.wanted;
     if ( ! (desc && wanted) ) return showGameList(req, res, 'Must provide description and player count');
     const newid = id++;
-    gameseeds[newid] = { desc, wanted, players:[] };
+    gameseeds[newid] = { desc, wanted, players:[name] };
     res.redirect('/');
 }
 

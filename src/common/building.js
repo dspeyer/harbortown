@@ -157,7 +157,7 @@ export const buildings = [
          const adv = countPile(toSell,'advanced');
          const basic = countPile(toSell,'value',(x)=>1) - adv;
          if (basic%3 != 0) {
-             ui.showMessage('Bridging '+basic+' basic goods wastes '+(basic%3)+' goods', {personal:true});
+             ui.showMessage('Bridging '+basic+' basic goods wastes '+(basic%3)+' goods', /*personal=*/ true);
          }
          addResources(player,{ money: adv+Math.floor(basic/3) });
      }
