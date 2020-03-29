@@ -321,11 +321,12 @@ export function checkDecks(bn) {
 
 export async function buy() {
     const player = gameState.players[gameState.currentPlayer];
-    const b = await ui.pickBuildingPlan('Choose a building or ship to buy', player.resources, true);
-    if (b.is_ship) {
-        subtractResources(player, { money: ship_prices[b.material] });
-        player.ships.push([b.material,gameState.ships[b.material].shift()]);
-    } else {
+    const bn = await ui.pickBuildingPlan('Choose a building or ship to buy', {for_buy: true});
+    if (bn in gameState.ships) {
+        subtractResources(player, { money: ship_prices[bn] });
+        player.ships.push([ bn, gameState.ships[bn].shift() ]);
+    } else if (bn in buildings_by_number) {
+        let b = buildings_by_number[bn];
         subtractResources(player, {money:(b.price||b.value)});
         let idx;
         if ( (idx = checkDecks(b.number)) != -1 ) {
@@ -339,7 +340,9 @@ export async function buy() {
             delete gameState.disks_by_building[b.number];
         }
         player.buildings.push(b.number);
-    } 
+    } else {
+        throw "Cannot buy "+bn+" -- don't know what it is";
+    }
     ui.update();
 }
 

@@ -305,7 +305,7 @@ export async function pickBuilding() {
     return buildings_by_number[bn];
 }
 
-export async function pickBuildingPlan(msg, resource, for_buy, pausable) {
+export async function pickBuildingPlan(msg, {resource, for_buy, pausable}) {
     allInstructions[0].set(msg, pausable);
     for (let deck of gameState.buildingPlans) {
         if (deck.length) {
@@ -326,12 +326,6 @@ export async function pickBuildingPlan(msg, resource, for_buy, pausable) {
     let bn = await p;
     clearAllClickTargets();
     annotate_log(bn);
-    if (bn in buildings_by_number) {
-        return buildings_by_number[bn];
-    }
-    if (bn in gameState.ships) {
-        return {is_ship: true, material: bn};
-    }
     return bn;
 }
 

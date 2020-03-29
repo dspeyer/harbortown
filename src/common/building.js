@@ -7,9 +7,10 @@ export const building_firm = {name: 'Building Firm',
                        text: 'Build 1 building',
                        action: async (player, self, msg, pausable) => {
                            if (!msg) msg = 'Choose a building to build';
-                           const plan = await ui.pickBuildingPlan(msg, player.resources, false, pausable);
-                           if (pausable && plan=='pause') throw "Paused";
-                           if (plan.is_ship) throw "Trying to build a ship at the building firm";
+                           const bn = await ui.pickBuildingPlan(msg, {resources:player.resources, pausable});
+                           if (pausable && bn=='pause') throw "Paused";
+                           let plan = buildings_by_number[bn];
+                           if (!plan) throw "Not a building: "+bn;
                            let idx;
                            if ( (idx = checkDecks(plan.number)) != -1 ) {
                                gameState.buildingPlans[idx].shift();

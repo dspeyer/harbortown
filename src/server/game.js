@@ -17,13 +17,13 @@ async function replay_event(e, game, playfrom) {
         throw "It's not your turn (you're ["+playfrom+"] but it's ["+currentPlayer.name+"]'s turn)";
     }
     const rawget = () => { return e[input++]; };
-    const bget = () => { let tmp = rawget(); return buildings_by_number[tmp] || tmp; };
+    const bget = () => buildings_by_number[rawget()];
     gs.ui.pickTownResource =
         gs.ui.pickResources =
+        gs.ui.pickBuildingPlan =
         rawget;
     gs.ui.pickBuilding =
         gs.ui.pickPlayerBuilding =
-        gs.ui.pickBuildingPlan =
         gs.ui.pickNextSpecialBuilding =
         bget;
     if (e[0]=='nextTurn' || e[0]=='completeFeed') {

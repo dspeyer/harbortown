@@ -116,6 +116,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   <CancelButton/>
                   🌊
                   { bat==0.5 ?
+                    /* TODO: resume things other than construction */
                     <input type="button" value="Resume Construction" onClick={wrap.bind(null,resumeConstruction)} />
                     : <span>
                         <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
