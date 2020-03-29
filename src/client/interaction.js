@@ -436,10 +436,10 @@ export async function wrap(callback) {
     const backup = safeCopy(gameState);
     if ( ! turnBackup ) turnBackup = safeCopy(gameState);
     try {
-        console.log('callback',callback,' has name ',callback.name)
+        const player = gameState.players[gameState.currentPlayer];
         prepare_log(callback.name);
         if (ui.cancelButton) ui.cancelButton.setState({active:true});
-        await callback();
+        await callback(player);
         if (callback.name == 'nextTurn') {
             turnBackup = null
             send_log()

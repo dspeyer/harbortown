@@ -744,7 +744,7 @@ const special_buildings = [
          addResources(gameState.players[gameState.disks_by_building[building.number]],{money:1});
          delete gameState.disks_by_building[building.number];
          ui.update();
-         await utilizeBuilding(building);
+         await utilizeBuilding(player,building);
      }
     },
 ]
