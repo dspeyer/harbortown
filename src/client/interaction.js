@@ -471,11 +471,3 @@ export function canRevert() {
     return !! turnBackup;
 }
 
-export function showResumeConstruction(){
-    const town = document.getElementsByClassName('townGrid')[0];
-    const rect = town.getBoundingClientRect();
-    showDialog(<input type="button" value="Resume Construction"
-                      style={ {position:'absolute', zIndex:999, left:rect.left, top:rect.top} }
-                      onClick={(ev)=>{wrap(resumeConstruction); closeSelf(ev);}}
-               />);
-}
