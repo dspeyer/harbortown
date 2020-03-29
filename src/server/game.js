@@ -55,7 +55,7 @@ async function replay_event(e, game, playfrom) {
         gs.ui.serverPickResources = gs.ui.pickPlayerResources;
         gs.ui.pickPlayerResources = demandPlayerResources.bind(null,game);
     };
-    gs.ui.showMessage = ((msg) => {broadcastMessages.push(msg);});
+    gs.ui.showMessage = ((msg, {personal}) => { if (!personal) broadcastMessages.push(msg);});
     
     let callback = gs[e[0]];
     await callback(player);

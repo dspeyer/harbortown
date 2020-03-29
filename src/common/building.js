@@ -52,7 +52,6 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                     else if (res.wood>=5) { res.wood -=5; ship_type='wood'; }
                     else throw "Cannot deduce intended ship type";
 
-                    //TODO: unify this?
                     if (countPile(res,'energy') < 3) throw "Not enough energy";
 
                     if (gameState.ships[ship_type].length == 0) throw "No "+ship_type+" ships available to build";
@@ -158,7 +157,7 @@ export const buildings = [
          const adv = countPile(toSell,'advanced');
          const basic = countPile(toSell,'value',(x)=>1) - adv;
          if (basic%3 != 0) {
-             //TODO: warning
+             ui.showMessage('Bridging '+basic+' basic goods wastes '+(basic%3)+' goods', {personal:true});
          }
          addResources(player,{ money: adv+Math.floor(basic/3) });
      }

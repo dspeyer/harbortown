@@ -17,7 +17,7 @@ ui.pickPlayerBuilding = pickPlayerBuilding;
 ui.pickNextSpecialBuilding = pickNextSpecialBuilding;
 ui.pickBuildingPlan = pickBuildingPlan;
 ui.initUi = initUi;
-ui.showMessage = (msg) => { if ( ! ui.am_client_to_server) showMessage(msg); };
+ui.showMessage = (msg, {personal}) => { if ( ! ui.am_client_to_server || personal) showMessage(msg); };
 ui.endGame = score;
 
 buildingHelpers.initBuildings = initBuildings;
