@@ -2,7 +2,7 @@ import React from 'react';
 import { ResourceStack } from './resources.js';
 import { Building } from './buildingui.js';
 import { Ship } from './ships.js';
-import { safeCopy, ui } from '../common/gamestate.js';
+import { safeCopy, ui } from '../common/utils.js';
 import { gameState } from './state.js';
 import './player.css';
 

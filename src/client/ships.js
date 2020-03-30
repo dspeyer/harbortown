@@ -1,5 +1,5 @@
 import React from 'react';
-import { ui } from '../common/gamestate.js';
+import { ui } from '../common/utils.js';
 import { gameState } from './state.js';
 import { ClickTarget } from './interaction.js';
 import './ship.css';

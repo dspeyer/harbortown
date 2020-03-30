@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { ui, buildingHelpers, backend, endGame, newGame } from '../common/gamestate.js';
+import { ui, buildingHelpers, backend } from '../common/utils.js';
+import { newGame } from '../common/actions.js'
 import { gameState } from './state.js';
 import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding,
          pickNextSpecialBuilding, initUi, showMessage, score } from './interaction.js';

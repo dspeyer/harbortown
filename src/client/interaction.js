@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
-import { safeCopy, restore, resumeConstruction, addResources, subtractResources, ui, countPile, countSymbol } from '../common/gamestate.js';
+import { safeCopy, restore, addResources, subtractResources, ui, countPile, countSymbol } from '../common/utils.js';
 import { gameState } from './state.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { buildings_by_number } from '../common/building.js';

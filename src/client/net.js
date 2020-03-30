@@ -1,4 +1,4 @@
-import { restore, ui, safeCopy } from '../common/gamestate.js';
+import { restore, ui, safeCopy } from '../common/utils.js';
 import { resources } from '../common/data.js';
 import { showMessage, pickPlayerResources, score } from './interaction.js';
 import { gameState } from './state.js';

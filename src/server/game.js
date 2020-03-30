@@ -1,6 +1,7 @@
 import { log_event } from './dbg.js';
-import * as gs from '../common/gamestate.js';
+import * as actions from '../common/actions.js';
 import { initBuildings, buildings_by_number } from '../common/building.js';
+import { ui, subtractResources, safeCopy, buildingHelpers } from '../common/utils.js';
 import { colls } from './gamelist.js';
 
 let sockets_by_id = {};
@@ -37,26 +38,26 @@ async function replay_event(e, game, playfrom) {
     
     const rawget = () => { return e[input++]; };
     const bget = () => buildings_by_number[rawget()];
-    gs.ui.pickTownResource =
-        gs.ui.pickResources =
-        gs.ui.pickBuildingPlan =
+    ui.pickTownResource =
+        ui.pickResources =
+        ui.pickBuildingPlan =
         rawget;
-    gs.ui.pickBuilding =
-        gs.ui.pickPlayerBuilding =
-        gs.ui.pickNextSpecialBuilding =
+    ui.pickBuilding =
+        ui.pickPlayerBuilding =
+        ui.pickNextSpecialBuilding =
         bget;
-    gs.ui.pickPlayerResources = (player, filter, msg, feeding) => {
+    ui.pickPlayerResources = (player, filter, msg, feeding) => {
         let r = rawget();
-        gs.subtractResources(player, r);
+        subtractResources(player, r);
         return r;
     }
     if (e[0]=='nextTurn' || e[0]=='completeFeed') {
-        gs.ui.serverPickResources = gs.ui.pickPlayerResources;
-        gs.ui.pickPlayerResources = demandPlayerResources.bind(null,game);
+        ui.serverPickResources = ui.pickPlayerResources;
+        ui.pickPlayerResources = demandPlayerResources.bind(null,game);
     };
-    gs.ui.showMessage = ((msg, personal) => { if (!personal) broadcastMessages.push(msg);});
+    ui.showMessage = ((msg, personal) => { if (!personal) broadcastMessages.push(msg);});
     
-    let callback = gs[e[0]];
+    let callback = actions[e[0]];
     await callback(player, game);
 }
 
@@ -77,7 +78,7 @@ export function game_socket_open(ws,req) {
         const pmsg = JSON.parse(msg);
         let game = await colls.games.findOne({id:ws.gameid});
         if (game) delete game._id;
-        const backup = gs.safeCopy(game);
+        const backup = safeCopy(game);
         for (let e of pmsg) {
             log_event(e);
             try {
@@ -107,11 +108,11 @@ export function game_socket_open(ws,req) {
 }
 
 export function init_game() {
-    gs.ui.initUi = ()=>{};
-    gs.buildingHelpers.initBuildings = initBuildings;
-    gs.buildingHelpers.buildings_by_number = buildings_by_number;
+    ui.initUi = ()=>{};
+    buildingHelpers.initBuildings = initBuildings;
+    buildingHelpers.buildings_by_number = buildings_by_number;
 }
 
-gs.ui.endGame = function(game) {
+ui.endGame = function(game) {
     game.ended = Date.now();
 }

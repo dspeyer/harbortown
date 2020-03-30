@@ -1,4 +1,5 @@
-import { newGame, shuffle, safeCopy } from '../common/gamestate.js';
+import { shuffle, safeCopy } from '../common/utils.js';
+import { newGame } from '../common/actions.js';
 import mongodb from 'mongodb';
 const { MongoClient } = mongodb;
 

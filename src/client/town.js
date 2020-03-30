@@ -3,8 +3,8 @@ import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
 import { MiniShip } from './ships.js';
 import { Instructions, CancelButton, score } from './interaction.js';
-import { ui, safeCopy, restore,
-         nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan, resumeConstruction } from '../common/gamestate.js';
+import { ui, safeCopy, restore } from '../common/utils.js';
+import { nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan, resumeConstruction } from '../common/actions.js';
 import { gameState } from './state.js';
 import { showDialog, closeSelf, showError, wrap, revert, canRevert } from './interaction.js';
 import './town.css';

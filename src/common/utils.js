@@ -58,7 +58,7 @@ export function safeCopy(x) {
     }
 }
     
-function satisfies(provided, reqs) {
+export function satisfies(provided, reqs) {
     if (('money' in reqs) && (provided.money >= reqs.money)) return true;
     if (('food' in reqs) && (countPile(provided,'food') >= reqs.food)) return true;
     return false;

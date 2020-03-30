@@ -1,10 +1,6 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
 import { buildings_by_number, building_firm } from './building.js';
-
-export const buildingHelpers = {};
-export const ui = {};
-ui.update = ()=>{}; // so it can be called before it's initialized
-export const backend = {};
+import { ui, buildingHelpers, shuffle, addResources, satisfies, subtractResources, checkDecks, restore, countPile, findOwner } from './utils.js';
 
 export function newGame(players) {
     let game = {}

@@ -1,5 +1,5 @@
-import {ui, shuffle, safeCopy, subtractResources,
-        addResources, countSymbol, checkDecks, countPile, utilizeBuilding } from './gamestate.js';
+import { ui, shuffle, safeCopy, subtractResources, addResources, countSymbol, checkDecks, countPile } from './utils.js';
+import { utilizeBuilding } from './actions.js';
 import {resources} from './data.js';
 
 export const building_firm = {name: 'Building Firm',
