@@ -7,8 +7,8 @@ import { game_socket_open, init_game } from './game.js';
 import { requireLogin, handleLogin, showLogin } from './login.js';
 import { showGameList, join, createSeed, mkGame } from './gamelist.js';
 
-const port = 3000
-const app = express()
+const port = 8080
+export const app = express()
 expressWs(app);
 app.set("view engine","vash")
 app.use(cookieParser());
