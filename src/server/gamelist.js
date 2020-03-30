@@ -1,4 +1,4 @@
-import { newGame, shuffle, gameState, safeCopy } from '../common/gamestate.js';
+import { newGame, shuffle, safeCopy } from '../common/gamestate.js';
 import mongodb from 'mongodb';
 const { MongoClient } = mongodb;
 
@@ -40,8 +40,7 @@ export async function join(req, res) {
     delete seed._id;
     if (seed.players.length == seed.wanted) {
         const players = shuffle(seed.players);
-        newGame(players);
-        let game = safeCopy(gameState);
+        let game = newGame(players);
         game.desc = seed.desc;
         game.id = id;
         await colls.seeds.removeOne({id});

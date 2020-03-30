@@ -3,10 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { gameState, ui, buildingHelpers, backend, endGame, newGame } from '../common/gamestate.js';
+import { ui, buildingHelpers, backend, endGame, newGame } from '../common/gamestate.js';
+import { gameState } from './state.js';
 import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding,
          pickNextSpecialBuilding, initUi, showMessage, score } from './interaction.js';
-import { initBuildings, buildings_by_number } from '../common/building.js';
+import { initBuildings, buildings_by_number, clientCheat } from '../common/building.js';
 import * as net from './net.js';
 
 ui.pickTownResource = pickTownResource;
@@ -26,6 +27,8 @@ buildingHelpers.buildings_by_number = buildings_by_number;
 backend.prepare_log = net.prepare_log;
 backend.send_log = net.send_log;
 backend.abort_log = net.abort_log;
+
+clientCheat.game = gameState;
 
 if (document.cookie) {
     for (let crumb of document.cookie.split(';')) {

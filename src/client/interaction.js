@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
-import { safeCopy, restore, resumeConstruction, addResources, subtractResources, gameState, ui, countPile, countSymbol } from '../common/gamestate.js';
+import { safeCopy, restore, resumeConstruction, addResources, subtractResources, ui, countPile, countSymbol } from '../common/gamestate.js';
+import { gameState } from './state.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { buildings_by_number } from '../common/building.js';
 import { annotate_log } from './net.js';
@@ -439,7 +440,7 @@ export async function wrap(callback) {
         const player = gameState.players[gameState.currentPlayer];
         prepare_log(callback.name);
         if (ui.cancelButton) ui.cancelButton.setState({active:true});
-        await callback(player);
+        await callback(player, gameState);
         if (callback.name == 'nextTurn') {
             turnBackup = null
             send_log()

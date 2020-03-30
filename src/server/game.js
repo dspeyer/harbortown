@@ -16,7 +16,7 @@ async function demandPlayerResources(game, player, filter, msg, feeding) {
         }
         if (s.name == player.name) {
             console.log('  sending fooddemand to '+player.name);
-            s.send(JSON.stringify({foodDemand:msg, newGameState: gs.gameState}));
+            s.send(JSON.stringify({foodDemand:msg, newGameState: game}));
         } else {
             console.log('  Skipping socket for '+s.name);
         }
@@ -28,10 +28,9 @@ async function demandPlayerResources(game, player, filter, msg, feeding) {
 async function replay_event(e, game, playfrom) {
     console.log('Replaying ',e)
     let input = 1;
-    gs.restore(gs.gameState, game);
 
-    const player = gs.gameState.players.filter((p)=>(p.name==playfrom))[0];
-    const currentPlayer = gs.gameState.players[gs.gameState.currentPlayer];
+    const player = game.players.filter((p)=>(p.name==playfrom))[0];
+    const currentPlayer = game.players[game.currentPlayer];
     if (e[0]!='completeFeed' && player !== currentPlayer) {
         throw "It's not your turn (you're ["+playfrom+"] but it's ["+currentPlayer.name+"]'s turn)";
     }
@@ -58,9 +57,7 @@ async function replay_event(e, game, playfrom) {
     gs.ui.showMessage = ((msg, personal) => { if (!personal) broadcastMessages.push(msg);});
     
     let callback = gs[e[0]];
-    await callback(player);
-
-    gs.restore(game, gs.gameState);
+    await callback(player, game);
 }
 
 function set_id(id, ws) {
@@ -93,7 +90,6 @@ export function game_socket_open(ws,req) {
             } catch (e) {
                 log_event(['ERROR',e]);
                 ws.send(JSON.stringify({newGameState:backup,msg:'ERROR '+e}));
-                gs.restore(gs.gameState, backup);
                 return;
             }
         }
@@ -116,6 +112,6 @@ export function init_game() {
     gs.buildingHelpers.buildings_by_number = buildings_by_number;
 }
 
-gs.ui.endGame = function() {
-    gs.gameState.ended = Date.now();
+gs.ui.endGame = function(game) {
+    game.ended = Date.now();
 }

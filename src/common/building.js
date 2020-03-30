@@ -1,19 +1,19 @@
-import {gameState, ui, shuffle, safeCopy, subtractResources,
+import {ui, shuffle, safeCopy, subtractResources,
         addResources, countSymbol, checkDecks, countPile, utilizeBuilding } from './gamestate.js';
 import {resources} from './data.js';
 
 export const building_firm = {name: 'Building Firm',
                        symbols: ['🏠','🔨'],
                        text: 'Build 1 building',
-                       action: async (player, self, msg, pausable) => {
+                       action: async (player, game, self, msg, pausable) => {
                            if (!msg) msg = 'Choose a building to build';
                            const bn = await ui.pickBuildingPlan(msg, {resources:player.resources, pausable});
                            if (pausable && bn=='pause') throw "Paused";
                            let plan = buildings_by_number[bn];
                            if (!plan) throw "Not a building: "+bn;
                            let idx;
-                           if ( (idx = checkDecks(plan.number)) != -1 ) {
-                               gameState.buildingPlans[idx].shift();
+                           if ( (idx = checkDecks(plan.number, game)) != -1 ) {
+                               game.buildingPlans[idx].shift();
                            } else {
                                throw "Not buildable "+JSON.stringify(plan);
                            }
@@ -24,24 +24,29 @@ export const building_firm = {name: 'Building Firm',
                        }
                       };
 
+export const clientCheat = {};
+
 const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'; },
                 symbols: ['🏭'],
                 entry: {food:2},
                 value: 14,
                 buildcost: {wood:2,clay:2,iron:2},
-                getmodernized(){ return (this.number in gameState.wharfModernization); },
-                setmodernized(x){ gameState.wharfModernization[this.number] = x; },
+                truegetmodernized(game){ return (this.number in game.wharfModernization); },
+                truesetmodernized(game, v){ game.wharfModernization[this.number] = v; },
+                getmodernized() { return clientCheat.game ? this.truegetmodernized(clientCheat.game) : false; },
                 gettext(){ return this.modernized ? 'Build a ship' : 'Build wooden ship, or metal w/ modernization'; },
                 
-                action: async (player, self) => {
+                action: async (player, game, self) => {
+                    let modernized = self.truegetmodernized(game);
                     let res = await ui.pickPlayerResources(player, (res)=>{return res=='wood' || res=='iron' || res=='steel' ||
-                                                                                  (!self.modernized && res=='brick') ||
+                                                                                  (!modernized && res=='brick') ||
                                                                                   resources[res].energy > 0;});
                     if (res.brick > 1) throw "Only one brick needed to modernize";
-                    if ( ! self.modernized && res.brick>0) {
-                        self.modernized = true;
+                    if ( ! modernized && res.brick>0) {
+                        self.truesetmodernized(game, true)
+                        modernized = true;
                     }
-                    if ((res.steel>0 || res.iron>0) && ! self.modernized) {
+                    if ((res.steel>0 || res.iron>0) && ! modernized) {
                         throw "Only modernized wharf can use metal";
                     }
                     
@@ -54,8 +59,8 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
 
                     if (countPile(res,'energy') < 3) throw "Not enough energy";
 
-                    if (gameState.ships[ship_type].length == 0) throw "No "+ship_type+" ships available to build";
-                    player.ships.push([ship_type,gameState.ships[ship_type].shift()]);
+                    if (game.ships[ship_type].length == 0) throw "No "+ship_type+" ships available to build";
+                    player.ships.push([ship_type,game.ships[ship_type].shift()]);
                 }
               };
 
@@ -76,17 +81,17 @@ export const starting_buildings = [
       entry: {food: 2},
       value: 8,
       number: 'b3',
-      action: async (player,self) => {
-          await building_firm.action(player,self);
+      action: async (player,game,self) => {
+          await building_firm.action(player,game,self);
           ui.update();
           try {
-              await building_firm.action(player,self,'Choose a second building to build or ', true);
+              await building_firm.action(player,game,self,'Choose a second building to build or ', true);
           } catch(e) {
               if (e=='canceled' || e=='nothing_to_choose') {
                   return;
               }
               if (e=='Paused') {
-                  gameState.bigActionTaken -= 0.5;
+                  game.bigActionTaken -= 0.5;
                   return;
               }
               throw e;
@@ -94,13 +99,13 @@ export const starting_buildings = [
       }},
 ];
 
-function capOfShips(ships,n) {
+function capOfShips(ships,n,game) {
     let rem = n;
     let cap = 0;
     for (let t of ['steel','iron','wood']) {
         for (let s of ships) {
             if (s[0]==t) {
-                cap += gameState.shipStats[t].ship;
+                cap += game.shipStats[t].ship;
                 rem -= 1;
             }
             if (rem==0) {
@@ -121,11 +126,11 @@ export const buildings = [
      buildcost: {'wood':2, 'brick':2},
      minplayers: 1,
      text: '3 ϟ + boatload ⮕ value',
-     action: async (player) => {
+     action: async (player, game) => {
          const enres = await ui.pickPlayerResources(player, (x)=>resources[x].energy, "Choose energy to load ships with 3/ship");
          const energy = countPile(enres,'energy');
          const nship = Math.floor(energy/3);
-         const cap = capOfShips(player.ships, nship);
+         const cap = capOfShips(player.ships, nship, game);
          const sres = await ui.pickPlayerResources(player, (x)=>resources[x].value>0, "Choose goods to ship (max "+cap+")");
          if (countPile(sres,'value',(x)=>1) > cap) throw "Too many goods";
          const v = countPile(sres,'value');
@@ -201,9 +206,9 @@ export const buildings = [
      buildcost: {unobtainium:1},
      minplayers: 3,
      text: '+2 each unavailable town resource',
-     action: async (player) => {
-         for (let res in gameState.townResources) {
-             if (gameState.townResources[res]==0) {
+     action: async (player, game) => {
+         for (let res in game.townResources) {
+             if (game.townResources[res]==0) {
                  addResources(player,{ [res]:2 });
              }
          }
@@ -410,7 +415,7 @@ export const buildings = [
      buildcost: {clay:1,iron:1},
      minplayers: 3,
      text: 'Build one building, save one wood',
-     action: async (player,self) => { await building_firm.action(player, self, "Choose building to saw"); }
+     action: async (player,game,self) => { await building_firm.action(player, game, self, "Choose building to saw"); }
     },
     
     {name: 'Clay Mound',
@@ -480,16 +485,16 @@ export const buildings = [
      buildcost: {wood:2},
      minplayers: 1,
      text: '2+🏠 different standard goods',
-     action: async (player) => {
+     action: async (player, game) => {
          const wanted = 2+countSymbol(player,'🏠');
          const goods = await ui.pickResources(['wood','clay','iron','fish','wheat','cattle','hides','coal'], wanted);
          if (Object.values(goods).reduce((a,b)=>a+b,0)!=wanted) throw "Wrong number of goods";
          addResources(player, goods);
          const nsb = await ui.pickNextSpecialBuilding();
-         if (nsb != gameState.specialBuildings[0]) {
-             const tmp = gameState.specialBuildings[0];
-             gameState.specialBuildings[0] = gameState.specialBuildings[1];
-             gameState.specialBuildings[1] = tmp;
+         if (nsb != game.specialBuildings[0]) {
+             const tmp = game.specialBuildings[0];
+             game.specialBuildings[0] = game.specialBuildings[1];
+             game.specialBuildings[1] = tmp;
          }
      }
     },
@@ -522,12 +527,12 @@ export const buildings = [
      buildcost: {wood:1,clay:2},
      minplayers: 4,
      text: '€4 for other player in your buildings',
-     action: async (player) => {
+     action: async (player, game) => {
          let cnt=0;
          for (let b of player.buildings) {
-             if (b in gameState.disks_by_building) {
-                 const pid = gameState.disks_by_building[b];
-                 if (gameState.players[pid] != player) {
+             if (b in game.disks_by_building) {
+                 const pid = game.disks_by_building[b];
+                 if (game.players[pid] != player) {
                      cnt++;
                  }
              }
@@ -736,14 +741,14 @@ const special_buildings = [
      value: 6,
      buildcost: {},
      text: 'Use in use building, pay player 1 money',
-     action: async (player) => {
+     action: async (player, game) => {
          const building = await ui.pickBuilding();
-         if (gameState.disks_by_building[building.number] === undefined) throw "Building must be occupied by an opponent";
+         if (game.disks_by_building[building.number] === undefined) throw "Building must be occupied by an opponent";
          subtractResources(player,{money:1});
-         addResources(gameState.players[gameState.disks_by_building[building.number]],{money:1});
-         delete gameState.disks_by_building[building.number];
+         addResources(game.players[game.disks_by_building[building.number]],{money:1});
+         delete game.disks_by_building[building.number];
          ui.update();
-         await utilizeBuilding(player,building);
+         await utilizeBuilding(player,game,building);
      }
     },
 ]
@@ -754,8 +759,9 @@ for (let b of special_buildings) buildings_by_number[b.number] = b;
 for (let b of buildings) buildings_by_number[b.number] = b;
 
 
-export function initBuildings(nplayers) {
-    gameState.townBuildings = starting_buildings.map((b)=>b.number);
+export function initBuildings(game) {
+    const nplayers = game.players.length;
+    game.townBuildings = starting_buildings.map((b)=>b.number);
     let deck = buildings. filter((b)=>(nplayers>=b.minplayers)). map((b)=>b.number);
     deck = shuffle(deck);
     let n = Math.floor(deck.length/3)
@@ -763,7 +769,7 @@ export function initBuildings(nplayers) {
     for (let deck of decks) {
         deck.sort((a,b)=>(a-b));
     }
-    gameState.buildingPlans = decks;
-    gameState.wharfModernization = {};
-    gameState.specialBuildings = shuffle(special_buildings.map((b)=>b.number));
+    game.buildingPlans = decks;
+    game.wharfModernization = {};
+    game.specialBuildings = shuffle(special_buildings.map((b)=>b.number));
 }

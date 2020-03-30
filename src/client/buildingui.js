@@ -2,7 +2,8 @@ import React, { useEffect } from 'react';
 import './building.css';
 import { resources } from '../common/data.js';
 import { ClickTarget } from './interaction.js';
-import { gameState, ui } from '../common/gamestate.js';
+import { ui } from '../common/gamestate.js';
+import { gameState } from './state.js';
 import { buildings_by_number } from '../common/building.js';
 import { sym_names } from '../common/data.js';
 
