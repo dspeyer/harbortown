@@ -1,56 +1,84 @@
 import { newGame, shuffle, gameState, safeCopy } from '../common/gamestate.js';
+import mongodb from 'mongodb';
+const { MongoClient } = mongodb;
 
-export const games = {};
-export const gameseeds = {};
-let id = 1;
+export let colls = {};
 
-export function showGameList(req, res, msg) {
+MongoClient.connect("mongodb://localhost:27017", (err,client) => {
+    if (err) throw err;
+    let db = client.db('harbortown');
+    for (let c of ['games','seeds','ids']) {
+        db.collection(c, (err, coll) => {
+            if (err) throw err;
+            colls[c] = coll;
+        });
+    }
+});
+            
+
+export async function showGameList(req, res, msg) {
     if (typeof(msg)=='function') msg='';
     const name = req.cookies.name;
     const now = Date.now()
-    const mygames = Object.values(games).
-          filter( (g)=> g.players.filter((p)=>p.name==name).length && ! ((now - g.ended) > 24*60*60*1000) );
+    const mygames = await colls.games.find({players:{$elemMatch:{name}}}).toArray(); // TODO: clip old finished games
+    const gameseeds = await colls.seeds.find().toArray();
     res.render('gamelist', {name,mygames,gameseeds,msg});
 }
 
-export function join(req, res) {
+export async function join(req, res) {
     const name = req.cookies.name;
     const id = req.body.id;
-    if ( ! (id in gameseeds) ) {
+    console.log(['query', {id}]);
+    let seed = await colls.seeds.findOne({id});
+    if ( !seed ) {
         return showGameList(req, res, "Not a valid game to join");
     }
-    let seed = gameseeds[id];
     if (name in seed.players) {
         return showGameList(req, res, "You are already in that game");
     }
     seed.players.push(name);
+    delete seed._id;
     if (seed.players.length == seed.wanted) {
         const players = shuffle(seed.players);
         newGame(players);
-        games[id] = safeCopy(gameState);
-        games[id].desc = seed.desc;
-        games[id].id = id;
-        delete gameseeds[id];
+        let game = safeCopy(gameState);
+        game.desc = seed.desc;
+        game.id = id;
+        await colls.seeds.removeOne({id});
+        await colls.games.insertOne(game);
         res.redirect('/game?'+id);
     } else {
+        await colls.seeds.updateOne({id}, {$set: seed});
         res.redirect('/');
     }
 }
 
-export function createSeed(req, res) {
+async function newId() {
+    let idobj = await colls.ids.findOne();
+    if (idobj) {
+        let id = idobj.id + 1;
+        await colls.ids.updateOne({},{$set: {id}});
+        return id+'';
+    } else {
+        await colls.ids.insertOne({id:1});
+        return '1';
+    }
+}
+
+export async function createSeed(req, res) {
     const name = req.cookies.name;
     const desc = req.body.desc;
     const wanted = req.body.wanted;
     if ( ! (desc && wanted) ) return showGameList(req, res, 'Must provide description and player count');
-    const newid = id++;
-    gameseeds[newid] = { desc, wanted, players:[name] };
+    let id = await newId();
+    await colls.seeds.insertOne({ id, desc, wanted, players:[name] });
     res.redirect('/');
 }
 
-export function mkGame(req, res) {
+export async function mkGame(req, res) {
     let game = JSON.parse(req.body.state);
-    game.id = id++;
+    game.id = await newId();
     delete game.whoami;
-    games[game.id] = game;
+    colls.games.insertOne(game);
     res.redirect('/');
 }

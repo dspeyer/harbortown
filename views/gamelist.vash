@@ -56,14 +56,14 @@
                 <th>Players</th>
                 <th>Wanted</th>
             </tr>
-            @Object.entries(model.gameseeds).forEach((x)=>{
+            @model.gameseeds.forEach((x)=>{
             <tr>
-                <td>@x[0]</td>
-                <td>@x[1].desc</td>
-                <td>@x[1].players.join(', ')</td>
-                <td>@x[1].wanted</td>
+                <td>@x.id</td>
+                <td>@x.desc</td>
+                <td>@x.players.join(', ')</td>
+                <td>@x.wanted</td>
                 <td><form action="/join" method="post">
-                    <input type="hidden" name="id" value="@x[0]">
+                    <input type="hidden" name="id" value="@x.id">
                     <input type="submit" value="Join">
                 </form></td>
             </tr>
