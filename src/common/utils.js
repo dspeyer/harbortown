@@ -4,7 +4,6 @@ import { buildings_by_number, building_firm } from './building.js';
 export const buildingHelpers = {};
 export const ui = {};
 ui.update = ()=>{}; // so it can be called before it's initialized
-export const backend = {};
 
 export function shuffle(input) {
     let array = input.slice(); // copy

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { ui, buildingHelpers, backend } from '../common/utils.js';
+import { ui, buildingHelpers } from '../common/utils.js';
 import { newGame } from '../common/actions.js'
 import { gameState } from './state.js';
 import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding,
@@ -24,10 +24,6 @@ ui.endGame = score;
 
 buildingHelpers.initBuildings = initBuildings;
 buildingHelpers.buildings_by_number = buildings_by_number;
-
-backend.prepare_log = net.prepare_log;
-backend.send_log = net.send_log;
-backend.abort_log = net.abort_log;
 
 clientCheat.game = gameState;
 
