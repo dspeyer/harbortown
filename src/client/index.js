@@ -29,7 +29,6 @@ if (window.location.search) {
     restore(gameState,
             newGame(['Daniel','Nick','Eppilito','Pei-hsin','Ken Horan'],
                     initBuildings));
-    ui.update();
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));

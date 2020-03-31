@@ -69,7 +69,7 @@ export async function pickTownResource() {
     allInstructions[0].set('Take one pile of resources from the town');
     for (let res in gameState.townResources) {
         if (gameState.townResources[res] > 0) {
-            ui.townResources[res].show();
+            holders.townResources[res].show();
         }
     }
     const wfu = new Promise((resolve,reject) => { ui.resolve = resolve; ui.reject = reject;} );
