@@ -22,7 +22,13 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": "react-app"
+      "extends": "react-app",
+      "rules": {
+          "eqeqeq": "off",
+          "no-throw-literal": "off",
+          "jsx-a11y/alt-text": "off",
+          "jsx-a11y/accessible-emoji": "off"
+      }
   },
   "browserslist": {
     "production": [
