@@ -27,7 +27,9 @@
           "eqeqeq": "off",
           "no-throw-literal": "off",
           "jsx-a11y/alt-text": "off",
-          "jsx-a11y/accessible-emoji": "off"
+          "jsx-a11y/accessible-emoji": "off",
+          "dot-location": "off",
+          "no-whitespace-before-property": "off"
       }
   },
   "browserslist": {
