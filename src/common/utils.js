@@ -1,4 +1,4 @@
-import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
+import { resources } from './data.js';
 
 export const buildings_by_number = {}; // filled in by buildings.js
 

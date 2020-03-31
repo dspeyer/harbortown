@@ -3,10 +3,9 @@ import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
 import { MiniShip } from './ships.js';
 import { Instructions, CancelButton, score } from './interaction.js';
-import { safeCopy, restore } from '../common/utils.js';
 import { nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan, resumeConstruction } from '../common/actions.js';
 import { gameState } from './state.js';
-import { showDialog, closeSelf, showError, wrap, revert, canRevert, holders } from './interaction.js';
+import { wrap, revert, canRevert, holders } from './interaction.js';
 import './town.css';
 
 export function AdvancerToken(props) {
@@ -60,7 +59,6 @@ export class EndOfTurn extends React.Component {
                   { gameState.events.map((eot,i)=>{
                       const x = mod(i,self.w) - cx;
                       const y = Math.floor(i/self.w) - cy;
-                      let opacity;
                       if (self.props.turn==i) return <OneEndOfTurn eot={gameState.events[self.props.turn]} />
                       return <div key={i} style={ {position: 'absolute',
                                                    top: (y*60)+'px',

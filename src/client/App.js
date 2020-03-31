@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import { Town } from './town.js'
 import { Player } from './player.js'
-import { newGame, safeCopy, restore } from '../common/utils.js'
+import { safeCopy, restore } from '../common/utils.js'
 import { gameState } from './state.js';
 import { ui } from './interaction.js';
 

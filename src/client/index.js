@@ -6,7 +6,7 @@ import * as serviceWorker from './serviceWorker';
 import { newGame } from '../common/actions.js';
 import { restore } from '../common/utils.js';
 import { gameState } from './state.js';
-import { ui, initUi } from './interaction.js';
+import { initUi } from './interaction.js';
 import { initBuildings, clientCheat } from '../common/building.js';
 import * as net from './net.js';
 
@@ -38,4 +38,3 @@ ReactDOM.render(<App />, document.getElementById('root'));
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
 
-export const setupdone = 1;
