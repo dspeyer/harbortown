@@ -17,7 +17,7 @@
   },
   "scripts": {
     "clientonly": "react-scripts start",
-    "build": "react-scripts build --profile --env.webpackEnv=development",
+    "build": "EXTEND_ESLINT=true react-scripts build --profile --env.webpackEnv=development",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
