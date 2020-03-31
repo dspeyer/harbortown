@@ -1,6 +1,6 @@
 import { log_event } from './dbg.js';
 import * as actions from '../common/actions.js';
-import { initBuildings } from '../common/building.js';
+import { initBuildings } from '../common/buildings.js';
 import { subtractResources, safeCopy, buildings_by_number } from '../common/utils.js';
 import { colls } from './gamelist.js';
 

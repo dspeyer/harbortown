@@ -1,5 +1,5 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
-import { building_firm } from './building.js'; // TODO: remove circular import
+import { building_firm } from './buildings.js'; // TODO: remove circular import
 import { buildings_by_number, shuffle, addResources, satisfies, subtractResources, checkDecks, countPile, findOwner } from './utils.js';
 
 export function newGame(players, initBuildings) {

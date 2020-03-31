@@ -3,7 +3,7 @@ import expressWs from 'express-ws';
 import cookieParser from 'cookie-parser';
 
 import { dbg_socket_open } from './dbg.js';
-import { game_socket_open } from './game.js';
+import { game_socket_open } from './socket.js';
 import { requireLogin, handleLogin, showLogin } from './login.js';
 import { showGameList, join, createSeed, mkGame } from './gamelist.js';
 

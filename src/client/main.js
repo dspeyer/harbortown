@@ -1,13 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import './main.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { newGame } from '../common/actions.js';
 import { restore } from '../common/utils.js';
 import { gameState } from './state.js';
 import { initUi } from './interaction.js';
-import { initBuildings, clientCheat } from '../common/building.js';
+import { initBuildings, clientCheat } from '../common/buildings.js';
 import * as net from './net.js';
 
 clientCheat.game = gameState;

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import './building.css';
+import './buildingui.css';
 import { resources } from '../common/data.js';
 import { ClickTarget, holders } from './interaction.js';
 import { buildings_by_number } from '../common/utils.js';

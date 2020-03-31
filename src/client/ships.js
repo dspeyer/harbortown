@@ -1,7 +1,7 @@
 import React from 'react';
 import { gameState } from './state.js';
 import { ClickTarget, holders } from './interaction.js';
-import './ship.css';
+import './ships.css';
 
 export function MiniShip({ship,later}) {
     const [mat, value] = ship;
