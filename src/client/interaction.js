@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
-import { safeCopy, restore, addResources, subtractResources, ui, countPile, countSymbol } from '../common/utils.js';
+import { safeCopy, restore, addResources, subtractResources, ui, countPile, countSymbol, buildings_by_number } from '../common/utils.js';
 import { gameState } from './state.js';
 import { ResourceStack, ResourceTile } from './resources.js';
-import { buildings_by_number } from '../common/building.js';
 import { annotate_log } from './net.js';
 import { Building } from './buildingui.js';
 import { ship_feeds, ship_capacities, ship_prices } from '../common/data.js';

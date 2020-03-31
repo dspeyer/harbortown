@@ -1,7 +1,7 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
-import { buildings_by_number, building_firm } from './building.js';
 
-export const buildingHelpers = {};
+export const buildings_by_number = {}; // filled in by buildings.js
+
 export const ui = {};
 ui.update = ()=>{}; // so it can be called before it's initialized
 
@@ -19,7 +19,7 @@ export function shuffle(input) {
 export function countSymbol(player, sym) {
     let cnt = 0;
     for (let b of player.buildings) {
-        for (let s of buildingHelpers.buildings_by_number[b].symbols) {
+        for (let s of buildings_by_number[b].symbols) {
             if (sym==s) {
                 cnt += 1;
             }

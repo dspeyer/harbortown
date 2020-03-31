@@ -1,5 +1,6 @@
 import { shuffle, safeCopy } from '../common/utils.js';
 import { newGame } from '../common/actions.js';
+import { initBuildings } from '../common/building.js';
 import mongodb from 'mongodb';
 const { MongoClient } = mongodb;
 
@@ -41,7 +42,7 @@ export async function join(req, res) {
     delete seed._id;
     if (seed.players.length == seed.wanted) {
         const players = shuffle(seed.players);
-        let game = newGame(players);
+        let game = newGame(players, initBuildings);
         game.desc = seed.desc;
         game.id = id;
         await colls.seeds.removeOne({id});

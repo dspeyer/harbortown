@@ -1,8 +1,8 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
-import { buildings_by_number, building_firm } from './building.js';
-import { ui, buildingHelpers, shuffle, addResources, satisfies, subtractResources, checkDecks, restore, countPile, findOwner } from './utils.js';
+import { building_firm } from './building.js'; // TODO: remove circular import
+import { ui, buildings_by_number, shuffle, addResources, satisfies, subtractResources, checkDecks, restore, countPile, findOwner } from './utils.js';
 
-export function newGame(players) {
+export function newGame(players, initBuildings) {
     let game = {}
     game.players = players.map( (n,i)=> {
         return {
@@ -25,7 +25,7 @@ export function newGame(players) {
     game.currentAdvancer = -1;
     game.currentPlayer = -1;
     game.sockets = []; // Used by server
-    buildingHelpers.initBuildings(game);
+    initBuildings(game);
     nextTurn(null, game);
     return game;
 }

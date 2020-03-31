@@ -2,9 +2,8 @@ import React, { useEffect } from 'react';
 import './building.css';
 import { resources } from '../common/data.js';
 import { ClickTarget } from './interaction.js';
-import { ui } from '../common/utils.js';
+import { ui, buildings_by_number } from '../common/utils.js';
 import { gameState } from './state.js';
-import { buildings_by_number } from '../common/building.js';
 import { sym_names } from '../common/data.js';
 
 function bmd(ref){

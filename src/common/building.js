@@ -1,4 +1,4 @@
-import { ui, shuffle, safeCopy, subtractResources, addResources, countSymbol, checkDecks, countPile } from './utils.js';
+import { ui, shuffle, safeCopy, subtractResources, addResources, countSymbol, checkDecks, countPile, buildings_by_number } from './utils.js';
 import { utilizeBuilding } from './actions.js';
 import {resources} from './data.js';
 
@@ -753,7 +753,6 @@ const special_buildings = [
     },
 ]
     
-export const buildings_by_number = {};
 for (let b of starting_buildings) buildings_by_number[b.number] = b;
 for (let b of special_buildings) buildings_by_number[b.number] = b;
 for (let b of buildings) buildings_by_number[b.number] = b;

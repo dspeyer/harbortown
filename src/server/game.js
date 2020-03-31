@@ -1,7 +1,7 @@
 import { log_event } from './dbg.js';
 import * as actions from '../common/actions.js';
-import { initBuildings, buildings_by_number } from '../common/building.js';
-import { ui, subtractResources, safeCopy, buildingHelpers } from '../common/utils.js';
+import { initBuildings } from '../common/building.js';
+import { ui, subtractResources, safeCopy, buildings_by_number } from '../common/utils.js';
 import { colls } from './gamelist.js';
 
 let sockets_by_id = {};
@@ -109,8 +109,6 @@ export function game_socket_open(ws,req) {
 
 export function init_game() {
     ui.initUi = ()=>{};
-    buildingHelpers.initBuildings = initBuildings;
-    buildingHelpers.buildings_by_number = buildings_by_number;
 }
 
 ui.endGame = function(game) {

@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import { ui, buildingHelpers } from '../common/utils.js';
+import { ui } from '../common/utils.js';
 import { newGame } from '../common/actions.js'
 import { gameState } from './state.js';
 import { pickTownResource, pickPlayerResources, pickResources, pickBuilding, pickBuildingPlan, pickPlayerBuilding,
          pickNextSpecialBuilding, initUi, showMessage, score } from './interaction.js';
-import { initBuildings, buildings_by_number, clientCheat } from '../common/building.js';
+import { initBuildings, clientCheat } from '../common/building.js';
 import * as net from './net.js';
 
 ui.pickTownResource = pickTownResource;
@@ -21,9 +21,6 @@ ui.pickBuildingPlan = pickBuildingPlan;
 ui.initUi = initUi;
 ui.showMessage = (msg, personal) => { if ( ! ui.am_client_to_server || personal) showMessage(msg); };
 ui.endGame = score;
-
-buildingHelpers.initBuildings = initBuildings;
-buildingHelpers.buildings_by_number = buildings_by_number;
 
 clientCheat.game = gameState;
 
@@ -41,7 +38,8 @@ if (window.location.search) {
     net.init();
 } else {
     gameState.whoami = false;
-    newGame(['Daniel','Nick','Eppilito','Pei-hsin','Ken Horan']);
+    newGame(['Daniel','Nick','Eppilito','Pei-hsin','Ken Horan'],
+            initBuildings);
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));
