@@ -2,9 +2,6 @@ import { resources, drop_tiles, player_colors, game_events, ship_capacities, shi
 
 export const buildings_by_number = {}; // filled in by buildings.js
 
-export const ui = {};
-ui.update = ()=>{}; // so it can be called before it's initialized
-
 export function shuffle(input) {
     let array = input.slice(); // copy
     for ( let i = array.length; i>0; i-- ) {

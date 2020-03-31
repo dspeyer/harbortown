@@ -2,8 +2,9 @@ import React from 'react';
 import { ResourceStack } from './resources.js';
 import { Building } from './buildingui.js';
 import { Ship } from './ships.js';
-import { safeCopy, ui } from '../common/utils.js';
+import { safeCopy } from '../common/utils.js';
 import { gameState } from './state.js';
+import { holders } from './interaction.js';
 import './player.css';
 
 export function Player(props) {
@@ -22,7 +23,7 @@ export function Player(props) {
     }
     for (let i of order) {
         let v = player.resources[i];
-        if (v>0) resourceElements.push(<ResourceStack type={i} number={v} key={i} holder={ui.playerResources[player.number]} />);
+        if (v>0) resourceElements.push(<ResourceStack type={i} number={v} key={i} holder={holders.playerResources[player.number]} />);
     }
     return <div className={'player' +
                            (player.color!='khaki' ? ' darkbkg' : '') +

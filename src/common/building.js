@@ -1,11 +1,11 @@
-import { ui, shuffle, safeCopy, subtractResources, addResources, countSymbol, checkDecks, countPile, buildings_by_number } from './utils.js';
+import { shuffle, safeCopy, subtractResources, addResources, countSymbol, checkDecks, countPile, buildings_by_number } from './utils.js';
 import { utilizeBuilding } from './actions.js';
 import {resources} from './data.js';
 
 export const building_firm = {name: 'Building Firm',
                        symbols: ['🏠','🔨'],
                        text: 'Build 1 building',
-                       action: async (player, game, self, msg, pausable) => {
+                       action: async (player, ui, game, self, msg, pausable) => {
                            if (!msg) msg = 'Choose a building to build';
                            const bn = await ui.pickBuildingPlan(msg, {resources:player.resources, pausable});
                            if (pausable && bn=='pause') throw "Paused";
@@ -36,7 +36,7 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                 getmodernized() { return clientCheat.game ? this.truegetmodernized(clientCheat.game) : false; },
                 gettext(){ return this.modernized ? 'Build a ship' : 'Build wooden ship, or metal w/ modernization'; },
                 
-                action: async (player, game, self) => {
+                action: async (player, ui, game, self) => {
                     let modernized = self.truegetmodernized(game);
                     let res = await ui.pickPlayerResources(player, (res)=>{return res=='wood' || res=='iron' || res=='steel' ||
                                                                                   (!modernized && res=='brick') ||
@@ -81,11 +81,11 @@ export const starting_buildings = [
       entry: {food: 2},
       value: 8,
       number: 'b3',
-      action: async (player,game,self) => {
-          await building_firm.action(player,game,self);
+      action: async (player,ui,game,self) => {
+          await building_firm.action(player,ui,game,self);
           ui.update();
           try {
-              await building_firm.action(player,game,self,'Choose a second building to build or ', true);
+              await building_firm.action(player,ui,game,self,'Choose a second building to build or ', true);
           } catch(e) {
               if (e=='canceled' || e=='nothing_to_choose') {
                   return;
@@ -126,7 +126,7 @@ export const buildings = [
      buildcost: {'wood':2, 'brick':2},
      minplayers: 1,
      text: '3 ϟ + boatload ⮕ value',
-     action: async (player, game) => {
+     action: async (player, ui, game) => {
          const enres = await ui.pickPlayerResources(player, (x)=>resources[x].energy, "Choose energy to load ships with 3/ship");
          const energy = countPile(enres,'energy');
          const nship = Math.floor(energy/3);
@@ -157,7 +157,7 @@ export const buildings = [
      buildcost: {iron: 3},
      minplayers: 3,
      text: 'Sell adv for 1, basic for 1/3',
-     action: async (player) => {
+     action: async (player, ui) => {
          const toSell = await ui.pickPlayerResources(player, (res) => (res!='money' && res!='loans'));
          const adv = countPile(toSell,'advanced');
          const basic = countPile(toSell,'value',(x)=>1) - adv;
@@ -176,7 +176,7 @@ export const buildings = [
      buildcost: {brick:2, iron:2},
      minplayers: 1,
      text: 'coal ⮕ coke + money',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (res)=>(res=='coal'));
          const n = res.coal;
          addResources(player,{coke:n,money:n});
@@ -206,7 +206,7 @@ export const buildings = [
      buildcost: {unobtainium:1},
      minplayers: 3,
      text: '+2 each unavailable town resource',
-     action: async (player, game) => {
+     action: async (player, ui, game) => {
          for (let res in game.townResources) {
              if (game.townResources[res]==0) {
                  addResources(player,{ [res]:2 });
@@ -272,7 +272,7 @@ export const buildings = [
      buildcost: {wood:1,brick:1},
      minplayers: 1,
      text: 'hides ⮕ leather + money (max 4)',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (res)=>(res=='hides'));
          const n = res.hides;
          if (n > 4) throw "Too many hides";
@@ -288,7 +288,7 @@ export const buildings = [
      buildcost: {clay:2},
      minplayers: 1,
      text: '2 wheat + 1 ϟ ⮕ 2 bread + 1 money',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (res) => (res=='wheat' || resources[res].energy>0));
          const energy = countPile(res,'energy')
          if (2*energy < res.wheat) {
@@ -306,7 +306,7 @@ export const buildings = [
      buildcost: {clay:1},
      minplayers: 1,
      text: 'wood ⮕ charcoal',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (res)=>(res=='wood'));
          addResources(player,{charcoal:res.wood});
      }
@@ -320,7 +320,7 @@ export const buildings = [
      buildcost: {wood:3},
      minplayers: 3,
      text: '1/2/3 wood ⮕ 5/6/7 money',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (res)=>(res=='wood'));
          addResources(player,{money:res.wood+4});
      }
@@ -334,7 +334,7 @@ export const buildings = [
      buildcost: {wood:2,clay:1},
      minplayers: 1,
      text: 'fish + any ϟ ⮕ lox 1/2 money (max 6)',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (res)=>(res=='fish' || resources[res].energy>0));
          if ( ! (res.fish > 0) ) throw "fish required";
          const energytokens = countPile(res,'energy',(x)=>1);
@@ -364,7 +364,7 @@ export const buildings = [
      buildcost: {brick:4,iron:2},
      minplayers: 1,
      text: '5 ϟ + 1 iron ⮕ steel',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (res)=>(res=='iron' || resources[res].energy>0));
          const energy = countPile(res,'energy');
          if (energy < res.iron*5) {
@@ -382,7 +382,7 @@ export const buildings = [
      buildcost: {wood:4,clay:1},
      minplayers: 3,
      text: '4 any ⮕ steel and/or 1 any ⮕ charcoal / brick / leather',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (res)=>(res!='money' && res!='loans'));
          const cnt = countPile(res,'value',(x)=>1);
          if (cnt!=1 && cnt!=4 && cnt!=5) throw "Must select exactly one, four or five resources";
@@ -415,7 +415,7 @@ export const buildings = [
      buildcost: {clay:1,iron:1},
      minplayers: 3,
      text: 'Build one building, save one wood',
-     action: async (player,game,self) => { await building_firm.action(player, game, self, "Choose building to saw"); }
+     action: async (player,ui,game,self) => { await building_firm.action(player, ui, game, self, ui, "Choose building to saw"); }
     },
     
     {name: 'Clay Mound',
@@ -437,7 +437,7 @@ export const buildings = [
      buildcost: {wood:1,clay:1,iron:1},
      minplayers: 1,
      text: 'cattle ⮕ meat + 1/2 hides',
-     action: async (player) => { 
+     action: async (player, ui) => { 
          const res = await ui.pickPlayerResources(player, (res)=>(res=='cattle'));
          addResources(player,{meat:res.cattle, hides:Math.floor(res.cattle/2)});
      }
@@ -451,7 +451,7 @@ export const buildings = [
      buildcost: {wood:3,brick:2},
      minplayers: 1,
      text: '3 iron (4 if 6ϟ)',
-     action: async (player) => { 
+     action: async (player, ui) => { 
          const res = await ui.pickPlayerResources(player, (res)=>resources[res].energy);
          const energy = countPile(res, 'energy');
          addResources(player,{iron:3+(energy>=6)});
@@ -466,7 +466,7 @@ export const buildings = [
      buildcost: {wood:2,clay:1,iron:1},
      minplayers: 1,
      text: 'clay + 1/2 ϟ ⮕ brick + 1/2 money',
-     action: async (player) => { 
+     action: async (player, ui) => { 
          const res = await ui.pickPlayerResources(player, (res)=>(res=='clay' || res=='brick' || resources[res].energy>0));
          const energy = countPile(res,'energy');
          const clay = (res.clay||0) + (res.brick||0);
@@ -485,7 +485,7 @@ export const buildings = [
      buildcost: {wood:2},
      minplayers: 1,
      text: '2+🏠 different standard goods',
-     action: async (player, game) => {
+     action: async (player, ui, game) => {
          const wanted = 2+countSymbol(player,'🏠');
          const goods = await ui.pickResources(['wood','clay','iron','fish','wheat','cattle','hides','coal'], wanted);
          if (Object.values(goods).reduce((a,b)=>a+b,0)!=wanted) throw "Wrong number of goods";
@@ -507,7 +507,7 @@ export const buildings = [
      buildcost: {wood:3,clay:2},
      minplayers: 3,
      text: 'Forgive 1/1.5/2 loans if you have 1/2/3+',
-     action: async (player) => {
+     action: async (player, ui) => {
          if (player.resources.loans >= 3) {
              subtractResources(player, {loans:2});
          } else if (player.resources.loans == 2) {
@@ -527,7 +527,7 @@ export const buildings = [
      buildcost: {wood:1,clay:2},
      minplayers: 4,
      text: '€4 for other player in your buildings',
-     action: async (player, game) => {
+     action: async (player, ui, game) => {
          let cnt=0;
          for (let b of player.buildings) {
              if (b in game.disks_by_building) {
@@ -574,7 +574,7 @@ const special_buildings = [
      value: 6,
      buildcost: {},
      text: '3 money + 4 wood',
-     action: async (player) => { addResources(player,{money:3,wood:4}); }
+     action: async (player, ui) => { addResources(player,{money:3,wood:4}); }
     },
 
     {name: 'Baguette Shop',
@@ -584,7 +584,7 @@ const special_buildings = [
      value: 4,
      buildcost: {},
      text: 'bread + meat ⮕ 6 money (4x)',
-     action: async (player) => {
+     action: async (player, ui) => {
          const resources = await ui.pickPlayerResources(player, (r)=>(r=='bread'||r=='meat'));
          if (!resources.bread) throw "No baguettes!";
          if (resources.bread != resources.meat) throw "Mismatched ingredients";
@@ -600,7 +600,7 @@ const special_buildings = [
      value: 8,
      buildcost: {},
      text: 'iron + 15 ϟ ⮕ 2 steel (once)',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (r)=>(r=='iron'||resources[r].energy));
          if (countPile(res,'energy') < 15) throw "Insufficient Energy";
          if (res.iron!=1) throw "Should have exactly one iron";
@@ -615,7 +615,7 @@ const special_buildings = [
      value: 6,
      buildcost: {},
      text: 'wheat ⮕ 2 money (max 4)',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (r)=>(r=='wheat'));
          if (res.wheat>4) throw "Too much wheat";
          if (!res.wheat) throw "Must have wheat";
@@ -630,7 +630,7 @@ const special_buildings = [
      value: 8,
      buildcost: {},
      text: '3 leather + 14 money ⮕ 30 money (once)',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (r)=>(r=='leather'||r=='money'));
          if (res.leather!=3 || res.money!=14) throw "Wrong resources";
          addResources(player, {money:30});
@@ -666,7 +666,7 @@ const special_buildings = [
      value: 6,
      buildcost: {},
      text: 'wood bread lox ⮕ 8 money (max 3x)',
-     action: async (player) => {
+     action: async (player, ui) => {
          const r = await ui.pickPlayerResources(player, (r)=>(r=='bread'||r=='lox'||r=='wood'));
          if (r.bread!=r.lox || r.bread!=r.wood) throw "Mismatched ingredients";
          if (!r.bread) throw "No resourced!";
@@ -696,7 +696,7 @@ const special_buildings = [
      value: 4,
      buildcost: {},
      text: '🍪 ⮕ charcoal (1x), 2🍪 ⮕ coal (5x)',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (r)=>resources[r].food);
          let food = countPile(res,'food');
          if (food>13) throw "Too much food: Only 11 can be used";
@@ -712,7 +712,7 @@ const special_buildings = [
      value: 6,
      buildcost: {},
      text: 'nonsteel adv per 🏠',
-     action: async (player) => {
+     action: async (player, ui) => {
          const wanted = countSymbol(player,'🏠');
          const goods = await ui.pickResources(['charcoal','brick','lox','bread','meat','leather','coke'], wanted);
          if (Object.values(goods).reduce((a,b)=>a+b,0)!=wanted) throw "Wrong number of goods";
@@ -727,7 +727,7 @@ const special_buildings = [
      value: 6,
      buildcost: {},
      text: 'lox ⮕ 3 money',
-     action: async (player) => {
+     action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (r)=>r=='lox');
          if (!res.lox) throw "No Lox";
          addResources(player,{money:3*res.lox});
@@ -741,14 +741,14 @@ const special_buildings = [
      value: 6,
      buildcost: {},
      text: 'Use in use building, pay player 1 money',
-     action: async (player, game) => {
+     action: async (player, ui, game) => {
          const building = await ui.pickBuilding();
          if (game.disks_by_building[building.number] === undefined) throw "Building must be occupied by an opponent";
          subtractResources(player,{money:1});
          addResources(game.players[game.disks_by_building[building.number]],{money:1});
          delete game.disks_by_building[building.number];
          ui.update();
-         await utilizeBuilding(player,game,building);
+         await utilizeBuilding(player,game,ui,building);
      }
     },
 ]

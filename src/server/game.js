@@ -1,7 +1,7 @@
 import { log_event } from './dbg.js';
 import * as actions from '../common/actions.js';
 import { initBuildings } from '../common/building.js';
-import { ui, subtractResources, safeCopy, buildings_by_number } from '../common/utils.js';
+import { subtractResources, safeCopy, buildings_by_number } from '../common/utils.js';
 import { colls } from './gamelist.js';
 
 let sockets_by_id = {};
@@ -38,27 +38,26 @@ async function replay_event(e, game, playfrom) {
     
     const rawget = () => { return e[input++]; };
     const bget = () => buildings_by_number[rawget()];
-    ui.pickTownResource =
-        ui.pickResources =
-        ui.pickBuildingPlan =
-        rawget;
-    ui.pickBuilding =
-        ui.pickPlayerBuilding =
-        ui.pickNextSpecialBuilding =
-        bget;
-    ui.pickPlayerResources = (player, filter, msg, feeding) => {
-        let r = rawget();
-        subtractResources(player, r);
-        return r;
+    let ui = {
+        pickTownResource: rawget,
+        pickResources: rawget,
+        pickBuildingPlan: rawget,
+        pickBuilding: bget,
+        pickPlayerBuilding: bget,
+        pickNextSpecialBuilding: bget,
+        pickPlayerResources: (p) => { let r = rawget(); subtractResources(p, r); return r},
+        showMessage: (msg, personal) => { if (!personal) broadcastMessages.push(msg);},
+        initUi: ()=>{},
+        update: ()=>{},
+        endGame: (game) => { game.ended = Date.now(); }
     }
     if (e[0]=='nextTurn' || e[0]=='completeFeed') {
         ui.serverPickResources = ui.pickPlayerResources;
         ui.pickPlayerResources = demandPlayerResources.bind(null,game);
     };
-    ui.showMessage = ((msg, personal) => { if (!personal) broadcastMessages.push(msg);});
     
     let callback = actions[e[0]];
-    await callback(player, game);
+    await callback(player, game, ui);
 }
 
 function set_id(id, ws) {
@@ -105,12 +104,4 @@ export function game_socket_open(ws,req) {
             }
         }
     });
-}
-
-export function init_game() {
-    ui.initUi = ()=>{};
-}
-
-ui.endGame = function(game) {
-    game.ended = Date.now();
 }

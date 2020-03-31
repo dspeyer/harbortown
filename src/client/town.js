@@ -3,10 +3,10 @@ import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
 import { MiniShip } from './ships.js';
 import { Instructions, CancelButton, score } from './interaction.js';
-import { ui, safeCopy, restore } from '../common/utils.js';
+import { safeCopy, restore } from '../common/utils.js';
 import { nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan, resumeConstruction } from '../common/actions.js';
 import { gameState } from './state.js';
-import { showDialog, closeSelf, showError, wrap, revert, canRevert } from './interaction.js';
+import { showDialog, closeSelf, showError, wrap, revert, canRevert, holders } from './interaction.js';
 import './town.css';
 
 export function AdvancerToken(props) {
@@ -78,7 +78,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
     let resourceElements = [];
     for (let i in resources) {
         let v = resources[i];
-        resourceElements.push(<span><ResourceStack type={i} number={v} key={i} holder={ui.townResources} /></span>);
+        resourceElements.push(<span><ResourceStack type={i} number={v} key={i} holder={holders.townResources} /></span>);
     }
     let advancerElements = advancers.map(
         (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} i={av[2]} active={i==current} key={i} />;}
@@ -94,15 +94,15 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   {advancerElements}
                 </div>
                 <div className="horiz resource1">
-                  <ResourceStack type="money" number={resources.money} holder={ui.townResources} />
-                  <ResourceStack type="wood" number={resources.wood} holder={ui.townResources} />
-                  <ResourceStack type="iron" number={resources.iron} holder={ui.townResources} />
-                  <ResourceStack type="cattle" number={resources.cattle} holder={ui.townResources} />
+                  <ResourceStack type="money" number={resources.money} holder={holders.townResources} />
+                  <ResourceStack type="wood" number={resources.wood} holder={holders.townResources} />
+                  <ResourceStack type="iron" number={resources.iron} holder={holders.townResources} />
+                  <ResourceStack type="cattle" number={resources.cattle} holder={holders.townResources} />
                 </div>
                 <div className="horiz resource2">
-                  <ResourceStack type="fish" number={resources.fish} holder={ui.townResources} />
-                  <ResourceStack type="clay" number={resources.clay} holder={ui.townResources} />
-                  <ResourceStack type="wheat" number={resources.wheat} holder={ui.townResources} />
+                  <ResourceStack type="fish" number={resources.fish} holder={holders.townResources} />
+                  <ResourceStack type="clay" number={resources.clay} holder={holders.townResources} />
+                  <ResourceStack type="wheat" number={resources.wheat} holder={holders.townResources} />
                 </div>
                 <div className="shipStacks">
                   <EndOfTurn turn={turn} />

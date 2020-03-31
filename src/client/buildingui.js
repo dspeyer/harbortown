@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import './building.css';
 import { resources } from '../common/data.js';
-import { ClickTarget } from './interaction.js';
-import { ui, buildings_by_number } from '../common/utils.js';
+import { ClickTarget, holders } from './interaction.js';
+import { buildings_by_number } from '../common/utils.js';
 import { gameState } from './state.js';
 import { sym_names } from '../common/data.js';
 
@@ -46,7 +46,7 @@ export function Building(props) {
     });
     if (bd === undefined) return <span>Failed bn {props.bn}</span>;
     return (<div className="building" onMouseDown={()=>bmd(bref)} onMouseUp={()=>bmu(bref)} ref={bref}>
-              <ClickTarget holder={ui.buildings} data={bd.number} />
+              <ClickTarget holder={holders.buildings} data={bd.number} />
               { player!==false && <div>
                                     <div className="disk" style={ {background: player.color} }></div>
                                     <div className="diskname">{player.name}</div>

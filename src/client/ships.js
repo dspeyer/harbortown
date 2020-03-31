@@ -1,16 +1,15 @@
 import React from 'react';
-import { ui } from '../common/utils.js';
 import { gameState } from './state.js';
-import { ClickTarget } from './interaction.js';
+import { ClickTarget, holders } from './interaction.js';
 import './ship.css';
 
 export function MiniShip({ship,later}) {
     const [mat, value] = ship;
     let title = mat+" ship (feeds "+gameState.shipStats[mat].feed+", ships "+gameState.shipStats[mat].ship+") €"+value;
     if (later) title += "; then "+later.map((x)=>"€"+x).join(", ");
-    if ( ! ui.miniships ) ui.miniships = {};
+    if ( ! holders.miniships ) holders.miniships = {};
     return <span className="miniship" title={title} >
-             {later && <ClickTarget holder={ui.miniships} data={mat} />}
+             {later && <ClickTarget holder={holders.miniships} data={mat} />}
              <img src={'images/'+mat+'.png'}/>
              <span className="cost">{value}</span>
              {later && <span className="cnt">(+{later.length})</span> }

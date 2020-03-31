@@ -1,6 +1,6 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
 import { building_firm } from './building.js'; // TODO: remove circular import
-import { ui, buildings_by_number, shuffle, addResources, satisfies, subtractResources, checkDecks, restore, countPile, findOwner } from './utils.js';
+import { buildings_by_number, shuffle, addResources, satisfies, subtractResources, checkDecks, restore, countPile, findOwner } from './utils.js';
 
 export function newGame(players, initBuildings) {
     let game = {}
@@ -26,11 +26,11 @@ export function newGame(players, initBuildings) {
     game.currentPlayer = -1;
     game.sockets = []; // Used by server
     initBuildings(game);
-    nextTurn(null, game);
+    nextTurn(null, game, /*ui=*/ {update:()=>{}});
     return game;
 }
 
-export function completeFeed(player, game, food) {
+export function completeFeed(player, game, ui, food) {
     if (food === undefined) food = ui.serverPickResources(player);
     if (food === null) return;
     const fed = countPile(food,'food');
@@ -40,17 +40,17 @@ export function completeFeed(player, game, food) {
                                (r)=>resources[r].food,
                                player.name+': that was '+fed+' food, now eat another '+player.hunger+' food',
                                true).
-            then(completeFeed.bind(null, player, game));
+            then(completeFeed.bind(null, player, game, ui));
     } else {
         delete player.hunger
         ui.update();
         if (game.players.filter((p)=>(p.hunger>0)).length == 0) {
-            nextTurn(null, game);
+            nextTurn(null, game, ui);
         }
     }
 }
 
-export function nextTurn(player, game) {
+export function nextTurn(player, game, ui) {
     game.currentAdvancer += 1;
     if ((game.currentTurn >= game.events.length) && (game.currentAdvancer >= game.players.length)) {
         ui.endGame(game);
@@ -119,7 +119,7 @@ export function nextTurn(player, game) {
                                            (r)=>resources[r].food,
                                            p.name+': eat '+p.hunger+' food',
                                           true).
-                        then(completeFeed.bind(null,p,game));
+                        then(completeFeed.bind(null,p,game,ui));
                 } else {
                     console.log('letting the server worry about feeding ',p);
                 }
@@ -155,7 +155,7 @@ export function nextTurn(player, game) {
     ui.update();
 }
 
-export async function takeResource(player, game) {
+export async function takeResource(player, game, ui) {
     if (game.bigActionTaken) throw "You already took your turn";
     const resource = await ui.pickTownResource();
     if ( ! ( game.townResources[resource] > 0 ) ) return false;
@@ -166,7 +166,7 @@ export async function takeResource(player, game) {
     ui.update();
 }
 
-export async function utilizeBuilding(player, game, building) {
+export async function utilizeBuilding(player, game, ui, building) {
     if (game.bigActionTaken) throw "You already took your turn";
     if (building === undefined) {
         building = await ui.pickBuilding();
@@ -194,18 +194,18 @@ export async function utilizeBuilding(player, game, building) {
             if ( ! satisfies(entryres, building.entry) ) throw "Insufficient Entry Resources";
         }
     }
-    await building.action(player, game, building);
+    await building.action(player, ui, game, building);
     game.bigActionTaken += 1;
     ui.update();
 }
 
-export async function resumeConstruction(player, game) {
+export async function resumeConstruction(player, game, ui) {
     if (game.bigActionTaken != 0.5) throw "Construction isn't paused";
-    await building_firm.action(player,{},'Choose a second building or ',true);
+    await building_firm.action(player,ui,game,{},'Choose a second building or ',true);
     game.bigActionTaken += 0.5;
 }
 
-export async function buy(player, game) {
+export async function buy(player, game, ui) {
     const bn = await ui.pickBuildingPlan('Choose a building or ship to buy', {for_buy: true});
     if (bn in game.ships) {
         subtractResources(player, { money: ship_prices[bn] });
@@ -231,11 +231,11 @@ export async function buy(player, game) {
     ui.update();
 }
 
-export async function repayLoan(player, game) {
+export async function repayLoan(player, game, ui) {
     subtractResources(player,{loans:1,money:5});
 }
 
-export async function sell(player, game) {
+export async function sell(player, game, ui) {
     const b = await ui.pickPlayerBuilding('Choose a building to sell', player);
     const idx = player.buildings.indexOf(b.number);
     if (idx == -1) throw "Cannot sell";
@@ -248,7 +248,7 @@ export async function sell(player, game) {
     ui.update();
 }
 
-export async function cheat(player, game) {
+export async function cheat(player, game, ui) {
     addResources(player, {money:20,wood:20,clay:20,iron:20,wheat:20,coal:20,bread:20,meat:20,lox:20,fish:10,cattle:10});
     ui.update();
 }

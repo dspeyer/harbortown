@@ -1,6 +1,6 @@
-import { restore, ui, safeCopy } from '../common/utils.js';
+import { restore, safeCopy } from '../common/utils.js';
 import { resources } from '../common/data.js';
-import { showMessage, pickPlayerResources, score } from './interaction.js';
+import { showMessage, pickPlayerResources, ui, score } from './interaction.js';
 import { gameState } from './state.js';
 
 let log = [];

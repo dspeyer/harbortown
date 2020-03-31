@@ -1,13 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
-import { safeCopy, restore, addResources, subtractResources, ui, countPile, countSymbol, buildings_by_number } from '../common/utils.js';
+import { safeCopy, restore, addResources, subtractResources, countPile, countSymbol, buildings_by_number } from '../common/utils.js';
 import { gameState } from './state.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { annotate_log } from './net.js';
 import { Building } from './buildingui.js';
 import { ship_feeds, ship_capacities, ship_prices } from '../common/data.js';
 import { prepare_log, abort_log, send_log, clear_log } from './net.js';
+
+export let holders = {};
 
 let allClickTargets = [];
 
@@ -224,7 +226,7 @@ export async function pickPlayerResources(player, filter, msg) {
     
     for (let r in player.resources) {
         if (player.resources[r]>0 && filter(r)) {
-            ui.playerResources[player.number][r].show();
+            holders.playerResources[player.number][r].show();
         }
     }
     ui.resolve = (res) => {
@@ -291,11 +293,11 @@ export async function pickNextSpecialBuilding() {
 export async function pickBuilding() {
     allInstructions[0].set('Choose an existing building');
     for (let b of gameState.townBuildings) {
-        ui.buildings[b].setState({active:true});
+        holders.buildings[b].setState({active:true});
     }
     for (let p of gameState.players) {
         for (let b of p.buildings) {
-            ui.buildings[b].show();
+            holders.buildings[b].show();
         }
     }
     let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
@@ -309,16 +311,16 @@ export async function pickBuildingPlan(msg, {resource, for_buy, pausable}) {
     allInstructions[0].set(msg, pausable);
     for (let deck of gameState.buildingPlans) {
         if (deck.length) {
-            ui.buildings[deck[0]].show(for_buy && buildings_by_number[deck[0]].price);
+            holders.buildings[deck[0]].show(for_buy && buildings_by_number[deck[0]].price);
         }
     }
     if (for_buy) {
         for (let b of gameState.townBuildings) {
-            ui.buildings[b].show(for_buy && buildings_by_number[b].price);
+            holders.buildings[b].show(for_buy && buildings_by_number[b].price);
         }
         for (let m in gameState.ships) {
             if (gameState.ships[m].length) {
-                ui.miniships[m].show(ship_prices[m]);
+                holders.miniships[m].show(ship_prices[m]);
             }
         }
     }
@@ -332,7 +334,7 @@ export async function pickBuildingPlan(msg, {resource, for_buy, pausable}) {
 export async function pickPlayerBuilding(msg, player) {
     allInstructions[0].set(msg);
     for (let b of player.buildings) {
-        ui.buildings[b].show();
+        holders.buildings[b].show();
     }
     let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
     let bn = await p;
@@ -342,18 +344,18 @@ export async function pickPlayerBuilding(msg, player) {
 }    
 
 export function initUi(nplayers) {
-    ui.buildings = {};
-    ui.townResources = {};
-    ui.playerResources = [];
+    holders.buildings = {};
+    holders.townResources = {};
+    holders.playerResources = [];
     for (let i=0; i<nplayers; i++){
-        ui.playerResources.push({});
+        holders.playerResources.push({});
     }
 }
         
 export class CancelButton extends React.Component {
     constructor(props) {
         super(props);
-        ui.cancelButton = this;
+        holders.cancelButton = this;
         this.state = {active: false};
     }
     render() {
@@ -438,8 +440,8 @@ export async function wrap(callback) {
     try {
         const player = gameState.players[gameState.currentPlayer];
         prepare_log(callback.name);
-        if (ui.cancelButton) ui.cancelButton.setState({active:true});
-        await callback(player, gameState);
+        if (holders.cancelButton) holders.cancelButton.setState({active:true});
+        await callback(player, gameState, ui);
         if (callback.name == 'nextTurn') {
             turnBackup = null
             send_log()
@@ -451,7 +453,7 @@ export async function wrap(callback) {
         restore(gameState, backup);
         throw e;
     } finally {
-        if (ui.cancelButton) ui.cancelButton.setState({active:false});
+        if (holders.cancelButton) holders.cancelButton.setState({active:false});
         ui.update();
     }
 }
@@ -469,3 +471,15 @@ export function canRevert() {
     return !! turnBackup;
 }
 
+export let ui = {
+    pickTownResource,
+    pickPlayerResources,
+    pickResources,
+    pickBuilding,
+    pickPlayerBuilding,
+    pickNextSpecialBuilding,
+    pickBuildingPlan,
+    initUi,
+    showMessage: (msg, personal) => { if ( ! ui.am_client_to_server || personal) showMessage(msg) },
+    endGame: score
+}

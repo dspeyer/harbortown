@@ -3,7 +3,7 @@ import expressWs from 'express-ws';
 import cookieParser from 'cookie-parser';
 
 import { dbg_socket_open } from './dbg.js';
-import { game_socket_open, init_game } from './game.js';
+import { game_socket_open } from './game.js';
 import { requireLogin, handleLogin, showLogin } from './login.js';
 import { showGameList, join, createSeed, mkGame } from './gamelist.js';
 
@@ -31,7 +31,5 @@ app.get('/', showGameList);
 app.post('/join', join);
 app.post('/new', createSeed);
 app.post('/mkGame', mkGame);
-
-init_game();
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
