@@ -415,7 +415,7 @@ export const buildings = [
      buildcost: {clay:1,iron:1},
      minplayers: 3,
      text: 'Build one building, save one wood',
-     action: async (player,ui,game,self) => { await building_firm.action(player, ui, game, self, ui, "Choose building to saw"); }
+     action: async (player,ui,game,self) => { await building_firm.action(player, ui, game, self, "Choose building to saw"); }
     },
     
     {name: 'Clay Mound',
@@ -550,7 +550,7 @@ export const buildings = [
      buildcost: {wood:1, brick:2, iron:2},
      minplayers: 4,
      text: 'Endgame €4 / ⛴',
-     endgameBonus: async (player) => { return player.ships.length * 4; } 
+     endgameBonus: (player) => { return player.ships.length * 4; } 
     },
 
     {name: 'Storehouse',
@@ -562,7 +562,7 @@ export const buildings = [
      buildcost: {wood:2,brick:2},
      minplayers: 4,
      text: 'Endgame: 1/2 per common 1 per advanced',
-     endgameBonus: async (p) => Math.floor( countPile(p.resources,'advanced',(a)=>(a?1:0.5)) - p.resources.loans/2 )
+     endgameBonus: (p) => Math.floor( countPile(p.resources,'advanced',(a)=>(a?1:0.5)) - p.resources.loans/2 )
     },
 ]
 
