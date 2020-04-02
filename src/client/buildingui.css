@@ -24,6 +24,13 @@
     font-size: 6pt;
 }
 
+.building > .number.accentNumbertrue {
+    background: #f7f;
+    font-size: 8pt;
+    font-weight: bold;
+}
+                  
+
 .building > .name {
     font-weight: bold;
 }

@@ -56,7 +56,7 @@ export function Building(props) {
                 {bd.entry.money && <span>{bd.entry.money}€</span>}
                 {bd.entry.unobtainium && <span>🔒</span>}
               </div>
-              {props.showNumber && <div className="number">{bd.number}</div>}
+              {props.showNumber && <div className={'number accentNumber'+props.accentNumber}>{bd.number}</div>}
               <div className="name" style={ {textAlign:(gt(bd.name.length,8)?'left':'center')} }>{bd.name}</div>
               <div className="text" title={nameSymbols(bd.text)} ref={tref}>{
                   bd.text.split(' ').map((w) => {
@@ -93,7 +93,7 @@ export function BuildingStack(props) {
                 return ( <div className="buildingHolder" key={building} style={ {bottom: (n-i-1)*19+'px',
                                                                                  zIndex: 100-i,
                                                                                  cursor: (i?'zoom-in':'unset') } } >
-                           <Building bn={building} showNumber={true}/>
+                           <Building bn={building} showNumber={true} accentNumber={props.minplan==building} />
                          </div> );
             })}
             </div>);

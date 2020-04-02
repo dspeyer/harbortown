@@ -83,6 +83,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
     );
     let myturn = ( ( ! gameState.whoami ) || (gameState.whoami == curp) );
     let bat = gameState.bigActionTaken;
+    let minplan = Math.min.apply(null, plans.map((d)=>(d.length?d[0]:999)) );
     return (<div>
               <Instructions/>
               <h1>The Town</h1>
@@ -136,7 +137,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                 </div>
                 <div className="plans">
                   { plans.map((plan,i) => {
-                      return <BuildingStack buildings={plan} key={i} />
+                      return <BuildingStack buildings={plan} key={i} minplan={minplan} />
                   } ) }
                 </div>
               </div>

@@ -249,6 +249,6 @@ export async function sell(player, game, ui) {
 }
 
 export async function cheat(player, game, ui) {
-    addResources(player, {money:20,wood:20,clay:20,iron:20,wheat:20,coal:20,bread:20,meat:20,lox:20,fish:10,cattle:10});
+    addResources(player, {money:200,wood:20,clay:20,iron:20,wheat:20,coal:20,bread:20,meat:20,lox:20,fish:10,cattle:10});
     ui.update();
 }
