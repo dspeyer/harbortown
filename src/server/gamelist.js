@@ -27,6 +27,17 @@ export async function showGameList(req, res, msg) {
     res.render('gamelist', {name,mygames,gameseeds,msg});
 }
 
+async function startGame(seed, id, res) {
+    const players = shuffle(seed.players);
+    let game = newGame(players, initBuildings);
+    game.desc = seed.desc;
+    game.id = id;
+    await colls.seeds.removeOne({id});
+    await colls.games.insertOne(game);
+    res.redirect('/game?'+id);
+}
+    
+
 export async function join(req, res) {
     const name = req.cookies.name;
     const id = req.body.id;
@@ -41,13 +52,7 @@ export async function join(req, res) {
     seed.players.push(name);
     delete seed._id;
     if (seed.players.length == seed.wanted) {
-        const players = shuffle(seed.players);
-        let game = newGame(players, initBuildings);
-        game.desc = seed.desc;
-        game.id = id;
-        await colls.seeds.removeOne({id});
-        await colls.games.insertOne(game);
-        res.redirect('/game?'+id);
+        startGame(seed, id, res);
     } else {
         await colls.seeds.updateOne({id}, {$set: seed});
         res.redirect('/');
@@ -72,8 +77,13 @@ export async function createSeed(req, res) {
     const wanted = req.body.wanted;
     if ( ! (desc && wanted) ) return showGameList(req, res, 'Must provide description and player count');
     let id = await newId();
-    await colls.seeds.insertOne({ id, desc, wanted, players:[name] });
-    res.redirect('/');
+    let seed = { id, desc, wanted, players:[name] };
+    await colls.seeds.insertOne(seed);
+    if (wanted==1) {
+        startGame(seed, id, res);
+    } else {
+        res.redirect('/');
+    }
 }
 
 export async function mkGame(req, res) {
