@@ -135,6 +135,7 @@ h1 {
     grid-column-end: 2; 
     grid-row-start: 1; 
     grid-row-end: 4;
+    height: 100vh;
 }
 
 .player_2_of_4 {
@@ -150,6 +151,7 @@ h1 {
     grid-column-end: 5; 
     grid-row-start: 1; 
     grid-row-end: 4;
+    height: 100vh;
 }
 
 
@@ -168,6 +170,7 @@ h1 {
     grid-column-end: 2; 
     grid-row-start: 2; 
     grid-row-end: 4;
+    height: calc( 50vh + ( 260px / 2 ) );
 }
 
 .player_2_of_5 {
@@ -191,5 +194,6 @@ h1 {
     grid-column-end: 5; 
     grid-row-start: 2; 
     grid-row-end: 4;
+    height: calc( 50vh + ( 260px / 2 ) );
 }
 
