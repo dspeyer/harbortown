@@ -15,6 +15,7 @@ class App extends React.Component {
     }
     
     update() {
+        document.title = gameState.desc + ' [' + gameState.whoami + '] -- HarborTown';
         this.setState(safeCopy(gameState));
     }
 
