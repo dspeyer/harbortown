@@ -6,7 +6,8 @@ import { gameState } from './state.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { annotate_log } from './net.js';
 import { Building } from './buildingui.js';
-import { ship_feeds, ship_capacities, ship_prices } from '../common/data.js';
+import { ship_feeds, ship_capacities, ship_prices, sym_names } from '../common/data.js';
+import { special_buildings } from '../common/buildings.js';
 import { prepare_log, abort_log, send_log, clear_log } from './net.js';
 
 export let holders = {};
@@ -430,6 +431,104 @@ export function score() {
         </div>
     );
 }
+
+export function help(){
+    showDialog(
+        <div className="helpDlg">
+          <h2>Rules Reference</h2>
+          <div className="content">
+
+            <h3>Resources</h3>
+            <table className="resources">
+              {
+                  [['money','wood','clay','iron','fish','wheat','cattle','coal','hides'],
+                   ['loans','charcoal','brick','steel','lox','bread','meat','coke','leather']].map(
+                       (row) => <tr> { row.map(
+                           (res) => <td>
+                                      <ResourceTile type={res} />
+                                      {res=='money' && "Also counts as 1 food"}
+                                      {res=='loans' && "Grant €4, Repay €5, Endgame -€7"}
+                                      {res=='brick' && "Can be used as clay" }
+                                      {res=='steel' && "Can be used as iron" }
+                                      {res=='wheat' && "+1 at harvest if you have any" }
+                                      {res=='cattle' && "+1 at harvest if you have at least two" }
+                                    </td>
+                       ) } </tr>
+                   )
+              }
+            </table>
+            The value in the lower right is the value when shipped at the Shipping line.  The lower left is either for when the good is
+            used as either food or energy (fortunately no good can be used as both).  The multi-colored background indicates an advanced
+            good.
+            
+            <h3>Ships</h3>
+            <table className="ships">
+              <tr>
+                <td colspan="2">Type</td>
+                <td>Build Cost</td>
+                <td>Buy Cost</td>
+                <td>Feeds</td>
+                <td>Ships</td>
+                <td>Requires Modernization</td>
+              </tr>
+              
+              { ['wood','iron','steel','luxury'].map(
+                  (t) => <tr>
+                           <td><img src={'images/'+t+'.png'}/></td>
+                           <td>{t}</td>
+                           <td>
+                             { ({wood:5,iron:4,steel:2,luxury:3})[t]} &nbsp;
+                             {t=='luxury' ? 'steel' : t} &nbsp;
+                             + 3 energy
+                           </td>
+                           <td>€{ship_prices[t]}</td>
+                           <td>{ship_feeds[t][gameState.players.length]}</td>
+                           <td>{ship_capacities[t]}</td>
+                           <td>{t=='wood' ? 'no' : 'yes'}</td>
+                         </tr>
+              ) }
+            </table>
+            Summed shipping capacity for each player is in the score dialog.
+
+            <h3>How to Read a Building</h3>
+            <table>
+              <tr><td>Number</td><td colspan="2">Name</td><td>Entry Cost</td></tr>
+              <tr><td colspan="4">What it does</td></tr>
+              <tr><td>Value</td><td>Name</td><td>Symbols</td><td>Construction Cost</td></tr>
+            </table>
+            <ul>
+              <li>Number: When the town builds a building, it chooses the lowest number.  The current lowest is highlighted in purple.
+                Not shown for buildings that have been built.</li>
+              <li>Entry Cost: In food or money.  If both are shown, you may pay either.</li>
+              <li>What it does: Either when you go on it or at endgame.  Hover for fully textual version.</li>
+              <li>Value: Points at endgame.  Or can be sold for half.  Usually also the buy price.  When not, a * is present and you
+                can hover for the buy price.</li>
+              <li>Symbols: The owner of the building gains the benefit of the symbols.  Order doesn't matter.  Hover for textual version.</li>
+              <li>Construction Costs: For building this building (e.g. with the Building Firm)</li>
+            </ul>
+            
+            <h3>Special Buildings</h3>
+            There's no way to know which are in this game beyond the two the marketplace reveals, but here's all the special buildings
+            in the deck:
+            <div className="sbholder">
+              { special_buildings.map((b) => <Building bn={b.number} />) }
+            </div>
+            (Experienced Le Havre players may note there ought to be more of these.  They are welcome to send a pull request.  Entering
+            these was <i>tedious</i>.)
+            
+            <h3>Symbols</h3>
+            <ul>
+              {Object.entries(sym_names).map(
+                  (x) => <li><span style={{fontSize:'larger'}}>{x[0]}</span>: {x[1]}</li>
+              )}
+            </ul>
+
+          </div>
+          <input type="button" value="Close" onClick={closeSelf} />
+        </div>
+    );
+}
+
 
 
 let turnBackup = null;

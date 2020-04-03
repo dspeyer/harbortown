@@ -566,7 +566,7 @@ export const buildings = [
     },
 ]
 
-const special_buildings = [
+export const special_buildings = [
     {name: 'Plant Nursery',
      number: 's011',
      symbols: ['🔨','🏠'],

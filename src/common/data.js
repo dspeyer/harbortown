@@ -192,13 +192,15 @@ export const ship_prices = { wood: 14,
                              luxury: 999 };
         
 export const sym_names = {
-    '🔨': 'hammer',
+    '🔨': 'crafting',
     '🎣': 'fishing',
     '🏠': 'small business',
     '🏢': 'commercial',
     '🏭': 'industrial',
     '🏛': 'civic',
+    '⛴': 'ship',
     '🍪': 'food',
     'ϟ': 'energy',
+    '€': 'money'
 }
                                  

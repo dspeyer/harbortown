@@ -5,6 +5,7 @@ import { ClickTarget } from './interaction.js';
 
 export function ResourceTile(props) {
     const attrs = resources[props.type];
+    if ( ! attrs ) return <span>??{props.type}??</span>;
     if (props.type == 'money') {
         return (<div className="tile money">
                   €
