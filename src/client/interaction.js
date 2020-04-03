@@ -114,7 +114,9 @@ class MessageDialog extends React.Component {
         super(props);
         this.state={opacity:1};
         this.dom = React.createRef();
-        this.timeout = window.setTimeout(this.tick.bind(this), 5000);
+        if ( ! props.lasting ) {
+            this.timeout = window.setTimeout(this.tick.bind(this), 5000);
+        }
     }
     render() {
         return (<div className="msgDialog" ref={this.dom} style={ {opacity: this.state.opacity,
@@ -124,6 +126,7 @@ class MessageDialog extends React.Component {
                 </div>);
     }
     tick(){
+        if (this.props.lasting) return;
         this.setState({opacity: this.state.opacity-0.05});
         this.timeout = window.setTimeout(this.tick.bind(this), 100);        
         if (this.state.opacity<=0) this.close();
@@ -134,12 +137,12 @@ class MessageDialog extends React.Component {
     }
 }
 
-export function showError(msg) {
-    showDialog(<MessageDialog msg={msg} color="#fa0" />);
+export function showError(msg, lasting) {
+    showDialog(<MessageDialog msg={msg} color="#fa0" lasting={lasting} />);
 }
 
-export function showMessage(msg) {
-    showDialog(<MessageDialog msg={msg} color="#ff7" />);
+export function showMessage(msg, lasting) {
+    showDialog(<MessageDialog msg={msg} color="#ff7" lasting={lasting} />);
 }
 
 class PickResourcesDialog extends React.Component {
@@ -548,7 +551,7 @@ export async function wrap(callback) {
     } catch (e) {
         abort_log();
         console.log(['error',e]);
-        showError(e+ (e.stack ? ' *st:'+e.stack : ''));
+        showError(e+ (e.stack ? ' *st:'+e.stack : ''), !!e.stack);
         restore(gameState, backup);
         throw e;
     } finally {

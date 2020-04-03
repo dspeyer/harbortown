@@ -1,6 +1,6 @@
 import { restore, safeCopy } from '../common/utils.js';
 import { resources } from '../common/data.js';
-import { showMessage, pickPlayerResources, ui, score } from './interaction.js';
+import { showMessage, showError, pickPlayerResources, ui, score } from './interaction.js';
 import { gameState } from './state.js';
 
 let log = [];
@@ -35,6 +35,9 @@ export function init() {
     socket.addEventListener('open', () => {
         socket.send(JSON.stringify([['set_id',id]]));
         ui.am_client_to_server = true;
+    });
+    socket.addEventListener('close', () => {
+        showError('Lost contact with server, consider reloading', /*lasting=*/ true);
     });
 }
 
