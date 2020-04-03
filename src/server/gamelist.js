@@ -21,10 +21,20 @@ MongoClient.connect("mongodb://localhost:27017", (err,client) => {
 export async function showGameList(req, res, msg) {
     if (typeof(msg)=='function') msg='';
     const name = req.cookies.name;
-    const now = Date.now()
-    const mygames = await colls.games.find({players:{$elemMatch:{name}}}).toArray(); // TODO: clip old finished games
-    const gameseeds = await colls.seeds.find().toArray();
-    res.render('gamelist', {name,mygames,gameseeds,msg});
+    const now = Date.now();
+    const ago = (t) => (now-t) / (24*60*60*1000);
+    const showOld = !! req.query.showOld;
+    const rawgames = await colls.games.find({players:{$elemMatch:{name}}}).toArray();
+    let mygames, clipped;
+    if (showOld) {
+        mygames = rawgames;
+        clipped = false;
+    } else {
+        mygames = rawgames.filter( (g) => ! (ago(g.ended)>2) );
+        clipped = (mygames.length != rawgames.length);
+    }
+    let gameseeds = await colls.seeds.find().toArray();
+    res.render('gamelist', {name,mygames,gameseeds,msg,ago,showOld,clipped});
 }
 
 async function startGame(seed, id, res) {

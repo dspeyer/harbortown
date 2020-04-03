@@ -40,13 +40,19 @@
                 <td>@g.desc</td>
                 <td>@g.players.map((p)=>{return p.name;}).join(', ')</td>
                 @if (g.ended) {
-                  <td>Over</td>
+                  <td>Over @model.ago(g.ended).toString().replace(/([0-9]*\.[0-9]).*/,'$1') days ago</td>
                 } else {
                   <td>@g.players[g.currentPlayer].name</td>
                 }
             </tr>
             })
         </table>
+        @if (model.showOld) {
+          <a href="?">Hide old games</a>
+        } else if (model.clipped) {
+          <a href="?showOld=true">Show old games</a>
+        }
+        
 
         <h1>Open Games</h1>
         <table>
