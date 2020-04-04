@@ -10,6 +10,7 @@
     "express-ws": "^4.0.0",
     "mongodb": "^3.5.5",
     "node-rsa": "^1.0.7",
+    "nodemailer": "^6.4.6",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.4.0",
@@ -22,15 +23,15 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-      "extends": "react-app",
-      "rules": {
-          "eqeqeq": "off",
-          "no-throw-literal": "off",
-          "jsx-a11y/alt-text": "off",
-          "jsx-a11y/accessible-emoji": "off",
-          "dot-location": "off",
-          "no-whitespace-before-property": "off"
-      }
+    "extends": "react-app",
+    "rules": {
+      "eqeqeq": "off",
+      "no-throw-literal": "off",
+      "jsx-a11y/alt-text": "off",
+      "jsx-a11y/accessible-emoji": "off",
+      "dot-location": "off",
+      "no-whitespace-before-property": "off"
+    }
   },
   "browserslist": {
     "production": [
