@@ -66,7 +66,7 @@
             <tr>
                 <td>@x.id</td>
                 <td>@x.desc</td>
-                <td>@x.players.join(', ')</td>
+                <td>@x.players.map((x)=>x.name).join(', ')</td>
                 <td>@x.wanted</td>
                 <td><form action="/join" method="post">
                     <input type="hidden" name="id" value="@x.id">
@@ -85,7 +85,7 @@
             </form>
         </table>
         <br/><br/>
-        You are logged in as "@model.name".  You can <a href="/login">change this</a>
+        You are logged in as "@model.name" (@model.email).  You can <a href="/login">change this</a>
         <br/><br/>
         <form action="/mkGame" method="post">
             Or specify exact game:<br/>

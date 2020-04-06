@@ -8,6 +8,18 @@ let sockets_by_id = {};
 
 let broadcastMessages = [];
 
+function clean(game, email) {
+    let out = safeCopy(game);
+    for (let p of out.players) {
+        if (p.email == email) {
+            p.isMe = true;
+        }
+        delete p.email;
+    }
+    out.specialBuildings = out.specialBuildings.slice(0,2);
+    return out;
+}
+
 async function demandPlayerResources(game, player, filter, msg, feeding) {
     console.log(' PPR in fooddemand for '+JSON.stringify(player));
     for (let s of sockets_by_id[game.id]) {
@@ -15,9 +27,9 @@ async function demandPlayerResources(game, player, filter, msg, feeding) {
             console.log('  skipping closed socket for '+s.name);
             continue;
         }
-        if (s.name == player.name) {
+        if (s.email == player.email) {
             console.log('  sending fooddemand to '+player.name);
-            s.send(JSON.stringify({foodDemand:msg, newGameState: game}));
+            s.send(JSON.stringify({foodDemand:msg, newGameState: clean(game,player.email)}));
         } else {
             console.log('  Skipping socket for '+s.name);
         }
@@ -30,7 +42,7 @@ async function replay_event(e, game, playfrom) {
     console.log('Replaying ',e)
     let input = 1;
 
-    const player = game.players.filter((p)=>(p.name==playfrom))[0];
+    const player = game.players.filter((p)=>(p.email==playfrom))[0];
     const currentPlayer = game.players[game.currentPlayer];
     if (e[0]!='completeFeed' && player !== currentPlayer) {
         throw "It's not your turn (you're ["+playfrom+"] but it's ["+currentPlayer.name+"]'s turn)";
@@ -65,12 +77,13 @@ function set_id(id, ws) {
     if ( ! (id in sockets_by_id) ) sockets_by_id[id] = [];
     sockets_by_id[id].push(ws);
     colls.games.findOne({id}).then((game)=>{
-        ws.send(JSON.stringify({newGameState:game,init:true}))
+        ws.send(JSON.stringify({newGameState:clean(game,ws.email),init:true}))
     });
 }
 
 export function game_socket_open(ws,req) {
     ws.name = req.cookies.name;
+    ws.email = req.cookies.email;
     console.log('socket',ws.name,req.path);
     ws.on('message', async (msg) => {
         broadcastMessages = [];
@@ -85,11 +98,11 @@ export function game_socket_open(ws,req) {
                     set_id(e[1], ws);
                     return;
                 } else {
-                    await replay_event(e, game, ws.name);
+                    await replay_event(e, game, ws.email);
                 }
             } catch (e) {
                 log_event(['ERROR',e]);
-                ws.send(JSON.stringify({newGameState:backup,msg:'ERROR '+e}));
+                ws.send(JSON.stringify({newGameState:clean(backup,ws.email),msg:'ERROR '+e}));
                 return;
             }
         }
@@ -97,7 +110,7 @@ export function game_socket_open(ws,req) {
         for (let s of sockets_by_id[game.id]) {
             try {
                 if (s.readyState != 3) { // CLOSED -- TODO: find the named constant
-                    s.send(JSON.stringify({newGameState:game, msg:broadcastMessages.join('\n\n')}));
+                    s.send(JSON.stringify({newGameState:clean(game,s.email), msg:broadcastMessages.join('\n\n')}));
                 }
             }catch (e) {
                 console.log(e);

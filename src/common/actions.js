@@ -6,7 +6,8 @@ export function newGame(players, initBuildings) {
     let game = {}
     game.players = players.map( (n,i)=> {
         return {
-            name: n,
+            name: n.name || n,
+            email: n.email,
             color: player_colors[i],
             number: i,
             resources: {money:5, coal:1},

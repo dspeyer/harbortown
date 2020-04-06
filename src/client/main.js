@@ -12,23 +12,15 @@ import * as net from './net.js';
 
 clientCheat.game = gameState;
 
-if (document.cookie) {
-    for (let crumb of document.cookie.split(';')) {
-        let words = crumb.split('=');
-        if (words.length==2 && words[0]=='name') {
-            gameState.whoami = unescape(words[1]);
-        }
-    }
-}
-
 initUi(5);
 if (window.location.search) {
     net.init();
 } else {
-    gameState.whoami = false;
     restore(gameState,
             newGame(['Daniel','Nick','Eppilito','Pei-hsin','Ken Horan'],
                     initBuildings));
+    for (let p of gameState.players) p.isMe = true;
+    gameState.desc = 'Client-only game';
 }
 
 ReactDOM.render(<App />, document.getElementById('root'));

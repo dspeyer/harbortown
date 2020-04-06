@@ -22,11 +22,11 @@ export function init() {
             showMessage(msg.msg);
         }
         if (msg.init && ! msg.foodDemand) {
-            const p = gameState.players.filter((p)=> p.name==gameState.whoami)[0];
+            const p = gameState.players.filter((p)=> p.isMe)[0];
             if (p.hunger > 0) msg.foodDemand = "It's feeding time: eat "+p.hunger;
         }
         if (msg.foodDemand) {
-            const p = gameState.players.filter((p)=> p.name==gameState.whoami)[0];
+            const p = gameState.players.filter((p)=> p.isMe)[0];
             pickPlayerResources(p, (r)=> resources[r].food>0, msg.foodDemand).
                 then((food)=>{
                     socket.send(JSON.stringify([['completeFeed',food]]))});

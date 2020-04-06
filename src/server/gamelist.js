@@ -9,7 +9,7 @@ export let colls = {};
 MongoClient.connect("mongodb://localhost:27017", (err,client) => {
     if (err) throw err;
     let db = client.db('harbortown');
-    for (let c of ['games','seeds','ids']) {
+    for (let c of ['games','seeds','ids','people']) {
         db.collection(c, (err, coll) => {
             if (err) throw err;
             colls[c] = coll;
@@ -21,10 +21,11 @@ MongoClient.connect("mongodb://localhost:27017", (err,client) => {
 export async function showGameList(req, res, msg) {
     if (typeof(msg)=='function') msg='';
     const name = req.cookies.name;
+    const email = req.cookies.email;
     const now = Date.now();
     const ago = (t) => (now-t) / (24*60*60*1000);
     const showOld = !! req.query.showOld;
-    const rawgames = await colls.games.find({players:{$elemMatch:{name}}}).toArray();
+    const rawgames = await colls.games.find({players:{$elemMatch:{email}}}).toArray();
     let mygames, clipped;
     if (showOld) {
         mygames = rawgames;
@@ -34,7 +35,7 @@ export async function showGameList(req, res, msg) {
         clipped = (mygames.length != rawgames.length);
     }
     let gameseeds = await colls.seeds.find().toArray();
-    res.render('gamelist', {name,mygames,gameseeds,msg,ago,showOld,clipped});
+    res.render('gamelist', {name,email,mygames,gameseeds,msg,ago,showOld,clipped});
 }
 
 async function startGame(seed, id, res) {
@@ -50,16 +51,17 @@ async function startGame(seed, id, res) {
 
 export async function join(req, res) {
     const name = req.cookies.name;
+    const email = req.cookies.email;
     const id = req.body.id;
     console.log(['query', {id}]);
     let seed = await colls.seeds.findOne({id});
     if ( !seed ) {
         return showGameList(req, res, "Not a valid game to join");
     }
-    if (name in seed.players) {
+    if (email in seed.players.map((x)=>x.email)) {
         return showGameList(req, res, "You are already in that game");
     }
-    seed.players.push(name);
+    seed.players.push({name,email});
     delete seed._id;
     if (seed.players.length == seed.wanted) {
         startGame(seed, id, res);
@@ -82,12 +84,13 @@ async function newId() {
 }
 
 export async function createSeed(req, res) {
+    const email = req.cookies.email;
     const name = req.cookies.name;
     const desc = req.body.desc;
     const wanted = req.body.wanted;
     if ( ! (desc && wanted) ) return showGameList(req, res, 'Must provide description and player count');
     let id = await newId();
-    let seed = { id, desc, wanted, players:[name] };
+    let seed = { id, desc, wanted, players:[{name,email}] };
     await colls.seeds.insertOne(seed);
     if (wanted==1) {
         startGame(seed, id, res);

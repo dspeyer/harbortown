@@ -8,7 +8,6 @@ import './player.css';
 
 export function Player(props) {
     const player = props.player;
-    const isme = (player.name == gameState.whoami);
     let resourceElements = [];
     let order = ['money','loans',
                  'fish','lox','bread','meat',
@@ -28,7 +27,7 @@ export function Player(props) {
                            (player.color!='khaki' ? ' darkbkg' : '') +
                            (player.number==gameState.currentPlayer ? ' current' : '')}
                 style={ {backgroundColor:player.color} } >
-             <h1 class={'isme'+isme}>{player.name}</h1>
+             <h1 class={'isme'+player.isMe}>{player.name}</h1>
              { player.hunger>0 && <h1 class="hunger">Awaiting {player.hunger} food</h1> }
              <div className="stuff">
                { resourceElements }

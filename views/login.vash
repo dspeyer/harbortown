@@ -3,12 +3,13 @@
         <title>Login Required</title>
         <style>
          form {
-             width: 16.8em;
-             height: 10em;
-             margin: calc( 50vh - 5em) auto;
+             width: 36.9em;
+             min-height: 22em;
+             margin: calc( 50vh - 11em) auto;
              border: 3px #888 outset;
              background: white;
              text-align: center;
+             padding: 1em;
          }
          body {
              background: #ccc;
@@ -26,6 +27,10 @@
              width: 95%;
              display: block;
              margin: 1em auto;
+             margin-top: 0.5em;
+         }
+         hr {
+             margin: 2em auto;
          }
         </style>
     </head>
@@ -36,9 +41,14 @@
             }
         </div>
         <form method="post" action="/login">
-            <h1>Who Are You?</h1>
-            <input name="name" class="text">
-            <input type="submit" >
+          <h1>Login</h1>
+          Email Address
+          <input name="email" class="text">
+          Password:
+          <input name="pass" type="password" class="text">
+          <input type="submit" value="Log In">
+          <hr>
+          Don't have an account here yet?  <a href="register">Register</a>
         </form>
     </body>
 </html>

@@ -6,6 +6,7 @@ import { safeCopy, restore } from '../common/utils.js'
 import { gameState } from './state.js';
 import { ui } from './interaction.js';
 
+
 class App extends React.Component {
     
     constructor(props) {
@@ -15,7 +16,8 @@ class App extends React.Component {
     }
     
     update() {
-        document.title = (gameState.desc||'Nameless Game') + ' [' + (gameState.whoami||'No One') + '] -- HarborTown';
+        const whoami = gameState.players.filter((x)=>x.isMe).map((x)=>x.name).join('/');
+        document.title = gameState.desc + ' [' + whoami + '] -- HarborTown';
         this.setState(safeCopy(gameState));
     }
 
@@ -34,7 +36,7 @@ class App extends React.Component {
                       ships={this.state.ships}
                       turn={this.state.currentTurn}
                       dbb={this.state.disks_by_building}
-                      curp={this.state.players[this.state.currentPlayer].name} />
+                      myturn={this.state.players[this.state.currentPlayer].isMe} />
               </div>
               { this.state.players.map( (player,i) => { return (
                   <div className={'playerbox player_'+i+'_of_'+this.state.players.length} key={i}>

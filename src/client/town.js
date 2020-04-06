@@ -72,7 +72,7 @@ export class EndOfTurn extends React.Component {
     }
 }
 
-export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb, curp}) {
+export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb, myturn}) {
     let resourceElements = [];
     for (let i in resources) {
         let v = resources[i];
@@ -81,7 +81,6 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
     let advancerElements = advancers.map(
         (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} i={av[2]} active={i==current} key={i} />;}
     );
-    let myturn = ( ( ! gameState.whoami ) || (gameState.whoami == curp) );
     let bat = gameState.bigActionTaken;
     let minplan = Math.min.apply(null, plans.map((d)=>(d.length?d[0]:999)) );
     return (<div>
