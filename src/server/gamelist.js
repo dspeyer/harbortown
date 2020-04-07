@@ -9,8 +9,12 @@ export let colls = {};
 
 const mgHostPort = process.env.MONGO_HOSTPORT || 'localhost:27017';
 const mgDb = process.env.MONGO_DB || 'harbortown';
+let mgUserPass = ''
+if (process.env.MONGO_PASS) {
+    mgUserPass = 'harbortown:'+process.env.MONGO_PASS+'@';
+}
 
-MongoClient.connect("mongodb://"+mgHostPort, (err,client) => {
+MongoClient.connect("mongodb://"+mgUserPass+mgHostPort, (err,client) => {
     if (err) throw err;
     let db = client.db('harbortown');
     for (let c of ['games','seeds','ids','people']) {
