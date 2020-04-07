@@ -1,36 +1,12 @@
 <html>
     <head>
         <title>Login Required</title>
+        <link rel="stylesheet" href="login.css">
         <style>
          form {
-             width: 36.9em;
-             min-height: 22em;
-             margin: calc( 50vh - 11em) auto;
-             border: 3px #888 outset;
-             background: white;
-             text-align: center;
-             padding: 1em;
-         }
-         body {
-             background: #ccc;
-         }
-         h3 {
-             position: absolute;
-             width: 100vw;
-             text-align:center;
-             color: red;
-             top: calc( 25vh - 2em );
-             text-shadow: 0 0 2px white;
-             font-size: 19pt;
-         }
-         input.text {
-             width: 95%;
-             display: block;
-             margin: 1em auto;
-             margin-top: 0.5em;
-         }
-         hr {
-             margin: 2em auto;
+             width: calc( 16em * 1.618 );
+             min-height: 16em;
+             margin-top: calc( 50vh - 8em - 2em );
          }
         </style>
     </head>

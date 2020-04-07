@@ -141,3 +141,7 @@ export async function handleLoginLink(req, res) {
         res.send('Invalid link');
     }
 }
+
+export async function css(req, res) {
+    res.type('css').render('login-css', {player_colors});
+}

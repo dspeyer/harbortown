@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 
 import { dbg_socket_open } from './dbg.js';
 import { game_socket_open } from './socket.js';
-import { requireLogin, refererGrabber, handleLogin, showLogin, handleRegister, showRegister, showOpts, handleOpts, handleLoginLink } from './login.js';
+import { requireLogin, refererGrabber, handleLogin, showLogin, handleRegister, showRegister, showOpts, handleOpts, handleLoginLink, css } from './login.js';
 import { showGameList, join, createSeed, mkGame } from './gamelist.js';
 
 const port = 8080
@@ -20,6 +20,7 @@ app.post('/login', handleLogin);
 app.get('/register', showRegister);
 app.post('/register', handleRegister);
 app.get('/frommail', handleLoginLink);
+app.get('/login.css', css);
 
 app.use(requireLogin);
 

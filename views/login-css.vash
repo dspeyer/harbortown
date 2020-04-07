@@ -1,0 +1,46 @@
+h1 {
+    text-align: center;
+    margin-top: 0;
+}
+form {
+    width: min-content;
+    margin: 1em auto;
+    border: 3px #888 outset;
+    background: white;
+    padding: 1em;
+}
+body {
+    background: #ccc;
+}
+h3 {
+    position: absolute;
+    width: 100vw;
+    text-align:center;
+    color: red;
+    top: calc( 25vh - 2em );
+    text-shadow: 0 0 2px white;
+    font-size: 19pt;
+}
+input.text {
+    width: 95%;
+    display: block;
+    margin-bottom: 2em;
+}
+label.box {
+    padding: 2px;
+    border: 1px solid black;
+}
+label.random {
+    background: linear-gradient(-55deg, @model.player_colors.join(', '));
+    color: white;
+    text-shadow: 1px 1px black, -1px -1px black;
+}
+div.rb {
+    white-space: nowrap;
+    margin-bottom: 2em;
+}
+blockquote {
+    border-left: 3px solid grey;
+    margin-left: 1em;
+    padding-left: 3em;
+}
