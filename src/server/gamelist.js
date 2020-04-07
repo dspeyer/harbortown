@@ -1,6 +1,7 @@
 import { shuffle, safeCopy } from '../common/utils.js';
 import { newGame } from '../common/actions.js';
 import { initBuildings } from '../common/buildings.js';
+import { player_colors } from '../common/data.js';
 import mongodb from 'mongodb';
 const { MongoClient } = mongodb;
 
@@ -39,7 +40,15 @@ export async function showGameList(req, res, msg) {
 }
 
 async function startGame(seed, id, res) {
-    const players = shuffle(seed.players);
+    let players = shuffle(seed.players);
+    let promises = [];
+    for (let p of players) {
+        promises.push( colls.people.findOne({email:p.email}).then((person)=>{p.color=person.color}) );
+    }
+    for (let p of promises) await p;
+    for (let p of players) {
+        if (p.color=='random' || !p.color) p.color = player_colors[Math.floor(Math.random()*player_colors.length)];
+    }
     let game = newGame(players, initBuildings);
     game.desc = seed.desc;
     game.id = id;

@@ -4,6 +4,7 @@ import NodeRSA from 'node-rsa';
 import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
 
+import { player_colors } from '../common/data.js';
 import { colls } from './gamelist.js';
 
 let key;
@@ -70,30 +71,30 @@ function validToken({email,ts,token}) {
 
 export function showRegister(req,res,msg) {
     if (typeof(msg)=='function') msg=false;
-    res.render('register',{msg});
+    res.render('register',{msg,player_colors});
 }
 
 export async function handleRegister(req,res) {
-    let {email,name,pass1,pass2,coo1,coo2,turnemails} = req.body;
+    let {email,name,pass1,pass2,coo1,coo2,turnemails,color} = req.body;
     let person = await colls.people.findOne({email});
     if (person) return showRegister(req,res,'That email is already in use');
     if (pass1!=pass2) return showRegister(req,res,'Passwords must match');
     if (!coo1 || !coo2) return showRegister(req,res,'Must accept codes of coduct');
     let pwhash = await bcrypt.hash(pass1,10);
-    person = { email, name, pwhash, turnemails };
+    person = { email, name, pwhash, turnemails, color };
     await colls.people.insertOne(person);
     loginSuccess(res, person.name, email);
 }
 
 export async function showOpts(req,res) {
     const email = req.cookies.email;
-    const {name, turnemails, validated} = await colls.people.findOne({email});
-    res.render('opts',{email,name,turnemails,validated});
+    const {name, turnemails, validated, color} = await colls.people.findOne({email});
+    res.render('opts',{email,name,turnemails,validated,color,player_colors});
 }
 
 export async function handleOpts(req,res) {
     const email = req.cookies.email;
-    let { name, turnemails, resend, reset, pass1, pass2 } = req.body;
+    let { name, turnemails, resend, color, reset, pass1, pass2 } = req.body;
     let old = await colls.people.findOne({email});
     if (reset && pass1!=pass2) {
         res.send('When resetting password, passwords must match');
@@ -112,7 +113,7 @@ export async function handleOpts(req,res) {
         pwhash = old.pwhash;
     }
     let eversent = old.eversent || resend;
-    await colls.people.updateOne({email}, {$set: {name,turnemails,pwhash,eversent}});
+    await colls.people.updateOne({email}, {$set: {name,turnemails,pwhash,eversent,color}});
     res.cookie('name',name).cookie('email',email).cookie('token',makeToken(email)).redirect('/');
 }
 

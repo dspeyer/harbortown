@@ -2,6 +2,7 @@ import { log_event } from './dbg.js';
 import * as actions from '../common/actions.js';
 import { initBuildings } from '../common/buildings.js';
 import { subtractResources, safeCopy, buildings_by_number } from '../common/utils.js';
+import { player_colors } from '../common/data.js';
 import { colls } from './gamelist.js';
 import { sendLoginLink } from './login.js';
 
@@ -16,6 +17,22 @@ function clean(game, email) {
             p.isMe = true;
         }
         delete p.email;
+    }
+    let colorCnt = Object.assign(...player_colors.map(x =>({[x]:0})));
+    for (let p of out.players) {
+        colorCnt[p.color] += 1;
+    }
+    for (let p of out.players) {
+        if (p.isMe) continue;
+        if (colorCnt[p.color] == 1) continue;
+        for (let c of player_colors) {
+            if (colorCnt[c]==0) {
+                colorCnt[p.color] -= 1;
+                p.color = c;
+                colorCnt[c] += 1;
+                break;
+            }
+        }
     }
     out.specialBuildings = out.specialBuildings.slice(0,2);
     return out;
