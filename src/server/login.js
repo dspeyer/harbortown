@@ -8,16 +8,24 @@ import { player_colors } from '../common/data.js';
 import { colls } from './gamelist.js';
 
 let key;
-fs.readFile('private-key.pem','ascii',(err,keyData)=> {
-    if (err) throw err;
-    key = new NodeRSA(keyData);
-});
+if (process.env.PRIVATE_KEY) {
+    key = new NodeRSA(process.env.PRIVATE_KEY);
+} else {
+    fs.readFile('private-key.pem','ascii',(err,keyData)=> {
+        if (err) throw err;
+        key = new NodeRSA(keyData);
+    });
+}
 
 let tr;
-fs.readFile('gmail-auth.json','ascii',(err,txt)=> {
-    if (err) throw err;
-    tr = nodemailer.createTransport({service:'gmail',auth:JSON.parse(txt)});
-});
+if (process.env.GMAIL_PASS) {
+    tr = nodemailer.createTransport({service:'gmail',auth:{user:'harbortownbot',pass:process.env.GMAIL_PASS}});
+} else {
+    fs.readFile('gmail-auth.json','ascii',(err,txt)=> {
+        if (err) throw err;
+        tr = nodemailer.createTransport({service:'gmail',auth:JSON.parse(txt)});
+    });
+}
 
 let baseurl = '';
 

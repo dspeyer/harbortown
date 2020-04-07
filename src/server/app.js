@@ -7,7 +7,7 @@ import { game_socket_open } from './socket.js';
 import { requireLogin, refererGrabber, handleLogin, showLogin, handleRegister, showRegister, showOpts, handleOpts, handleLoginLink, css } from './login.js';
 import { showGameList, join, createSeed, mkGame } from './gamelist.js';
 
-const port = 8080
+const port = process.env.PORT || 8080;
 export const app = express()
 expressWs(app);
 app.set("view engine","vash")
