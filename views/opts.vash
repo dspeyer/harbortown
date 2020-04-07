@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <title>Personal Options</title>
+        <link rel="stylesheet" href="login.css">
+    </head>
+    <body>
+        <form method="post" action="opts">
+            <h1>Personal Options for <tt>@model.email</tt></h1>
+            Display Name
+            <input name="name" class="text" value="@model.name">
+
+            <div class="rb">
+                <input type="checkbox" name="turnemails" id="turnemails" checked="@(model.turnemails=='on')'">
+                <label for="turnemails">Email me when my turn arrives</label>
+                @if ( ! model.validated ) {
+                <blockquote>
+                    Requires email validation
+                    (<input type="checkbox" name="resend" id="resend"><label for="resend">resend</label>)
+                </blockquote>
+                }
+            </div>
+            
+            Favorite Color
+            <div class="rb">
+                @model.player_colors.forEach((c)=> {
+                <span>
+                    <input name="color" value="@c" id="@c" type="radio" />
+                    <label for="@c" class="box" style="background:@c;color:@(c=='khaki'?'black':'white');">@c</label>
+                </span>
+                })
+                <input name="color" value="random" id="random" type="radio" />
+                <label for="random" class="box random">random</label>
+            </div>
+            <script>
+                document.getElementById('@model.color').checked=true;
+            </script>
+                
+            <input type="checkbox" name="reset" id="reset"><label for="reset">Reset Password</label>
+            <blockquote id="pb">
+                New Password
+                <input name="pass1" type="password" class="text">
+                Confirm Password
+                <input name="pass2" type="password" class="text">
+            </blockquote>
+            <br><br><hr><br>
+            <input type="submit" value="Make It So">
+        </form>
+        <Script>
+         let cb = document.getElementById('reset');
+         let pb = document.getElementById('pb');
+         let onChange = () => { pb.style.display = cb.checked ? 'block' : 'none'; }
+         cb.addEventListener('change',onChange);
+         onChange();
+        </Script>
+    </body>
+</html>

@@ -1,0 +1,41 @@
+<html>
+    <head>
+        <title>Login Required</title>
+        <link rel="stylesheet" href="login.css">
+    </head>
+    <body>
+        <div>
+            @if (model.msg) {
+              <h3>@model.msg</h3>
+            }
+        </div>
+        <form method="post" action="register">
+          <h1>Create Account</h1>
+          Email Address:
+          <input name="email" class="text">
+          Password:
+          <input name="pass1" type="password" class="text">
+          Password (again):
+          <input name="pass2" type="password" class="text">
+          Display Name
+          <input name="name" class="text">
+          Favorite Color<br>
+          <div class="rb">
+            @model.player_colors.forEach((c)=> {
+            <span>
+              <input name="color" value="@c" id="@c" type="radio" />
+              <label for="@c" class="box" style="background:@c;color:@(c=='khaki'?'black':'white');">@c</label>
+            </span>
+            })
+            <input name="color" value="random" id="random" type="radio" checked="true" />
+            <label for="random" class="box random">random</label>
+          </div>
+          <input type="checkbox" name="turnemails"> Email me when my turn arrives (requires email validation)<br><br>
+          <input type="checkbox" name="coo1"> I promise to be good to my fellow players<br>
+          <input type="checkbox" name="coo2"> I promise that I will never let the existence of this website prevent me from purchasing a copy of Le Havre<br>
+          <br>
+          <input type="submit" value="Register">
+        </form>
+        <hr>
+    </body>
+</html>
