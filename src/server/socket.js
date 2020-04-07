@@ -3,6 +3,7 @@ import * as actions from '../common/actions.js';
 import { initBuildings } from '../common/buildings.js';
 import { subtractResources, safeCopy, buildings_by_number } from '../common/utils.js';
 import { colls } from './gamelist.js';
+import { sendLoginLink } from './login.js';
 
 let sockets_by_id = {};
 
@@ -34,8 +35,31 @@ async function demandPlayerResources(game, player, filter, msg, feeding) {
             console.log('  Skipping socket for '+s.name);
         }
     }
+    if (player != game.players[game.currentPlayer]) {
+        const person = await colls.people.findOne({email:player.email});
+        if (person.turnemails && person.validated) {
+            sendLoginLink('Your turn',
+                          "Pick your end-of-round food in game #"+game.id+" ("+game.desc+")",
+                          person.email,
+                          '/game/?id='+game.id);
+        }
+    }
     return null;
 };
+
+async function announceGameEnd(game) {
+    for (let p of game.players) {
+        let email = p.email;
+        let person = await colls.people.findOne({email:player.email});
+        if (person.turnemails && person.validated) {
+            sendLoginLink('Game Over',
+                          "Game #"+game.id+" ("+game.desc+") has finished",
+                          person.email,
+                          '/game/?id='+game.id);
+        }
+    }
+}
+            
 
 
 async function replay_event(e, game, playfrom) {
@@ -61,7 +85,7 @@ async function replay_event(e, game, playfrom) {
         showMessage: (msg, personal) => { if (!personal) broadcastMessages.push(msg);},
         initUi: ()=>{},
         update: ()=>{},
-        endGame: (game) => { game.ended = Date.now(); }
+        endGame: (game) => { game.ended = Date.now(); announceGameEnd(game); }
     }
     if (e[0]=='nextTurn' || e[0]=='completeFeed') {
         ui.serverPickResources = ui.pickPlayerResources;
@@ -107,6 +131,13 @@ export function game_socket_open(ws,req) {
             }
         }
         await colls.games.updateOne({id:ws.gameid},{$set:game});
+        if (game.currentPlayer != backup.currentPlayer && game.currentPlayer != -1) {
+            const email = game.players[game.currentPlayer].email;
+            const person = await colls.people.findOne({email});
+            if (person.turnemails && person.validated) {
+                sendLoginLink('Your turn', "It's your turn in game #"+game.id+" ("+game.desc+")", email, '/game/?id='+game.id)
+            }
+        }
         for (let s of sockets_by_id[game.id]) {
             try {
                 if (s.readyState != 3) { // CLOSED -- TODO: find the named constant

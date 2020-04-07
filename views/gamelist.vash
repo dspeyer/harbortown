@@ -85,7 +85,7 @@
             </form>
         </table>
         <br/><br/>
-        You are logged in as "@model.name" (@model.email).  You can <a href="/login">change this</a>
+        You are logged in as "@model.name" (@model.email).  You can <a href="/login">log in as someone else</a> or <a href="/opts">change your personal settings</a>.
         <br/><br/>
         <form action="/mkGame" method="post">
             Or specify exact game:<br/>

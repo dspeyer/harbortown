@@ -1,12 +1,31 @@
+import fs from 'fs';
+
 import NodeRSA from 'node-rsa';
 import bcrypt from 'bcrypt';
-import fs from 'fs';
+import nodemailer from 'nodemailer';
+
 import { colls } from './gamelist.js';
 
 let key;
 fs.readFile('private-key.pem','ascii',(err,keyData)=> {
+    if (err) throw err;
     key = new NodeRSA(keyData);
 });
+
+let tr;
+fs.readFile('gmail-auth.json','ascii',(err,txt)=> {
+    if (err) throw err;
+    tr = nodemailer.createTransport({service:'gmail',auth:JSON.parse(txt)});
+});
+
+let baseurl = '';
+
+export function refererGrabber(req,res,next) {
+    if ( ! baseurl && req.headers.referer && req.path.indexOf('favicon')!=-1) {
+        baseurl = req.headers.referer.split('/').slice(0,3).join('/');
+    }
+    next();
+}
 
 export function requireLogin(req,res,next) {
     if (req.method=='POST') return next();
@@ -34,15 +53,18 @@ function loginSuccess(res,name,email) {
     res.cookie('name',name).cookie('email',email).cookie('token',makeToken(email)).redirect('/');
 }
 
-function makeToken(email) {
-    const sig = key.sign(email);
-    return sig.toString('base64');
+function makeToken(email,ts) {
+    const sig = key.sign(email+(ts||''));
+    const out = sig.toString('base64');
+    console.log('Token is', out);
+    return out;
 }
 
-function validToken({email,token}) {
+function validToken({email,ts,token}) {
     if (!token) return false;
+    if (ts && Date.now()-ts > 60*60*1000) return false;
     const sig = new Buffer(token,'base64');
-    return key.verify(email,sig);
+    return key.verify(email+(ts||''),sig);
 }
 
 
@@ -61,4 +83,60 @@ export async function handleRegister(req,res) {
     person = { email, name, pwhash, turnemails };
     await colls.people.insertOne(person);
     loginSuccess(res, person.name, email);
+}
+
+export async function showOpts(req,res) {
+    const email = req.cookies.email;
+    const {name, turnemails, validated} = await colls.people.findOne({email});
+    res.render('opts',{email,name,turnemails,validated});
+}
+
+export async function handleOpts(req,res) {
+    const email = req.cookies.email;
+    let { name, turnemails, resend, reset, pass1, pass2 } = req.body;
+    let old = await colls.people.findOne({email});
+    if (reset && pass1!=pass2) {
+        res.send('When resetting password, passwords must match');
+        return;
+    }
+    if (turnemails && ! old.eversent && ! old.validated) {
+        resend = true;
+    }
+    if (resend) {
+        sendLoginLink('Validation', "Use this HarborTown login link to validate your email address", email, req.headers.referer);
+    }
+    let pwhash;
+    if (reset) {
+        pwhash = await bcrypt.hash(pass1,10);
+    } else {
+        pwhash = old.pwhash;
+    }
+    let eversent = old.eversent || resend;
+    await colls.people.updateOne({email}, {$set: {name,turnemails,pwhash,eversent}});
+    res.cookie('name',name).cookie('email',email).cookie('token',makeToken(email)).redirect('/');
+}
+
+
+export function sendLoginLink(subj, msg, email, redir) {
+    const ts = Date.now();
+    const token = makeToken(email, ts);
+    const _ = encodeURIComponent;
+    const url = baseurl + '/frommail?email='+_(email)+'&ts='+ts+'&token='+_(token)+'&redir='+_(redir||'/');
+    tr.sendMail({ to: email,
+                  from: "HarborTown Bot <harbortownbot@gmail.com>",
+                  subject: '[HarborTown] '+subj,
+                  text: msg+'\n\n'+url+'\n\n(This url is good for 1 hour)' });
+
+}
+
+export async function handleLoginLink(req, res) {
+    const { email, ts, token, redir } = req.query;
+    console.log({ email, ts, token, redir });
+    if (validToken({email, ts, token})) {
+        const name = (await colls.people.findOne({email})).name;
+        await colls.people.update({email}, {$set: {validated: true}});
+        res.cookie('name',name).cookie('email',email).cookie('token',makeToken(email)).redirect(redir);
+    } else {
+        res.send('Invalid link');
+    }
 }

@@ -102,7 +102,6 @@ export async function createSeed(req, res) {
 export async function mkGame(req, res) {
     let game = JSON.parse(req.body.state);
     game.id = await newId();
-    delete game.whoami;
     colls.games.insertOne(game);
     res.redirect('/');
 }
