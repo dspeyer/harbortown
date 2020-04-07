@@ -7,7 +7,10 @@ const { MongoClient } = mongodb;
 
 export let colls = {};
 
-MongoClient.connect("mongodb://localhost:27017", (err,client) => {
+const mgHostPort = process.env.MONGO_HOSTPORT || 'localhost:27017';
+const mgDb = process.env.MONGO_DB || 'harbortown';
+
+MongoClient.connect("mongodb://"+mgHostPort, (err,client) => {
     if (err) throw err;
     let db = client.db('harbortown');
     for (let c of ['games','seeds','ids','people']) {
