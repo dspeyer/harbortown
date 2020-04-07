@@ -14,9 +14,9 @@ if (process.env.MONGO_PASS) {
     mgUserPass = 'harbortown:'+process.env.MONGO_PASS+'@';
 }
 
-MongoClient.connect("mongodb://"+mgUserPass+mgHostPort, (err,client) => {
+MongoClient.connect("mongodb://"+mgUserPass+mgHostPort+'/'+mgDb, (err,client) => {
     if (err) throw err;
-    let db = client.db('harbortown');
+    let db = client.db(mgDb);
     for (let c of ['games','seeds','ids','people']) {
         db.collection(c, (err, coll) => {
             if (err) throw err;
