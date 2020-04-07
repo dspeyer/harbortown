@@ -47,5 +47,9 @@
     ]
   },
   "type": "module",
-  "homepage": "/game"
+  "homepage": "/game",
+  "engines": {
+    "node": "13.8.x"
+  }
+
 }
