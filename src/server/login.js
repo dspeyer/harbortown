@@ -91,6 +91,9 @@ export async function handleRegister(req,res) {
     let pwhash = await bcrypt.hash(pass1,10);
     person = { email, name, pwhash, turnemails, color };
     await colls.people.insertOne(person);
+    if (turnemails) {
+        sendLoginLink('Validation', "Use this HarborTown login link to validate your email address", email, req.headers.referer);
+    }
     loginSuccess(res, person.name, email);
 }
 
