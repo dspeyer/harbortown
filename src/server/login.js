@@ -94,7 +94,7 @@ export async function handleRegister(req,res) {
     person = { email, name, pwhash, turnemails, color };
     await colls.people.insertOne(person);
     if (turnemails) {
-        sendLoginLink('Validation', "Use this HarborTown login link to validate your email address", email, req.headers.referer);
+        sendLoginLink('Validation', "Use this HarborTown login link to validate your email address", email);
     }
     loginSuccess(res, person.name, email);
 }
@@ -117,7 +117,7 @@ export async function handleOpts(req,res) {
         resend = true;
     }
     if (resend) {
-        sendLoginLink('Validation', "Use this HarborTown login link to validate your email address", email, req.headers.referer);
+        sendLoginLink('Validation', "Use this HarborTown login link to validate your email address", email);
     }
     let pwhash;
     if (reset) {
