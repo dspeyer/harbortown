@@ -30,8 +30,10 @@ if (process.env.GMAIL_PASS) {
 let baseurl = '';
 
 export function refererGrabber(req,res,next) {
+    console.log({baseurl,p:req.path,r:req.headers.referer});
     if ( ! baseurl && req.headers.referer && req.path.indexOf('favicon')!=-1) {
         baseurl = req.headers.referer.split('/').slice(0,3).join('/');
+        console.log('...new baseurl',baseurl);
     }
     next();
 }
