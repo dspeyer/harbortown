@@ -109,6 +109,8 @@ export function closeSelf(ev) {
     holder.parentNode.removeChild(holder);
 }
 
+let allMessages = {};
+
 class MessageDialog extends React.Component {
     constructor(props) {
         super(props);
@@ -117,6 +119,8 @@ class MessageDialog extends React.Component {
         if ( ! props.lasting ) {
             this.timeout = window.setTimeout(this.tick.bind(this), 5000);
         }
+        this.id = Date.now();
+        allMessages[this.id] = this;
     }
     render() {
         return (<div className="msgDialog" ref={this.dom} style={ {opacity: this.state.opacity,
@@ -132,8 +136,15 @@ class MessageDialog extends React.Component {
         if (this.state.opacity<=0) this.close();
     }
     close(){
+        delete allMessages[this.id];
         window.clearTimeout(this.timeout);
         closeSelf({target:this.dom.current});
+    }
+}
+
+export function clearMessages() {
+    for (let m of Object.values(allMessages)) {
+        m.close();
     }
 }
 
@@ -562,6 +573,7 @@ let turnBackup = null;
 export async function wrap(callback) {
     const backup = safeCopy(gameState);
     if ( ! turnBackup ) turnBackup = safeCopy(gameState);
+    if (ui.prepnet) ui.prepnet();
     try {
         const player = gameState.players[gameState.currentPlayer];
         prepare_log(callback.name);

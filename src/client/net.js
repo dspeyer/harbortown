@@ -1,6 +1,7 @@
+import React from 'react';
 import { restore, safeCopy } from '../common/utils.js';
 import { resources } from '../common/data.js';
-import { showMessage, showError, pickPlayerResources, ui, score } from './interaction.js';
+import { showMessage, showError, clearMessages, pickPlayerResources, ui, score } from './interaction.js';
 import { gameState } from './state.js';
 
 let log = [];
@@ -10,6 +11,7 @@ export function init() {
     let hn = window.location.hostname;
     let port = window.location.port;
     let id = window.location.search.substr(1);
+    showMessage("Trying to connect...", /*lasting=*/ true);
     socket = new WebSocket('ws://'+hn+':'+port+'/socket');
     socket.addEventListener('message', (raw) => {
         const msg = JSON.parse(raw.data);
@@ -35,9 +37,12 @@ export function init() {
     socket.addEventListener('open', () => {
         socket.send(JSON.stringify([['set_id',id]]));
         ui.am_client_to_server = true;
+        clearMessages();
+        ui.prepnet = null;
     });
     socket.addEventListener('close', () => {
-        showError('Lost contact with server, consider reloading', /*lasting=*/ true);
+        showError(<span>Lost contact with server <input type="button" value="reconnect" onClick={init} /></span>, /*lasting=*/ true);
+        ui.prepnet = init;
     });
 }
 
