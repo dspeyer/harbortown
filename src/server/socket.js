@@ -94,7 +94,7 @@ async function replay_event(e, game, playfrom) {
     const logged = (cb,fmt) => (()=>{ let o=cb(); game.log.push(fmt(o)); return o; });
     let ui = {
         pickTownResource: logged(rawget, (x)=>x),
-        pickResources: logged(rawget, (x)=>Object.keys(x).join(', ')),
+        pickResources: logged(rawget, (x)=>'Choose '+Object.keys(x).join(', ')),
         pickBuildingPlan: rawget,
         pickNextSpecialBuilding: rawget,
         pickBuilding: logged(bget, (x)=>x.name),

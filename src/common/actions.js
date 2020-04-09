@@ -191,13 +191,15 @@ export async function utilizeBuilding(player, game, ui, building) {
     }
     if (game.currentTurn < game.events.length) {
         if (game.disks_by_building[building.number] > -1) throw "Building Occupied";
-    }
-    for (let b in game.disks_by_building) {
-        if (game.disks_by_building[b] == game.currentPlayer) {
-            delete game.disks_by_building[b];
+        for (let b in game.disks_by_building) {
+            if (game.disks_by_building[b] == game.currentPlayer) {
+                delete game.disks_by_building[b];
+            }
         }
+        game.disks_by_building[building.number] = game.currentPlayer;
+    } else {
+        if (game.disks_by_building[building.number] == player.number) throw "Building Occupied By You";
     }
-    game.disks_by_building[building.number] = game.currentPlayer;
     const owner = findOwner(building.number, game);
     if (owner != player) {
         const pt = Object.keys(building.entry);
