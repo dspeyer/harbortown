@@ -1,6 +1,7 @@
 <html>
     <head>
         <title>HarborTown</title>
+        <link rel="icon" href="/game/favicon.ico" />
         <style>
          body {
              text-align: center;

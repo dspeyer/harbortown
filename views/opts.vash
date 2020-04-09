@@ -2,6 +2,7 @@
     <head>
         <title>Personal Options</title>
         <link rel="stylesheet" href="login.css">
+        <link rel="icon" href="/game/favicon.ico" />
     </head>
     <body>
         <form method="post" action="opts">

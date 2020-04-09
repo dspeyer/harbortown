@@ -2,6 +2,7 @@
     <head>
         <title>Login Required</title>
         <link rel="stylesheet" href="login.css">
+        <link rel="icon" href="/game/favicon.ico" />
         <style>
          form {
              width: calc( 16em * 1.618 );
