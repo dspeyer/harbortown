@@ -103,6 +103,13 @@ div.horiz {
     grid-row-start: 5; 
     grid-row-end: 6;
     position: relative;
+    white-space: nowrap;
+    font-size: 10pt;
+    color: blue;
+}
+
+.buttonbar input {
+    vertical-align: text-bottom;
 }
 
 .shipStacks {

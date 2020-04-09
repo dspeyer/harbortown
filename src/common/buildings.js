@@ -21,6 +21,7 @@ export const building_firm = {name: 'Building Firm',
                            if (self && self.name=='Sawmill' && buildcost.wood > 0) { buildcost.wood -= 1; }
                            subtractResources(player, buildcost);
                            player.buildings.push(plan.number);
+                           game.log.push(plan.name);
                        }
                       };
 
@@ -45,6 +46,7 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                     if ( ! modernized && res.brick>0) {
                         self.truesetmodernized(game, true)
                         modernized = true;
+                        game.log('Modernized');
                     }
                     if ((res.steel>0 || res.iron>0) && ! modernized) {
                         throw "Only modernized wharf can use metal";
@@ -60,6 +62,7 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                     if (countPile(res,'energy') < 3) throw "Not enough energy";
 
                     if (game.ships[ship_type].length == 0) throw "No "+ship_type+" ships available to build";
+                    game.log('€'+game.ships[ship_type][0]+' '+ship_type+' ship')
                     player.ships.push([ship_type,game.ships[ship_type].shift()]);
                 }
               };
@@ -102,13 +105,16 @@ export const starting_buildings = [
 function capOfShips(ships,n,game) {
     let rem = n;
     let cap = 0;
+    let shipsFound = []
     for (let t of ['steel','iron','wood']) {
         for (let s of ships) {
             if (s[0]==t) {
                 cap += game.shipStats[t].ship;
                 rem -= 1;
+                shipsFound.push(t)
             }
             if (rem==0) {
+                game.log.push('Using '+shipsFound.join(', ')+' to ship '+cap+' goods');
                 return cap;
             }
         }
@@ -135,6 +141,7 @@ export const buildings = [
          if (countPile(sres,'value',(x)=>1) > cap) throw "Too many goods";
          const v = countPile(sres,'value');
          addResources(player,{money:v});
+         game.log.push('Making €'+v);
      }
     },
     
@@ -295,6 +302,9 @@ export const buildings = [
              throw "Not enough energy for that wheat";
          }
          addResources(player,{bread:res.wheat, money:Math.floor(res.wheat/2)});
+         if (res.wheat%2 == 1) {
+             ui.showMessage(player.name+unescape("%20%62%61%6b%65%64%20%74%68%65%20%61%66%69%6b%6f%6d%65%6e"));
+         }
      }
     },
 

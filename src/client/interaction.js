@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
 import { safeCopy, restore, addResources, subtractResources, countPile, countSymbol, buildings_by_number } from '../common/utils.js';
@@ -435,6 +435,29 @@ export function score() {
     );
 }
 
+function ScrollToBottom(){
+    let ref = React.createRef();
+    let out = <span ref={ref}/>;
+    useEffect( () => { ref.current.parentNode.scroll(0,999999); } );
+    return out;
+}
+
+export function log() {
+    showDialog(
+        <div className="helpDlg">
+          <h2>Game Log</h2>
+          <div className="content">
+            {
+                gameState.log.map((e) => ((typeof(e)=='string') ? (<li>{e}</li>) : (<h6 className={'l'+e[0]}>{e[1]}</h6>)))
+            }
+            <ScrollToBottom/>
+          </div>
+          <input type="button" value="OK" onClick={closeSelf} />
+        </div>
+    );
+}
+
+
 export function help(){
     showDialog(
         <div className="helpDlg">
@@ -542,6 +565,7 @@ export async function wrap(callback) {
     try {
         const player = gameState.players[gameState.currentPlayer];
         prepare_log(callback.name);
+        gameState.log.push([2,callback.name]);
         if (holders.cancelButton) holders.cancelButton.setState({active:true});
         await callback(player, gameState, ui);
         if (callback.name == 'nextTurn') {

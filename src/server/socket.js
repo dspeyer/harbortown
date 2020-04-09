@@ -91,14 +91,19 @@ async function replay_event(e, game, playfrom) {
     
     const rawget = () => { return e[input++]; };
     const bget = () => buildings_by_number[rawget()];
+    const logged = (cb,fmt) => (()=>{ let o=cb(); game.log.push(fmt(o)); return o; });
     let ui = {
-        pickTownResource: rawget,
-        pickResources: rawget,
+        pickTownResource: logged(rawget, (x)=>x),
+        pickResources: logged(rawget, (x)=>Object.keys(x).join(', ')),
         pickBuildingPlan: rawget,
         pickNextSpecialBuilding: rawget,
-        pickBuilding: bget,
-        pickPlayerBuilding: bget,
-        pickPlayerResources: (p) => { let r = rawget(); subtractResources(p, r); return r},
+        pickBuilding: logged(bget, (x)=>x.name),
+        pickPlayerBuilding: logged(bget, (x)=>x.name),
+        pickPlayerResources: (p,_,msg) => { let r = rawget();
+                                            subtractResources(p, r);
+                                            if (e[0]!='completeFeed') game.log.push(((msg && msg.indexOf('entry')!=-1)?'Entry: ':'Sent: ') +
+                                                                                    JSON.stringify(r) );
+                                            return r; },
         showMessage: (msg, personal) => { if (!personal) broadcastMessages.push(msg);},
         initUi: ()=>{},
         update: ()=>{},
@@ -107,7 +112,9 @@ async function replay_event(e, game, playfrom) {
     if (e[0]=='nextTurn' || e[0]=='completeFeed') {
         ui.serverPickResources = ui.pickPlayerResources;
         ui.pickPlayerResources = demandPlayerResources.bind(null,game);
-    };
+    } else {
+        game.log.push([2,e[0]]);
+    }
     
     let callback = actions[e[0]];
     await callback(player, game, ui);

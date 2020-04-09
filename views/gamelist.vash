@@ -87,7 +87,10 @@
         <br/><br/>
         You are logged in as "@model.name" (@model.email).  You can <a href="/login">log in as someone else</a> or <a href="/opts">change your personal settings</a>.
         <br/><br/>
-        <form action="/mkGame" method="post">
+        Based on <a href="https://smile.amazon.com/Mayfair-Games-MFG3518-Le-Havre/dp/B01N17W07Y/ref=sr_1_1?dchild=1&keywords=le+havre&qid=1586405294&sr=8-1">Le Havre</a> by Uwe Rosenberg.
+        <br/><br/>
+        Source code <a href="https://github.com/dspeyer/harbortown">on github</a>.
+        <form action="/mkGame" method="post" style="display:none;">
             Or specify exact game:<br/>
             <textarea name="state" rows="10" cols="90"></textarea><br/>
             <input type="submit"/>

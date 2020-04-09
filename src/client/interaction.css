@@ -185,3 +185,22 @@
     display: inline-block;
     vertical-align: top;
 }
+
+h6 {
+    margin: 0;
+}
+
+h6.l1 {
+    font-size: 14pt;
+    border-top: 1px solid grey;
+    background: linear-gradient(to bottom, #ddd 0%, #ddd 50%, #fff 100%);
+    margin-top: 0.5em;
+}
+
+h6.l2 {
+    font-size: 12pt;
+}
+
+.content > li {
+    margin-left: 2em;
+}

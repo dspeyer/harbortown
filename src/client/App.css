@@ -13,7 +13,6 @@ h1 {
 .grid {
     display: grid;
     width: 100%;
-    height: 200vh;
     grid-template-rows: min-content min-content min-content min-content;
     grid-template-columns: 1fr min-content min-content 1fr;
 }
@@ -44,6 +43,7 @@ h1 {
 
 
 .dbg {
+    display: none;
     grid-column-start: 1; 
     grid-column-end: 5; 
     grid-row-start: 4; 

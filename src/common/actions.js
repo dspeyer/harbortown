@@ -25,6 +25,7 @@ export function newGame(players, initBuildings) {
     game.currentTurn = 0;
     game.currentAdvancer = -1;
     game.currentPlayer = -1;
+    game.log = [];
     game.sockets = []; // Used by server
     initBuildings(game);
     nextTurn(null, game, /*ui=*/ {update:()=>{}});
@@ -34,6 +35,7 @@ export function newGame(players, initBuildings) {
 export function completeFeed(player, game, ui, food) {
     if (food === undefined) food = ui.serverPickResources(player);
     if (food === null) return;
+    game.log.push(player.name+' ate '+JSON.stringify(food));
     const fed = countPile(food,'food');
     if (fed < player.hunger) {
         player.hunger -= fed;
@@ -58,6 +60,7 @@ export function nextTurn(player, game, ui) {
         return;
     }
     if (game.currentAdvancer == game.advancers.length) {
+        game.log.push([1,'End of Round']);
         const ev = game.events[game.currentTurn];
         game.ships[ev.ship[0]].unshift(ev.ship[1]);
         if (ev.building) {
@@ -72,19 +75,23 @@ export function nextTurn(player, game, ui) {
                 game.townBuildings.push(bestdeck.shift());
                 let b = buildings_by_number[ game.townBuildings[game.townBuildings.length-1] ];
                 ui.showMessage('Town built '+b.name);
+                game.log.push('Town built '+b.name);
             }
         }
         if (ev.special) {
             game.townBuildings.push(game.specialBuildings.shift());
             let b = buildings_by_number[ game.townBuildings[game.townBuildings.length-1] ];
             ui.showMessage('Town built '+b.name+' ('+b.text+')');
+            game.log.push('Town built '+b.name);
         }
         if ( ! ev.noharvest) {
+            game.log.push('Wheat and cattle grew');
             for (let p of game.players) {
                 if (p.resources.wheat > 0) p.resources.wheat += 1;
                 if (p.resources.cattle > 1) p.resources.cattle += 1;
             }
         }
+        game.log.push([2,'All must feed '+ev.feed]);
         for (let p of game.players){
             p.hunger = ev.feed;
             for (let s of p.ships) {
@@ -92,13 +99,16 @@ export function nextTurn(player, game, ui) {
             }
             if (p.hunger <= 0) {
                 delete p.hunger;
+                game.log.push(p.name+' is covered');
                 continue;
             }
             let available = countPile(p.resources,'food');
             if (available <= p.hunger) {
                 console.log('autofeeding ',p);
+                let msg = p.name+' ate ';
                 for (let r in p.resources) {
                     if (resources[r].food) {
+                        msg += p.resources[r]+' '+r+', ';
                         p.resources[r] = 0;
                     }
                 }
@@ -106,6 +116,8 @@ export function nextTurn(player, game, ui) {
                 const loans = Math.ceil(p.hunger/4);
                 const money = loans*4 - p.hunger;
                 addResources(p,{loans,money});
+                if (loans) msg += ' and took '+loans+' loans';
+                game.log.push(msg);
                 delete p.hunger
             } else {
                 const foodtypes = Object.entries(p.resources).filter((e)=>(resources[e[0]].food>0 && e[1]>0));
@@ -113,6 +125,7 @@ export function nextTurn(player, game, ui) {
                     console.log('autofeeding ',p,'using',foodtypes);
                     const n = Math.ceil(p.hunger / resources[foodtypes[0][0]].food);
                     subtractResources(p,{[foodtypes[0][0]]: n});
+                    game.log.push(p.name+' ate '+n+' '+foodtypes[0][0]);
                     delete p.hunger;
                 } else if ( ! ui.am_client_to_server ) {
                     console.log('manual feeding ',p);
@@ -139,12 +152,15 @@ export function nextTurn(player, game, ui) {
         if (res != 'interest') {
             game.townResources[res] += 1;
         } else {
+            game.log.push([1,'Interest']);
             for (let p of game.players) {
                 if (p.resources.loans > 0) {
                     try {
                         subtractResources(p,{money:1});
+                        game.log.push(p.name+' paid');
                     } catch {
                         addResources(p,{loans:1,money:3});
+                        game.log.push(p.name+' took another loan');
                     }
                 }
             }
@@ -152,6 +168,7 @@ export function nextTurn(player, game, ui) {
     }
     game.currentPlayer += 1;
     game.currentPlayer %= game.players.length;
+    game.log.push([1,game.players[game.currentPlayer].name+"'s Turn"]);
     game.bigActionTaken = 0;
     ui.update();
 }
@@ -210,10 +227,12 @@ export async function buy(player, game, ui) {
     const bn = await ui.pickBuildingPlan('Choose a building or ship to buy', {for_buy: true});
     if (bn in game.ships) {
         subtractResources(player, { money: ship_prices[bn] });
+        game.log.push('€'+game.ships[bn][0]+' bn ship for €'+ship_prices[bn])
         player.ships.push([ bn, game.ships[bn].shift() ]);
     } else if (bn in buildings_by_number) {
         let b = buildings_by_number[bn];
         subtractResources(player, {money:(b.price||b.value)});
+        game.log.push(b.name+' for €'+(b.price||b.value));
         let idx;
         if ( (idx = checkDecks(b.number, game)) != -1 ) {
             game.buildingPlans[idx].shift();
@@ -243,7 +262,7 @@ export async function sell(player, game, ui) {
     player.buildings.splice(idx,1);
     addResources(player, {money:Math.floor(b.value/2)});
     game.townBuildings.push(b.number);
-        if (b.number in game.disks_by_building) {
+    if (b.number in game.disks_by_building) {
         delete game.disks_by_building[b.number];
     }
     ui.update();
