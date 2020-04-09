@@ -108,7 +108,7 @@ export function nextTurn(player, game, ui) {
                 let msg = p.name+' ate ';
                 for (let r in p.resources) {
                     if (resources[r].food) {
-                        msg += p.resources[r]+' '+r+', ';
+                        if (p.resources[r]) msg += p.resources[r]+' '+r+', ';
                         p.resources[r] = 0;
                     }
                 }

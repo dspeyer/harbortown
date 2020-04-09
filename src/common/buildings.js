@@ -46,7 +46,7 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                     if ( ! modernized && res.brick>0) {
                         self.truesetmodernized(game, true)
                         modernized = true;
-                        game.log('Modernized');
+                        game.log.push('Modernized');
                     }
                     if ((res.steel>0 || res.iron>0) && ! modernized) {
                         throw "Only modernized wharf can use metal";
@@ -62,7 +62,7 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                     if (countPile(res,'energy') < 3) throw "Not enough energy";
 
                     if (game.ships[ship_type].length == 0) throw "No "+ship_type+" ships available to build";
-                    game.log('€'+game.ships[ship_type][0]+' '+ship_type+' ship')
+                    game.log.push('€'+game.ships[ship_type][0]+' '+ship_type+' ship')
                     player.ships.push([ship_type,game.ships[ship_type].shift()]);
                 }
               };
