@@ -494,7 +494,7 @@ export const buildings = [
      value: 6,
      buildcost: {wood:2},
      minplayers: 1,
-     text: '2+🏠 different standard goods',
+     text: '2+🏠 standard goods; pick next special building',
      action: async (player, ui, game) => {
          const wanted = 2+countSymbol(player,'🏠');
          const goods = await ui.pickResources(['wood','clay','iron','fish','wheat','cattle','hides','coal'], wanted);
