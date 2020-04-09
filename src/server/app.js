@@ -13,7 +13,9 @@ expressWs(app);
 app.set("view engine","vash")
 app.use(cookieParser());
 app.use(express.urlencoded())
-app.use(refererGrabber);
+if ( ! process.env.BASEURL ) {
+    app.use(refererGrabber);
+}
 
 app.get('/login', showLogin);
 app.post('/login', handleLogin);

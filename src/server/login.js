@@ -27,7 +27,7 @@ if (process.env.GMAIL_PASS) {
     });
 }
 
-let baseurl = '';
+let baseurl = process.env.BASEURL || '';
 
 export function refererGrabber(req,res,next) {
     console.log({baseurl,p:req.path,r:req.headers.referer});
