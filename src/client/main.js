@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './main.css';
-import App from './App';
+import App from './App.js';
 import * as serviceWorker from './serviceWorker';
 import { newGame } from '../common/actions.js';
 import { restore } from '../common/utils.js';
