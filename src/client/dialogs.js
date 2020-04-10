@@ -274,7 +274,7 @@ export async function pickPlayerBuilding(msg, player) {
     return buildings_by_number[bn];
 }    
 
-export function score() {
+export function showScore() {
     const syms = ['🔨','🎣','🏠','🏢','🏭','🏛'];
     showDialog(
         <div className="score">
@@ -340,7 +340,7 @@ function ScrollToBottom(){
     return out;
 }
 
-export function log() {
+export function showLog() {
     showDialog(
         <div className="helpDlg">
           <h2>Game Log</h2>
@@ -356,7 +356,7 @@ export function log() {
 }
 
 
-export function help(){
+export function showHelp(){
     showDialog(
         <div className="helpDlg">
           <h2>Rules Reference</h2>
@@ -463,10 +463,10 @@ export function initDialogs() {
         pickNextSpecialBuilding,
         pickBuildingPlan,
         showError,
-        score,
-        help,
-        log,
+        showScore,
+        showHelp,
+        showLog,
         showMessage: (msg, personal) => { if ( ! ui.am_client_to_server || personal) showMessage(msg) },
-        endGame: score
+        endGame: showScore
     });
 }

@@ -128,9 +128,9 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   <input type="button" value="Repay" onClick={wrap.bind(null,repayLoan)} disabled={!myturn || current==-1} />
                   <input type="button" value="C" onClick={wrap.bind(null,cheat)} style={{display:'none'}}/>
                   🌊
-                  <input type="button" value="Score" onClick={ui.score} />
-                  <input type="button" value="Log" onClick={ui.log} />
-                  <input type="button" value="?" onClick={ui.help} />
+                  <input type="button" value="Score" onClick={ui.showScore} />
+                  <input type="button" value="Log" onClick={ui.showLog} />
+                  <input type="button" value="?" onClick={ui.showHelp} />
                   🌊
                   <input type="button" value="Revert" onClick={revert} disabled={!myturn || !canRevert()} />
                   <input type="button" value="Done" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />

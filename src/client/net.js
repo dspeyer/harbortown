@@ -16,7 +16,7 @@ export function init(onNGS) {
         const msg = JSON.parse(raw.data);
         if (msg.newGameState) {
             restore(gameState, msg.newGameState);
-            if (gameState.ended) ui.score();
+            if (gameState.ended) ui.showScore();
             ui.update();
             if (onNGS) {
                 onNGS();
