@@ -463,6 +463,9 @@ export function initDialogs() {
         pickNextSpecialBuilding,
         pickBuildingPlan,
         showError,
+        score,
+        help,
+        log,
         showMessage: (msg, personal) => { if ( ! ui.am_client_to_server || personal) showMessage(msg) },
         endGame: score
     });
