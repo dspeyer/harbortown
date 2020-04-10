@@ -7,7 +7,7 @@ import { gameState } from './state.js';
 let log = [];
 let socket;
 
-export function init() {
+export function init(onNGS) {
     let hn = window.location.hostname;
     let port = window.location.port;
     let id = window.location.search.substr(1);
@@ -19,6 +19,10 @@ export function init() {
             restore(gameState, msg.newGameState);
             if (gameState.ended) score();
             ui.update();
+            if (onNGS) {
+                onNGS();
+                onNGS = null;
+            }
         }
         if (msg.msg) {
             showMessage(msg.msg);

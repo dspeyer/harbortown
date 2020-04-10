@@ -573,7 +573,13 @@ let turnBackup = null;
 export async function wrap(callback) {
     const backup = safeCopy(gameState);
     if ( ! turnBackup ) turnBackup = safeCopy(gameState);
-    if (ui.prepnet) ui.prepnet();
+    if (ui.prepnet) {
+        let res;
+        let p = new Promise((resolve)=>{res=resolve;});
+        window.setTimeout(res, 1000);
+        ui.prepnet(res);
+        await p;
+    }
     try {
         const player = gameState.players[gameState.currentPlayer];
         prepare_log(callback.name);
