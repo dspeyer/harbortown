@@ -2,7 +2,7 @@ import React from 'react';
 import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
 import { MiniShip } from './ships.js';
-import { Instructions, CancelButton, score, help, log } from './interaction.js';
+import { Instructions, CancelButton, ui } from './interaction.js';
 import { nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan, resumeConstruction } from '../common/actions.js';
 import { gameState } from './state.js';
 import { wrap, revert, canRevert, holders } from './interaction.js';
@@ -128,9 +128,9 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   <input type="button" value="Repay" onClick={wrap.bind(null,repayLoan)} disabled={!myturn || current==-1} />
                   <input type="button" value="C" onClick={wrap.bind(null,cheat)} style={{display:'none'}}/>
                   🌊
-                  <input type="button" value="Score" onClick={score} />
-                  <input type="button" value="Log" onClick={log} />
-                  <input type="button" value="?" onClick={help} />
+                  <input type="button" value="Score" onClick={ui.score} />
+                  <input type="button" value="Log" onClick={ui.log} />
+                  <input type="button" value="?" onClick={ui.help} />
                   🌊
                   <input type="button" value="Revert" onClick={revert} disabled={!myturn || !canRevert()} />
                   <input type="button" value="Done" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />

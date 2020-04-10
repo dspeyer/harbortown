@@ -9,10 +9,12 @@ import { gameState } from './state.js';
 import { initUi } from './interaction.js';
 import { initBuildings, clientCheat } from '../common/buildings.js';
 import * as net from './net.js';
+import { initDialogs } from './dialogs.js';
 
 clientCheat.game = gameState;
 
 initUi(5);
+initDialogs();
 if (window.location.search) {
     net.init();
 } else {

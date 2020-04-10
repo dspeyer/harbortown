@@ -1,7 +1,7 @@
 import React from 'react';
 import { restore, safeCopy } from '../common/utils.js';
 import { resources } from '../common/data.js';
-import { showMessage, showError, clearMessages, pickPlayerResources, ui, score } from './interaction.js';
+import { ui } from './interaction.js';
 import { gameState } from './state.js';
 
 let log = [];
@@ -11,13 +11,13 @@ export function init(onNGS) {
     let hn = window.location.hostname;
     let port = window.location.port;
     let id = window.location.search.substr(1);
-    showMessage("Trying to connect...", /*lasting=*/ true);
+    ui.showMessage("Trying to connect...", /*lasting=*/ true);
     socket = new WebSocket('ws://'+hn+':'+port+'/socket');
     socket.addEventListener('message', (raw) => {
         const msg = JSON.parse(raw.data);
         if (msg.newGameState) {
             restore(gameState, msg.newGameState);
-            if (gameState.ended) score();
+            if (gameState.ended) ui.score();
             ui.update();
             if (onNGS) {
                 onNGS();
@@ -25,7 +25,7 @@ export function init(onNGS) {
             }
         }
         if (msg.msg) {
-            showMessage(msg.msg);
+            ui.showMessage(msg.msg);
         }
         if (msg.init && ! msg.foodDemand) {
             const p = gameState.players.filter((p)=> p.isMe)[0];
@@ -33,7 +33,7 @@ export function init(onNGS) {
         }
         if (msg.foodDemand) {
             const p = gameState.players.filter((p)=> p.isMe)[0];
-            pickPlayerResources(p, (r)=> resources[r].food>0, msg.foodDemand).
+            ui.pickPlayerResources(p, (r)=> resources[r].food>0, msg.foodDemand).
                 then((food)=>{
                     socket.send(JSON.stringify([['completeFeed',food]]))});
         }
@@ -41,11 +41,11 @@ export function init(onNGS) {
     socket.addEventListener('open', () => {
         socket.send(JSON.stringify([['set_id',id]]));
         ui.am_client_to_server = true;
-        clearMessages();
+        ui.clearMessages();
         ui.prepnet = null;
     });
     socket.addEventListener('close', () => {
-        showError(<span>Lost contact with server <input type="button" value="reconnect" onClick={init} /></span>, /*lasting=*/ true);
+        ui.showError(<span>Lost contact with server <input type="button" value="reconnect" onClick={init} /></span>, /*lasting=*/ true);
         ui.prepnet = init;
     });
 }
