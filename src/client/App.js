@@ -3,9 +3,7 @@ import './App.css';
 import { Town } from './town.js'
 import { Player } from './player.js'
 import { safeCopy, restore } from '../common/utils.js'
-import { gameState } from './state.js';
-import { ui } from './interaction.js';
-
+import { gameState, ui } from './state.js';
 
 class App extends React.Component {
     

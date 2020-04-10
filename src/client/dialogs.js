@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { safeCopy, restore, addResources, subtractResources, countPile, countSymbol, buildings_by_number } from '../common/utils.js';
-import { gameState } from './state.js';
+import { gameState, ui } from './state.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { annotate_log } from './net.js';
 import { Building } from './buildingui.js';
 import { ship_feeds, ship_capacities, ship_prices, sym_names } from '../common/data.js';
 import { special_buildings } from '../common/buildings.js';
-import { holders, showDialog, ui, allInstructions, clearAllClickTargets, closeSelf } from './interaction.js';
+import { holders, showDialog, allInstructions, clearAllClickTargets, closeSelf } from './interaction.js';
 
 export async function pickTownResource() {
     allInstructions[0].set('Take one pile of resources from the town');

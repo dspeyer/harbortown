@@ -2,10 +2,9 @@ import React from 'react';
 import { ResourceStack } from './resources.js';
 import { Building, BuildingStack } from './buildingui.js';
 import { MiniShip } from './ships.js';
-import { Instructions, CancelButton, ui } from './interaction.js';
+import { Instructions, CancelButton, wrap, revert, canRevert, holders } from './interaction.js';
 import { nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan, resumeConstruction } from '../common/actions.js';
-import { gameState } from './state.js';
-import { wrap, revert, canRevert, holders } from './interaction.js';
+import { gameState, ui } from './state.js';
 import './town.css';
 
 export function AdvancerToken(props) {

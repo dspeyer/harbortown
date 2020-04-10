@@ -1,11 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './interaction.css';
-import { safeCopy, restore, addResources, subtractResources, countPile, countSymbol, buildings_by_number } from '../common/utils.js';
-import { gameState } from './state.js';
-import { annotate_log } from './net.js';
-import { ship_feeds, ship_capacities, ship_prices, sym_names } from '../common/data.js';
-import { special_buildings } from '../common/buildings.js';
+import { safeCopy, restore } from '../common/utils.js';
+import { gameState, ui } from './state.js';
 import { prepare_log, abort_log, send_log, clear_log, keep_alive } from './net.js';
 
 export let holders = {};
@@ -168,11 +165,6 @@ export async function revert() {
 
 export function canRevert() {
     return !! turnBackup;
-}
-
-export let ui = {
-    initUi,
-    // Mostly filled in from dialogs.js
 }
 
 let lastAct;

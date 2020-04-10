@@ -1,8 +1,7 @@
 import React from 'react';
 import { restore, safeCopy } from '../common/utils.js';
 import { resources } from '../common/data.js';
-import { ui } from './interaction.js';
-import { gameState } from './state.js';
+import { gameState, ui } from './state.js';
 
 let log = [];
 let socket;
