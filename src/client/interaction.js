@@ -8,7 +8,7 @@ import { annotate_log } from './net.js';
 import { Building } from './buildingui.js';
 import { ship_feeds, ship_capacities, ship_prices, sym_names } from '../common/data.js';
 import { special_buildings } from '../common/buildings.js';
-import { prepare_log, abort_log, send_log, clear_log } from './net.js';
+import { prepare_log, abort_log, send_log, clear_log, keep_alive } from './net.js';
 
 export let holders = {};
 
@@ -566,8 +566,6 @@ export function help(){
     );
 }
 
-
-
 let turnBackup = null;
 
 export async function wrap(callback) {
@@ -580,6 +578,7 @@ export async function wrap(callback) {
         ui.prepnet(res);
         await p;
     }
+    resetKeepaliveTimer();
     try {
         const player = gameState.players[gameState.currentPlayer];
         prepare_log(callback.name);
@@ -626,4 +625,21 @@ export let ui = {
     initUi,
     showMessage: (msg, personal) => { if ( ! ui.am_client_to_server || personal) showMessage(msg) },
     endGame: score
+}
+
+
+let lastAct;
+let tickTimeout;
+
+export function resetKeepaliveTimer() {
+    lastAct = Date.now();
+    window.clearTimeout(tickTimeout);
+    tick();
+}
+
+function tick() {
+    keep_alive();
+    if (Date.now() - lastAct < 15*60*1000) {
+        tickTimeout = window.setTimeout(tick, 5000);
+    }
 }

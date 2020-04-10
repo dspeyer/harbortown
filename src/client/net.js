@@ -77,3 +77,7 @@ export function abort_log() {
 export function clear_log() {
     log = [];
 }
+
+export function keep_alive() {
+    socket.send('keepalive');
+}

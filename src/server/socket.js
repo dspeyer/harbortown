@@ -134,6 +134,7 @@ export function game_socket_open(ws,req) {
     ws.email = req.cookies.email;
     console.log('socket',ws.name,req.path);
     ws.on('message', async (msg) => {
+        if (msg=='keepalive') return;
         broadcastMessages = [];
         const pmsg = JSON.parse(msg);
         let game = await colls.games.findOne({id:ws.gameid});
