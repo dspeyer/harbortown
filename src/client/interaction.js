@@ -170,7 +170,7 @@ export function canRevert() {
 let lastAct;
 let tickTimeout;
 
-export function resetKeepaliveTimer() {
+function resetKeepaliveTimer() {
     if ( ! ui.am_client_to_server ) return;
     lastAct = Date.now();
     window.clearTimeout(tickTimeout);

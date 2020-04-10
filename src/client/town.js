@@ -7,7 +7,7 @@ import { nextTurn, takeResource, utilizeBuilding, buy, cheat, sell, repayLoan, r
 import { gameState, ui } from './state.js';
 import './town.css';
 
-export function AdvancerToken(props) {
+function AdvancerToken(props) {
     return ( <div className={'advancer'+(props.active?' active':'')}>
                <div className="a">
                  {props.a}
@@ -20,7 +20,8 @@ export function AdvancerToken(props) {
                {props.i && <div className="interest">interest</div>}
              </div> );
 }
-export function OneEndOfTurn(props) {
+
+function OneEndOfTurn(props) {
     return <div className={"endOfTurn"+(props.dark?' dark':'')}>
              {props.eot.feed} 🍪<br/>
              <MiniShip ship={props.eot.ship} /><br/>
