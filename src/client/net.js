@@ -11,7 +11,7 @@ export function init(onNGS) {
     let port = window.location.port;
     let id = window.location.search.substr(1);
     ui.showMessage("Trying to connect...", /*lasting=*/ true);
-    let proto = (window.location.protocol == 'https' ? 'wss' : 'ws');
+    let proto = (window.location.protocol == 'https:' ? 'wss' : 'ws');
     let socketHref = proto+'://'+hn+':'+port+'/socket';
     console.log("Connecting to ",socketHref);
     socket = new WebSocket(socketHref);
