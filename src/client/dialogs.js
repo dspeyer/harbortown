@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
-import ReactDOM from 'react-dom';
 import './dialogs.css';
-import { safeCopy, restore, addResources, subtractResources, countPile, countSymbol, buildings_by_number } from '../common/utils.js';
+import { restore, addResources, subtractResources, countPile, countSymbol, buildings_by_number } from '../common/utils.js';
 import { gameState, ui } from './state.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { annotate_log } from './net.js';
