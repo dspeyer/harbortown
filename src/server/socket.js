@@ -132,7 +132,7 @@ function set_id(id, ws) {
 export function game_socket_open(ws,req) {
     ws.name = req.cookies.name;
     ws.email = req.cookies.email;
-    console.log('socket',ws.name,req.path);
+    console.log('got open socket request',ws.name,req.path);
     ws.on('message', async (msg) => {
         if (msg=='keepalive') return;
         broadcastMessages = [];

@@ -12,7 +12,9 @@ export function init(onNGS) {
     let id = window.location.search.substr(1);
     ui.showMessage("Trying to connect...", /*lasting=*/ true);
     let proto = (window.location.protocol == 'https' ? 'wss' : 'ws');
-    socket = new WebSocket(proto+'://'+hn+':'+port+'/socket');
+    let socketHref = proto+'://'+hn+':'+port+'/socket';
+    console.log("Connecting to ",socketHref);
+    socket = new WebSocket(socketHref);
     socket.addEventListener('message', (raw) => {
         const msg = JSON.parse(raw.data);
         if (msg.newGameState) {
