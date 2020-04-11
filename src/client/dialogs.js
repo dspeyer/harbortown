@@ -462,6 +462,7 @@ export function initDialogs() {
         pickNextSpecialBuilding,
         pickBuildingPlan,
         showError,
+        clearMessages,
         showScore,
         showHelp,
         showLog,
