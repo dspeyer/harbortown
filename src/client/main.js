@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './main.css';
 import App from './App.js';
+import MiniApp from './MiniApp.js';
 import * as serviceWorker from './serviceWorker.js';
 import { newGame } from '../common/actions.js';
 import { restore } from '../common/utils.js';
@@ -25,7 +26,11 @@ if (window.location.search) {
     gameState.desc = 'Client-only game';
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+if (window.innerWidth > 700 && window.innerHeight > 280) {
+    ReactDOM.render(<App />, document.getElementById('root'));
+} else {
+    ReactDOM.render(<MiniApp />, document.getElementById('root'));
+}
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

@@ -72,7 +72,7 @@ export class EndOfTurn extends React.Component {
     }
 }
 
-export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb, myturn}) {
+export function Town({advancers, current, resources, buildings, plans, ships, turn, dbb, myturn, miniified}) {
     let resourceElements = [];
     for (let i in resources) {
         let v = resources[i];
@@ -81,7 +81,6 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
     let advancerElements = advancers.map(
         (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} i={av[2]} active={i==current} key={i} />;}
     );
-    let bat = gameState.bigActionTaken;
     let minplan = Math.min.apply(null, plans.map((d)=>(d.length?d[0]:999)) );
     return (<div>
               <Instructions/>
@@ -111,37 +110,48 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                 <div className="horiz buildings">{ buildings.map((bn)=>{  
                     return <Building bn={bn} key={bn} player={dbb[bn]} />;
                 }) }</div>
-                <div className="buttonbar">
-                  <CancelButton/>
-                  🌊
-                  { bat==0.5 ?
-                    /* TODO: resume things other than construction */
-                    <input type="button" value="Resume Construction" onClick={wrap.bind(null,resumeConstruction)} />
-                    : <span>
-                        <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
-                        <input type="button" value="Use Building" onClick={wrap.bind(null,utilizeBuilding)} disabled={!myturn || bat} />
-                    </span>
-                  }
-                  🌊
-                  <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn || current==-1} />
-                  <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn || current==-1} />
-                  <input type="button" value="Repay" onClick={wrap.bind(null,repayLoan)} disabled={!myturn || current==-1} />
-                  <input type="button" value="C" onClick={wrap.bind(null,cheat)} style={{display:'none'}}/>
-                  🌊
-                  <input type="button" value="Score" onClick={ui.showScore} />
-                  <input type="button" value="Log" onClick={ui.showLog} />
-                  <input type="button" value="?" onClick={ui.showHelp} />
-                  🌊
-                  <input type="button" value="Revert" onClick={revert} disabled={!myturn || !canRevert()} />
-                  <input type="button" value="Done" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
-                  🌊
-                </div>
-                <div className="plans">
-                  { plans.map((plan,i) => {
-                      return <BuildingStack buildings={plan} key={i} minplan={minplan} />
-                  } ) }
-                </div>
+                { miniified || <ButtonBar myturn={myturn} feeding={current==-1} /> }
+                { miniified || <BuildingPlans plans={plans} /> }
               </div>
             </div>);
 }
-        
+
+export function ButtonBar({myturn,feeding}) {
+    let bat = gameState.bigActionTaken;
+    return (<div className="buttonbar">
+              <CancelButton/>
+              🌊
+              { bat==0.5 ?
+                /* TODO: resume things other than construction */
+                <input type="button" value="Resume Construction" onClick={wrap.bind(null,resumeConstruction)} />
+                : <span>
+                    <input type="button" value="Take Pile" onClick={wrap.bind(null,takeResource)} disabled={!myturn || bat} />
+                    <input type="button" value="Use Building" onClick={wrap.bind(null,utilizeBuilding)} disabled={!myturn || bat} />
+                  </span>
+              }
+              🌊
+              <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn || feeding} />
+              <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn || feeding} />
+              <input type="button" value="Repay" onClick={wrap.bind(null,repayLoan)} disabled={!myturn || feeding} />
+              <input type="button" value="C" onClick={wrap.bind(null,cheat)} style={{display:'none'}}/>
+              🌊
+              <span className="miniOnly"><wbr/>🌊</span>
+              <input type="button" value="Score" onClick={ui.showScore} />
+              <input type="button" value="Log" onClick={ui.showLog} />
+              <input type="button" value="?" onClick={ui.showHelp} />
+              🌊
+              <input type="button" value="Revert" onClick={revert} disabled={!myturn || !canRevert()} />
+              <input type="button" value="Done" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
+              🌊
+            </div>
+           );
+}
+
+export function BuildingPlans({plans}) {
+    let minplan = Math.min.apply(null, plans.map((d)=>(d.length?d[0]:999)) );
+    return <div className="plans">
+             { plans.map((plan,i) => {
+                 return <BuildingStack buildings={plan} key={i} minplan={minplan} />
+             } ) }
+           </div>
+}

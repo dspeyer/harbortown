@@ -11,6 +11,7 @@ import { holders, showDialog, allInstructions, clearAllClickTargets, closeSelf }
 
 export async function pickTownResource() {
     allInstructions[0].set('Take one pile of resources from the town');
+    if (ui.setTab) ui.setTab('town');
     for (let res in gameState.townResources) {
         if (gameState.townResources[res] > 0) {
             holders.townResources[res].show();
@@ -149,6 +150,8 @@ export async function pickPlayerResources(player, filter, msg) {
     }
     pickPlayerResourcesLocked = true;
     
+    if (ui.setTab) ui.setTab(player);
+
     if (!msg) msg="Choose resources to send";
     let dlobj=[];
     const dlelem = <PickResourcesDialog msg={msg} out={dlobj} player={player} />;
@@ -238,6 +241,7 @@ export async function pickBuilding() {
 }
 
 export async function pickBuildingPlan(msg, {resource, for_buy, pausable}) {
+    if (ui.setTab) ui.setTab('bps');
     allInstructions[0].set(msg, pausable);
     for (let deck of gameState.buildingPlans) {
         if (deck.length) {
@@ -263,6 +267,7 @@ export async function pickBuildingPlan(msg, {resource, for_buy, pausable}) {
 
 export async function pickPlayerBuilding(msg, player) {
     allInstructions[0].set(msg);
+    if (ui.setTab) ui.setTab(player);
     for (let b of player.buildings) {
         holders.buildings[b].show();
     }

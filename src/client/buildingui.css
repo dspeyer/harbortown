@@ -4,8 +4,10 @@
     position: relative;
     border-radius: 3px;
     width: 100px;
+    max-width: 100px;
     min-width: 86px;
     height: 66px;
+    max-height: 66px;
     font-size: 8pt;
     margin: 2px;
 }

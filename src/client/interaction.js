@@ -132,8 +132,8 @@ export async function wrap(callback) {
         await p;
     }
     resetKeepaliveTimer();
+    const player = gameState.players[gameState.currentPlayer];
     try {
-        const player = gameState.players[gameState.currentPlayer];
         prepare_log(callback.name);
         gameState.log.push([2,callback.name]);
         if (holders.cancelButton) holders.cancelButton.setState({active:true});
@@ -150,6 +150,7 @@ export async function wrap(callback) {
         throw e;
     } finally {
         if (holders.cancelButton) holders.cancelButton.setState({active:false});
+        if (ui.setTab) ui.setTab(player);
         ui.update();
     }
 }

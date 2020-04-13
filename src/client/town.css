@@ -1,5 +1,6 @@
 div.advancer {
     width: 46px;
+    max-width: 46px;
     height: 46px;
     border-radius: 23px;
     box-shadow: 4px 4px #777;
@@ -173,4 +174,8 @@ div.horiz {
     font-size: 10pt;
     font-family: times;
     background: #ddd;
+}
+
+.miniOnly {
+    display: none;
 }

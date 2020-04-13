@@ -1,0 +1,113 @@
+.mini {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    height: calc( 100vh - 70px );
+    margin: 5px;
+}
+
+.mini div {
+    flex-grow: 1;
+}
+
+.mini div.tabBar {
+    flex-grow: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+
+.mini div.buttonbar {
+    flex-grow: 0;
+}
+
+.tab {
+    border: 2px black solid;
+    border-radius: 1em 1em 0 0;
+    background: #aaa;
+    text-align: center;
+}
+
+.tab.activefalse {
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.tab.activetrue {
+    position: relative;
+    padding-bottom: 6px;
+    top: 2px;
+    border-bottom: none;
+    z-index: 1;
+}
+
+.mini .townbox {
+    background: white;
+    height: 100%;
+    width: 100%;
+    transform: none;
+    border: 2px solid black;
+}
+
+.bpHolder {
+    background: cyan;
+    position: relative;
+    height: 100%;
+    vertical-align: bottom;
+}
+
+.mini h1 {
+    display: none;
+}
+
+.mini .buttonbar {
+    white-space: wrap !important;
+    overflow-wrap: anywhere !important;
+    width: 100vw;
+    display: inline;
+    font-size: 14pt;
+}
+
+.mini .miniOnly {
+    display: inline;
+}
+
+.mini .plans {
+    height: 100%;
+}
+
+.mini .buildingStack {
+    overflow-y: auto;
+}
+
+.mini .buildingHolder {
+    position: unset;
+    display: block;
+}
+
+.mini .buildingHolder .building {
+    margin: auto;
+}
+
+.mini div.horiz {
+    flex-wrap: wrap;
+}
+
+.mini .advancers {
+    height: unset;
+}
+.mini .resource1 {
+    height: unset;
+}
+.mini .resource2 {
+    height: unset;
+}
+.mini .buildings {
+    height: unset;
+    overflow-y: auto;
+}
+
+.mini .player {
+    height: calc(100vh - 70px - 5em);
+}
