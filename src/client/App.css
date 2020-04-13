@@ -7,6 +7,7 @@ h1 {
     text-align: right;
     opacity: 0.4;
     z-index: 99;
+    font-size: 28pt;
 }
 
 
@@ -15,6 +16,7 @@ h1 {
     width: 100%;
     grid-template-rows: min-content min-content min-content min-content;
     grid-template-columns: 1fr min-content min-content 1fr;
+    font-size: 26px;
 }
 
 .townbox {
@@ -22,8 +24,19 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 2; 
     grid-row-end: 3;
-    height: 260px;
+    height: 10em;
     position: relative;
+}
+
+@media screen and (max-height: 520px) {
+    .grid {
+        font-size: 19.5px;
+    }
+    .townbox {
+        transform: scale(0.75);
+        transform-origin: top left;
+        width: 610px;
+    }
 }
 
 .townbox > div {
@@ -68,7 +81,7 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 3; 
     grid-row-end: 4;
-    height: calc( 100vh - 260px );
+    height: calc( 100vh - 10em );
     width: 98vw;
 }
 
@@ -79,7 +92,7 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 3; 
     grid-row-end: 4;
-    height: calc( ( 100vh - 260px ) / 2);
+    height: calc( ( 100vh - 10em ) / 2);
     width: 98vw;
 }
 
@@ -88,7 +101,7 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 1; 
     grid-row-end: 2;
-    height: calc( ( 100vh - 260px ) / 2);
+    height: calc( ( 100vh - 10em ) / 2);
 }
 
 /* 3 players */
@@ -98,8 +111,8 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 3; 
     grid-row-end: 4;
-    height: calc( ( 100vh - 260px ) / 2);
-    width: calc( 98vw - ( 1.5 * ( 100vh - 260px ) / 2) );
+    height: calc( ( 100vh - 10em ) / 2);
+    width: calc( 98vw - ( 1.5 * ( 100vh - 10em ) / 2) );
 }
 
 .player_1_of_3 {
@@ -107,7 +120,7 @@ h1 {
     grid-column-end: 2; 
     grid-row-start: 1; 
     grid-row-end: 4;
-    width: calc( 1.5 * ( 100vh - 260px ) / 2);
+    width: calc( 1.5 * ( 100vh - 10em ) / 2);
     max-width: calc( 100vw - 760px );
     height: 100vh;
 }
@@ -117,7 +130,7 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 1; 
     grid-row-end: 2;
-    height: calc( ( 100vh - 260px ) / 2);
+    height: calc( ( 100vh - 10em ) / 2);
 }
 
 /* 4 players */
@@ -127,7 +140,7 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 3; 
     grid-row-end: 4;
-    height: calc( ( 100vh - 260px ) / 2);
+    height: calc( ( 100vh - 10em ) / 2);
 }
 
 .player_1_of_4 {
@@ -143,7 +156,7 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 1; 
     grid-row-end: 2;
-    height: calc( ( 100vh - 260px ) / 2);
+    height: calc( ( 100vh - 10em ) / 2);
 }
 
 .player_3_of_4 {
@@ -162,7 +175,7 @@ h1 {
     grid-column-end: 4; 
     grid-row-start: 3; 
     grid-row-end: 4;
-    height: calc( ( 100vh - 260px ) / 2);
+    height: calc( ( 100vh - 10em ) / 2);
 }
 
 .player_1_of_5 {
@@ -170,7 +183,7 @@ h1 {
     grid-column-end: 2; 
     grid-row-start: 2; 
     grid-row-end: 4;
-    height: calc( 50vh + ( 260px / 2 ) );
+    height: calc( 50vh + ( 10em / 2 ) );
 }
 
 .player_2_of_5 {
@@ -178,7 +191,7 @@ h1 {
     grid-column-end: 3; 
     grid-row-start: 1; 
     grid-row-end: 2;
-    height: calc( ( 100vh - 260px ) / 2);
+    height: calc( ( 100vh - 10em ) / 2);
 }
 
 .player_3_of_5 {
@@ -186,7 +199,7 @@ h1 {
     grid-column-end: 5; 
     grid-row-start: 1; 
     grid-row-end: 2;
-    height: calc( ( 100vh - 260px ) / 2);
+    height: calc( ( 100vh - 10em ) / 2);
 }
 
 .player_4_of_5 {
@@ -194,6 +207,6 @@ h1 {
     grid-column-end: 5; 
     grid-row-start: 2; 
     grid-row-end: 4;
-    height: calc( 50vh + ( 260px / 2 ) );
+    height: calc( 50vh + ( 10em / 2 ) );
 }
 

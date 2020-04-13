@@ -37,9 +37,10 @@ export function Building(props) {
     let bref = React.createRef(), tref = React.createRef();
     useEffect(()=>{
         if (bd === undefined) return;
+        let maxDescHeight = window.innerHeight > 520 ? 40 : 30; // Small windows transform the css, but this is in post-transform pixels
         for (let i=14;i>6;i-=.5) {
             tref.current.style.fontSize = i+'pt';
-            if (tref.current.getBoundingClientRect().height < 40) {
+            if (tref.current.getBoundingClientRect().height < maxDescHeight) {
                 return;
             }
         }

@@ -95,6 +95,7 @@ div.horiz {
     overflow-x: auto;
     align-items: flex-end;
     justify-content: left !important;
+    height: 86px;
 }
 
 .buttonbar {
@@ -110,6 +111,8 @@ div.horiz {
 
 .buttonbar input {
     vertical-align: text-bottom;
+    z-index: 99;
+    position: relative;
 }
 
 .shipStacks {
