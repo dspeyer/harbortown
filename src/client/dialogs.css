@@ -9,6 +9,7 @@
     border: 3px #770 solid;
 }
 
+/* TODO: rename class? */
 .pickResourcesDialog {
     position: fixed;
     width: 350px;
@@ -17,6 +18,14 @@
     background: #ffd;
     border: 3px #770 outset;
     z-index: 500;
+}
+
+.pickResourcesDialog.grabbedfalse {
+    cursor: grab;
+}
+.pickResourcesDialog.grabbedtrue {
+    cursor: grabbing;
+    box-shadow: 5px 5px rgba(0,0,0,0.5);
 }
 
 .chosen {

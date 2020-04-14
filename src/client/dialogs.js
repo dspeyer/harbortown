@@ -7,6 +7,7 @@ import { annotate_log } from './net.js';
 import { Building } from './buildingui.js';
 import { ship_feeds, ship_capacities, ship_prices, sym_names } from '../common/data.js';
 import { special_buildings } from '../common/buildings.js';
+import { safeCopy } from '../common/utils.js';
 import { holders, showDialog, allInstructions, clearAllClickTargets, closeSelf } from './interaction.js';
 
 export async function pickTownResource() {
@@ -75,42 +76,51 @@ export function showMessage(msg, lasting) {
 class PickResourcesDialog extends React.Component {
     constructor(props) {
         super(props);
-        this.state={};
+        this.state={x:(window.innerWidth-350)/2, y:window.innerHeight/10, grabbed:false, chosen:{}};
         this.clickTargets={};
         props.out.push(this);
     }
 
     incr(res) {
-        this.setState({ [res]: (this.state[res] || 0) + 1 });
+        let chosen = safeCopy(this.state.chosen);
+        chosen[res] = (chosen[res] || 0) + 1;
+        this.setState({chosen});
     }
 
     decr(res) {
-        if (this.props.player && this.state[res] > 0) {
-            this.setState({ [res]: this.state[res] - 1 });
+        if (this.props.player && this.state.chosen[res] > 0) {
+            let chosen = safeCopy(this.state.chosen);
+            chosen[res] -= 1;
+            this.setState({chosen});
             addResources(this.props.player, { [res]: 1 });
             ui.update();
         }
     }
-            
-    
+
     toggleOffer(res) {
-        if (this.state[res] > 0) {
-            this.setState({ [res]: 0 });
-        } else {
-            this.incr(res);
-        }
+        let chosen = safeCopy(this.state.chosen);
+        chosen[res] = ( ! chosen[res]) +0;
+        this.setState({chosen});
     }
 
+    onMove(ev) {
+        if (!this.state.grabbed) return;
+        if (ev.changedTouches) ev = ev.changedTouches[0];
+        let dx = (ev.clientX - this.state.grabbed[0]) || 0;
+        let dy = (ev.clientY - this.state.grabbed[1]) || 0;
+        this.setState({x:this.state.x+dx, y:this.state.y+dy, grabbed:[ev.clientX,ev.clientY]});
+    }
+    
     render(){
         let resourceElements=[];
         if (this.props.offers) {
             for (let i of this.props.offers) {
-                resourceElements.push(<div className={'offer'+(this.state[i] ? ' chosen' : '')}
+                resourceElements.push(<div className={'offer'+(this.state.chosen[i] ? ' chosen' : '')}
                                            onClick={this.toggleOffer.bind(this,i)}><ResourceTile type={i}/></div>);
             }
         } else {
-            for (let i in this.state) {
-                let v = this.state[i];
+            for (let i in this.state.chosen) {
+                let v = this.state.chosen[i];
                 if (v>0) resourceElements.push(
                     <div style={ {cursor:'pointer'} } onClick={this.decr.bind(this,i)}>
                       <ResourceStack type={i} number={v} key={i} holder={this.clickTargets} />
@@ -118,14 +128,23 @@ class PickResourcesDialog extends React.Component {
                 );
             }
         }
-        return (<div className="pickResourcesDialog">
+        let self=this;
+        return (<div className={'pickResourcesDialog grabbed'+!!this.state.grabbed}
+                     style={{top:this.state.y-(this.state.grabbed?2:0),left:this.state.x-(this.state.grabbed?2:0)}}
+                     onMouseDown={(ev)=>{this.setState({grabbed:[ev.clientX,ev.clientY]})}}
+                     onTouchStart={(ev)=>{this.setState({grabbed:[ev.clientX,ev.clientY]})}}
+                     onMouseUp={()=>{this.setState({grabbed:false})}}
+                     onTouchEnd={()=>{this.setState({grabbed:false})}}
+                     onMouseMove={this.onMove.bind(this)} 
+                     onTouchMove={this.onMove.bind(this)} >
                   <h2>{this.props.msg}</h2>
                   <div className="prdstate">
                     { resourceElements }
                   </div>
                   <input type="button" value="Cancel" onClick={closeSelf} />
                   <input type="button" value="Done" onClick={closeSelf}
-                         disabled={this.props.n && Object.values(this.state).reduce((a,b)=>a+b,0)!=this.props.n} />
+                         disabled={this.props.n && Object.values(this.state.chosen).reduce((a,b)=>a+b,0)!=this.props.n} />
+                  <br/>{this.state.dbg}
                 </div>);
     }
 }
@@ -135,7 +154,7 @@ export async function pickResources(rl, n) {
     const msg = 'Pick '+n+' of the following resources';
     const dlelem = <PickResourcesDialog msg={msg} out={dlobj} offers={rl} n={n} />;
     const dl = showDialog(dlelem, dlobj);
-    const resources = await dl;
+    const resources = (await dl).chosen;
     annotate_log(resources);
     return resources;
 }
@@ -171,7 +190,7 @@ export async function pickPlayerResources(player, filter, msg) {
 
     try  {
         
-        const picked = await dl;
+        const picked = (await dl).chosen;
         clearAllClickTargets();
         annotate_log(picked);
 
