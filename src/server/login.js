@@ -53,10 +53,14 @@ export function showLogin(req,res,trouble) {
 
 export async function handleLogin(req,res) {
     const {email, pass} = req.body;
+    console.log({email});
     let person = await colls.people.findOne({email});
+    console.log(person);
     if ( ! person ) return showLogin(req,res,true);
     let rp = await bcrypt.compare(pass, person.pwhash);
+    console.log({rp});
     if ( ! rp ) return showLogin(req,res,true);
+    console.log('success');
     loginSuccess(res, person.name, email);
 }
 
