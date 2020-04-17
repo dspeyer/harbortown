@@ -200,7 +200,7 @@ export const buildings = [
      minplayers: 2,
      text: '5 loaves 2 fish ⮕ 10 loaves 5 fish once',
      action: async (player) => {
-         player.subtractResources({bread:5,fish:2});
+         subtractResources(player,{bread:5,fish:2});
          addResources(player,{bread:10,fish:5});
      }
     },
