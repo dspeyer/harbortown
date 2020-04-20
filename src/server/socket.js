@@ -3,7 +3,7 @@ import * as actions from '../common/actions.js';
 import { initBuildings } from '../common/buildings.js';
 import { subtractResources, safeCopy, buildings_by_number } from '../common/utils.js';
 import { player_colors } from '../common/data.js';
-import { colls, caseIns } from './gamelist.js';
+import { colls, caseIns } from './db.js';
 import { sendLoginLink } from './login.js';
 
 let sockets_by_id = {};

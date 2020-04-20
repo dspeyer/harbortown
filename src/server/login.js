@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
 
 import { player_colors } from '../common/data.js';
-import { colls, caseIns } from './gamelist.js';
+import { colls, caseIns } from './db.js';
 
 let key;
 if (process.env.PRIVATE_KEY) {
