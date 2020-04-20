@@ -17,14 +17,24 @@ if (process.env.MONGO_PASS) {
 MongoClient.connect("mongodb://"+mgUserPass+mgHostPort+'/'+mgDb, (err,client) => {
     if (err) throw err;
     let db = client.db(mgDb);
-    for (let c of ['games','seeds','ids','people']) {
+    let cw = ['games','seeds','ids','people']
+    for (let c of cw) {
         db.collection(c, (err, coll) => {
             if (err) throw err;
             colls[c] = coll;
+            if (Object.keys(colls).length == cw.length) initIndices();
         });
     }
 });
-            
+
+export const caseIns = {locale:'en',strength:2};
+
+function initIndices() {
+    colls.games.ensureIndex({id:1}, console.log.bind(null,'ensured games on id'));
+    colls.games.ensureIndex({'players.email':1}, {collation:caseIns}, console.log.bind(null,'ensured games on email'));
+    colls.seeds.ensureIndex({id:1}, console.log.bind(null,'ensured ids'));
+    colls.people.ensureIndex({'email':1}, {collation:caseIns}, console.log.bind(null,'ensured players'));
+}
 
 export async function showGameList(req, res, msg) {
     if (typeof(msg)=='function') msg='';
@@ -33,7 +43,7 @@ export async function showGameList(req, res, msg) {
     const now = Date.now();
     const ago = (t) => (now-t) / (24*60*60*1000);
     const showOld = !! req.query.showOld;
-    const rawgames = await colls.games.find({players:{$elemMatch:{email}}}).toArray();
+    const rawgames = await colls.games.find({players:{$elemMatch:{email}}}).collation(caseIns).toArray();
     let mygames, clipped;
     if (showOld) {
         mygames = rawgames;
@@ -50,7 +60,7 @@ async function startGame(seed, id, res) {
     let players = shuffle(seed.players);
     let promises = [];
     for (let p of players) {
-        promises.push( colls.people.findOne({email:p.email}).then((person)=>{p.color=person.color}) );
+        promises.push( colls.people.find({email:p.email}).collation(caseIns).next().then((person)=>{p.color=person.color}) );
     }
     for (let p of promises) await p;
     for (let p of players) {
@@ -67,7 +77,7 @@ async function startGame(seed, id, res) {
 
 export async function join(req, res) {
     const name = req.cookies.name;
-    const email = req.cookies.email;
+    const email = req.cookies.email.toLowerCase();
     const id = req.body.id;
     console.log(['query', {id}]);
     let seed = await colls.seeds.findOne({id});
@@ -100,7 +110,7 @@ async function newId() {
 }
 
 export async function createSeed(req, res) {
-    const email = req.cookies.email;
+    const email = req.cookies.email.toLowerCase();
     const name = req.cookies.name;
     const desc = req.body.desc;
     const wanted = req.body.wanted;

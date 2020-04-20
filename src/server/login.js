@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
 
 import { player_colors } from '../common/data.js';
-import { colls } from './gamelist.js';
+import { colls, caseIns } from './gamelist.js';
 
 let key;
 if (process.env.PRIVATE_KEY) {
@@ -54,7 +54,7 @@ export function showLogin(req,res,trouble) {
 export async function handleLogin(req,res) {
     const {email, pass} = req.body;
     console.log({email});
-    let person = await colls.people.findOne({email});
+    let person = await colls.people.find({email}).collation(caseIns).next();
     console.log(person);
     if ( ! person ) return showLogin(req,res,true);
     let rp = await bcrypt.compare(pass, person.pwhash);
@@ -90,7 +90,7 @@ export function showRegister(req,res,msg) {
 
 export async function handleRegister(req,res) {
     let {email,name,pass1,pass2,coo1,coo2,turnemails,color} = req.body;
-    let person = await colls.people.findOne({email});
+    let person = await colls.people.find({email}).collation(caseIns).next();
     if (person) return showRegister(req,res,'That email is already in use');
     if (pass1!=pass2) return showRegister(req,res,'Passwords must match');
     if (!coo1 || !coo2) return showRegister(req,res,'Must accept codes of coduct');
@@ -105,14 +105,14 @@ export async function handleRegister(req,res) {
 
 export async function showOpts(req,res) {
     const email = req.cookies.email;
-    const {name, turnemails, validated, color} = await colls.people.findOne({email});
+    const {name, turnemails, validated, color} = await colls.people.find({email}).collation(caseIns).next();
     res.render('opts',{email,name,turnemails,validated,color,player_colors});
 }
 
 export async function handleOpts(req,res) {
     const email = req.cookies.email;
     let { name, turnemails, resend, color, reset, pass1, pass2 } = req.body;
-    let old = await colls.people.findOne({email});
+    let old = await colls.people.find({email}).collation(caseIns).next();
     if (reset && pass1!=pass2) {
         res.send('When resetting password, passwords must match');
         return;
@@ -130,7 +130,7 @@ export async function handleOpts(req,res) {
         pwhash = old.pwhash;
     }
     let eversent = old.eversent || resend;
-    await colls.people.updateOne({email}, {$set: {name,turnemails,pwhash,eversent,color}});
+    await colls.people.updateOne({email}, {$set: {name,turnemails,pwhash,eversent,color}}, {collation: caseIns});
     res.cookie('name',name).cookie('email',email).cookie('token',makeToken(email)).redirect('/');
 }
 
@@ -151,8 +151,8 @@ export async function handleLoginLink(req, res) {
     const { email, ts, token, redir } = req.query;
     console.log({ email, ts, token, redir });
     if (validToken({email, ts, token})) {
-        const name = (await colls.people.findOne({email})).name;
-        await colls.people.update({email}, {$set: {validated: true}});
+        const name = (await colls.people.find({email}).collation(caseIns).next()).name;
+        await colls.people.update({email}, {$set: {validated: true}}, {collation: caseIns});
         res.cookie('name',name).cookie('email',email).cookie('token',makeToken(email)).redirect(redir);
     } else {
         res.send('Invalid link');

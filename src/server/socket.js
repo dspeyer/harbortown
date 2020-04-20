@@ -3,7 +3,7 @@ import * as actions from '../common/actions.js';
 import { initBuildings } from '../common/buildings.js';
 import { subtractResources, safeCopy, buildings_by_number } from '../common/utils.js';
 import { player_colors } from '../common/data.js';
-import { colls } from './gamelist.js';
+import { colls, caseIns } from './gamelist.js';
 import { sendLoginLink } from './login.js';
 
 let sockets_by_id = {};
@@ -53,7 +53,7 @@ async function demandPlayerResources(game, player, filter, msg, feeding) {
         }
     }
     if (player != game.players[game.currentPlayer]) {
-        const person = await colls.people.findOne({email:player.email});
+        const person = await colls.people.find({email:player.email}).collation(caseIns).next();
         if (person.turnemails && person.validated) {
             sendLoginLink('Your turn',
                           "Pick your end-of-round food in game #"+game.id+" ("+game.desc+")",
@@ -67,7 +67,7 @@ async function demandPlayerResources(game, player, filter, msg, feeding) {
 async function announceGameEnd(game) {
     for (let p of game.players) {
         let email = p.email;
-        let person = await colls.people.findOne({email:player.email});
+        let person = await colls.people.find({email:player.email}).collation(caseIns).next();
         if (person.turnemails && person.validated) {
             sendLoginLink('Game Over',
                           "Game #"+game.id+" ("+game.desc+") has finished",
@@ -131,7 +131,7 @@ function set_id(id, ws) {
 
 export function game_socket_open(ws,req) {
     ws.name = req.cookies.name;
-    ws.email = req.cookies.email;
+    ws.email = req.cookies.email.toLowerCase();
     console.log('got open socket request',ws.name,req.path);
     ws.on('message', async (msg) => {
         if (msg=='keepalive') return;
@@ -158,9 +158,9 @@ export function game_socket_open(ws,req) {
         await colls.games.updateOne({id:ws.gameid},{$set:game});
         if (game.currentPlayer != backup.currentPlayer && game.currentPlayer != -1) {
             const email = game.players[game.currentPlayer].email;
-            const person = await colls.people.findOne({email});
+            const person = await colls.people.find({email}).collation(caseIns).next();
             if (person.turnemails && person.validated) {
-                sendLoginLink('Your turn', "It's your turn in game #"+game.id+" ("+game.desc+")", email, '/game/?id='+game.id)
+                sendLoginLink('Your turn', "It's your turn in game #"+game.id+" ("+game.desc+")", person.email, '/game/?id='+game.id)
             }
         }
         for (let s of sockets_by_id[game.id]) {
