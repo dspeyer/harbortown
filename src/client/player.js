@@ -32,7 +32,7 @@ export function Player(props) {
              <div className="stuff">
                { resourceElements }
                { props.player.buildings.map( (bn)=>{
-                   return <Building bn={bn} key={bn} player={props.dbb[bn]} />
+                   return <Building bn={bn} key={bn} player={props.dbb[bn]} hilite={gameState.hilites[bn]} />
                } ) }
                { props.player.ships.map( (s,i)=>{
                    return <Ship ship={s} key={i} />

@@ -1,7 +1,7 @@
 import React from 'react';
 import './resources.css';
 import {resources} from '../common/data.js';
-import { ClickTarget } from './interaction.js';
+import { ClickTarget, Hilite } from './interaction.js';
 
 export function ResourceTile(props) {
     const attrs = resources[props.type];
@@ -28,8 +28,7 @@ export function ResourceTile(props) {
     }
 }
 
-export function  ResourceStack(props) {
-    let {number, type, holder} = props;
+export function  ResourceStack({number, type, holder, hilite}) {
     let offsets = [];
     for (let i=0; i<number; i++) {
         offsets.push(Math.floor( i * 38 / (number-.99999) ))
@@ -38,6 +37,7 @@ export function  ResourceStack(props) {
     return (
         <div className="stack">
           <ClickTarget holder={holder} data={type} />
+          { hilite && <Hilite vals={hilite}/> }
           <div className="count">{number}</div>
           <div className="tiles">
             {offsets.map( (offset) => {

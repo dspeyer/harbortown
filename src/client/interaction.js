@@ -61,6 +61,43 @@ export function clearAllClickTargets() {
     for (let i of allInstructions) i.set('');
 }
 
+let hlOpacity = 0;
+
+export class Hilite extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = { opacity: hlOpacity };
+        holders.hilites.push(this);
+    }
+    render() {
+        let dup = (x) => x+','+x;
+        let bkg = 'linear-gradient(45deg,'+this.props.vals.map((i)=>dup(gameState.players[i].color)).join(',')+')';
+        return <div className="hlwrap"> <div className="hilite" style={{background:bkg, opacity:this.state.opacity}} /> </div>;
+    }
+}
+
+function showHilites() {
+    hlOpacity = 1;
+    for (let hl of holders.hilites) hl.setState({opacity: hlOpacity});
+    try { document.removeEventListener('mousemove', hlStartFade); } catch {}
+    document.addEventListener('mousemove', hlStartFade);
+}
+ui.showHilites = showHilites;
+
+function hlTick() {
+    if (hlOpacity <= 0) return;
+    hlOpacity -= 0.01;
+    for (let hl of holders.hilites) hl.setState({opacity: hlOpacity});
+    window.setTimeout(hlTick, 16);
+}
+
+function hlStartFade() {
+    console.log('hlStartFade',hlOpacity);
+    if (hlOpacity == 1) hlTick();
+}
+ui.hlStartFade = hlStartFade;    
+
+
 export function showDialog(elem, elemobjwrap) {
     const dialogs = document.getElementById('nonroot');
     const holder = document.createElement('div');
@@ -93,6 +130,7 @@ export function closeSelf(ev) {
 export function initUi(nplayers) {
     holders.buildings = {};
     holders.townResources = {};
+    holders.hilites = [];
     holders.playerResources = [];
     for (let i=0; i<nplayers; i++){
         holders.playerResources.push({});
@@ -122,6 +160,7 @@ export class CancelButton extends React.Component {
 let turnBackup = null;
 
 export async function wrap(callback) {
+    hlStartFade();
     const backup = safeCopy(gameState);
     if ( ! turnBackup ) turnBackup = safeCopy(gameState);
     if (ui.prepnet) {

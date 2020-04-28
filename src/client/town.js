@@ -91,15 +91,14 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   {advancerElements}
                 </div>
                 <div className="horiz resource1">
-                  <ResourceStack type="money" number={resources.money} holder={holders.townResources} />
-                  <ResourceStack type="wood" number={resources.wood} holder={holders.townResources} />
-                  <ResourceStack type="iron" number={resources.iron} holder={holders.townResources} />
-                  <ResourceStack type="cattle" number={resources.cattle} holder={holders.townResources} />
+                  {['money','wood','iron','cattle'].map((r)=>(
+                      <ResourceStack type={r} number={resources[r]} holder={holders.townResources} hilite={gameState.hilites[r]} />
+                  ))}
                 </div>
                 <div className="horiz resource2">
-                  <ResourceStack type="fish" number={resources.fish} holder={holders.townResources} />
-                  <ResourceStack type="clay" number={resources.clay} holder={holders.townResources} />
-                  <ResourceStack type="wheat" number={resources.wheat} holder={holders.townResources} />
+                  {['fish','clay','wheat'].map((r)=>(
+                      <ResourceStack type={r} number={resources[r]} holder={holders.townResources} hilite={gameState.hilites[r]} />
+                  ))}
                 </div>
                 <div className="shipStacks">
                   <EndOfTurn turn={turn} />
@@ -108,7 +107,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                   })}
                 </div>
                 <div className="horiz buildings">{ buildings.map((bn)=>{  
-                    return <Building bn={bn} key={bn} player={dbb[bn]} />;
+                    return <Building bn={bn} key={bn} player={dbb[bn]} hilite={gameState.hilites[bn]} />;
                 }) }</div>
                 { miniified || <ButtonBar myturn={myturn} feeding={current==-1} /> }
                 { miniified || <BuildingPlans plans={plans} /> }

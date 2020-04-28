@@ -21,6 +21,8 @@ export function init(onNGS) {
             restore(gameState, msg.newGameState);
             if (gameState.ended) ui.showScore();
             ui.update();
+            ui.showHilites();
+            if ( ! document.hidden ) ui.hlStartFade();
             if (onNGS) {
                 onNGS();
                 onNGS = null;

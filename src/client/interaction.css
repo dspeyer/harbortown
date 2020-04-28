@@ -25,6 +25,20 @@
     font-size: 14pt;
 }
 
+.hilite {
+    position: absolute;
+    left: -5px;
+    right: -5px;
+    top: -5px;
+    bottom: -5px;
+    box-shadow: 0 0 2px yellow, 0 0 2px 2px black;
+    border-radius: 10px;
+}
+
+.townGrid .hlwrap {
+    opacity: 0.7;
+}
+
 .instructions {
     position: absolute;
     background: cyan;

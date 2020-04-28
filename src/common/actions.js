@@ -1,6 +1,6 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
 import { building_firm } from './buildings.js'; // TODO: remove circular import
-import { buildings_by_number, shuffle, addResources, satisfies, subtractResources, checkDecks, countPile, findOwner } from './utils.js';
+import { buildings_by_number, shuffle, addResources, satisfies, subtractResources, checkDecks, countPile, findOwner, appendKey } from './utils.js';
 
 export function newGame(players, initBuildings) {
     let game = {}
@@ -26,6 +26,7 @@ export function newGame(players, initBuildings) {
     game.currentAdvancer = -1;
     game.currentPlayer = -1;
     game.log = [];
+    game.hilites = {};
     game.sockets = []; // Used by server
     initBuildings(game);
     nextTurn(null, game, /*ui=*/ {update:()=>{}});
@@ -170,6 +171,10 @@ export function nextTurn(player, game, ui) {
     game.currentPlayer %= game.players.length;
     game.log.push([1,game.players[game.currentPlayer].name+"'s Turn"]);
     game.bigActionTaken = 0;
+    for (let i in game.hilites) {
+        game.hilites[i] = game.hilites[i].filter((x)=>(x!=game.currentPlayer));
+        if (game.hilites[i].length == 0) delete game.hilites[i];
+    }
     ui.update();
 }
 
@@ -181,6 +186,7 @@ export async function takeResource(player, game, ui) {
     player.resources[resource] += game.townResources[resource];
     game.townResources[resource] = 0;
     game.bigActionTaken = 1;
+    appendKey(game.hilites, resource, player.number);    
     ui.update();
 }
 
@@ -216,6 +222,7 @@ export async function utilizeBuilding(player, game, ui, building) {
     }
     await building.action(player, ui, game, building);
     game.bigActionTaken += 1;
+    appendKey(game.hilites, building.number, player.number);
     ui.update();
 }
 
@@ -247,6 +254,7 @@ export async function buy(player, game, ui) {
             delete game.disks_by_building[b.number];
         }
         player.buildings.push(b.number);
+        appendKey(game.hilites, b.number, player.number);
     } else {
         throw "Cannot buy "+bn+" -- don't know what it is";
     }
@@ -267,6 +275,7 @@ export async function sell(player, game, ui) {
     if (b.number in game.disks_by_building) {
         delete game.disks_by_building[b.number];
     }
+    appendKey(game.hilites, b.number, player.number);
     ui.update();
 }
 

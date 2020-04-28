@@ -1,7 +1,13 @@
 .building {
+    position: relative;
+    margin: 2px;
+    width: fit-content;
+    height: fit-content;
+}
+
+.buildingCard {
     border: 1px solid #444;
     background: white;
-    position: relative;
     border-radius: 3px;
     width: 100px;
     max-width: 100px;
@@ -9,10 +15,11 @@
     height: 66px;
     max-height: 66px;
     font-size: 8pt;
-    margin: 2px;
+    z-index: 1;
+    position: relative;
 }
 
-.building > .entry {
+.buildingCard > .entry {
     position: absolute;
     right: 2px;
     top: 2px;
@@ -20,20 +27,20 @@
     opacity: 0.7;
 }
 
-.building > .number {
+.buildingCard > .number {
     float: left;
     background: white;
     font-size: 6pt;
 }
 
-.building > .number.accentNumbertrue {
+.buildingCard > .number.accentNumbertrue {
     background: #f7f;
     font-size: 8pt;
     font-weight: bold;
 }
                   
 
-.building > .name {
+.buildingCard > .name {
     font-weight: bold;
 }
 
@@ -47,7 +54,7 @@
 
 }
 
-.building > .footer {
+.buildingCard > .footer {
     position: absolute;
     bottom: 0px;
     left: 3px;
@@ -59,19 +66,19 @@
     align-items: flex-end;
 }
 
-.building > .footer > .cost {
+.buildingCard > .footer > .cost {
     background: #ff0;
     height: 1.2em;
     border-radius: 0.6em;
     white-space: nowrap
 }
 
-.building > .footer > .smallname {
+.buildingCard > .footer > .smallname {
     font-size: smaller;
     overflow-x: hidden;
 }
 
-.building > .footer > .build > span > img {
+.buildingCard > .footer > .build > span > img {
     width: 1em;
     height: 1em;
 }

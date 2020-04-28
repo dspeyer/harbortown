@@ -117,3 +117,11 @@ export function countPile(res, aspect, fn) {
     }
     return out;
 }
+
+// Because JS has no defaultdict (grr)
+export function appendKey(obj, key, val) {
+    if ( ! obj[key] ) {
+        obj[key] = [];
+    }
+    obj[key].push(val);
+}
