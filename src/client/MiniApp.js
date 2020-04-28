@@ -2,7 +2,7 @@ import React from 'react';
 import './MiniApp.css';
 import { Town, ButtonBar, BuildingPlans } from './town.js'
 import { Player } from './player.js'
-import { safeCopy, restore } from '../common/utils.js'
+import { safeCopy } from '../common/utils.js'
 import { gameState, ui } from './state.js';
 
 class MiniApp extends React.Component {

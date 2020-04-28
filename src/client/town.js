@@ -81,7 +81,6 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
     let advancerElements = advancers.map(
         (av,i) => {return <AdvancerToken a={av[0]} b={av[1]} i={av[2]} active={i==current} key={i} />;}
     );
-    let minplan = Math.min.apply(null, plans.map((d)=>(d.length?d[0]:999)) );
     return (<div>
               <Instructions/>
               <h1>The Town</h1>
