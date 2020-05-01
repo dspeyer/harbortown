@@ -99,3 +99,10 @@ export async function mkGame(req, res) {
     colls.games.insertOne(game);
     res.redirect('/');
 }
+
+export async function mkGameForm(req,res) {
+    res.send(" <form method=post action=/mkGame> " +
+             "   <textarea name=state cols=80 rows=30></textarea>" +
+             "   <input type=submit>" +
+             " </form>");
+}

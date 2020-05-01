@@ -5,7 +5,7 @@ import cookieParser from 'cookie-parser';
 import { dbg_socket_open } from './dbg.js';
 import { game_socket_open } from './socket.js';
 import { requireLogin, refererGrabber, handleLogin, showLogin, handleRegister, showRegister, showOpts, handleOpts, handleLoginLink, css } from './login.js';
-import { showGameList, join, createSeed, mkGame } from './gamelist.js';
+import { showGameList, join, createSeed, mkGame, mkGameForm } from './gamelist.js';
 
 const port = process.env.PORT || 8080;
 export const app = express()
@@ -41,6 +41,7 @@ app.get('/', showGameList);
 app.post('/join', join);
 app.post('/new', createSeed);
 app.post('/mkGame', mkGame);
+app.get('/mkGameForm', mkGameForm);
 
 app.get('/opts', showOpts);
 app.post('/opts', handleOpts);
