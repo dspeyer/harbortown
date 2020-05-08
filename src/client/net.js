@@ -5,8 +5,38 @@ import { gameState, ui } from './state.js';
 
 let log = [];
 let socket;
+let onNGS = null;
 
-export function init(onNGS) {
+export function onMessage(raw)  {
+    const msg = JSON.parse(raw.data);
+    if (msg.newGameState) {
+        restore(gameState, msg.newGameState);
+        if (gameState.ended) ui.showScore();
+        ui.update();
+        ui.showHilites();
+        if ( ! document.hidden ) ui.hlStartFade();
+        if (onNGS) {
+            onNGS();
+            onNGS = null;
+        }
+    }
+    if (msg.msg) {
+        ui.showMessage(msg.msg);
+    }
+    if (msg.init && ! msg.foodDemand) {
+        const p = gameState.players.filter((p)=>p.isMe)[0];
+        if (p.hunger > 0) msg.foodDemand = "It's feeding time: eat "+p.hunger;
+    }
+    if (msg.foodDemand) {
+        const p = gameState.players.filter((p)=> p.isMe)[0];
+        ui.pickPlayerResources(p, (r)=> resources[r].food>0, msg.foodDemand).
+            then((food)=>{
+                socket.send(JSON.stringify([['completeFeed',food]]))});
+    }
+}
+
+export function init(_onNGS) {
+    onNGS = _onNGS;
     let hn = window.location.hostname;
     let port = window.location.port;
     let id = window.location.search.substr(1);
@@ -15,33 +45,7 @@ export function init(onNGS) {
     let socketHref = proto+'://'+hn+':'+port+'/socket';
     console.log("Connecting to ",socketHref);
     socket = new WebSocket(socketHref);
-    socket.addEventListener('message', (raw) => {
-        const msg = JSON.parse(raw.data);
-        if (msg.newGameState) {
-            restore(gameState, msg.newGameState);
-            if (gameState.ended) ui.showScore();
-            ui.update();
-            ui.showHilites();
-            if ( ! document.hidden ) ui.hlStartFade();
-            if (onNGS) {
-                onNGS();
-                onNGS = null;
-            }
-        }
-        if (msg.msg) {
-            ui.showMessage(msg.msg);
-        }
-        if (msg.init && ! msg.foodDemand) {
-            const p = gameState.players.filter((p)=> p.isMe)[0];
-            if (p.hunger > 0) msg.foodDemand = "It's feeding time: eat "+p.hunger;
-        }
-        if (msg.foodDemand) {
-            const p = gameState.players.filter((p)=> p.isMe)[0];
-            ui.pickPlayerResources(p, (r)=> resources[r].food>0, msg.foodDemand).
-                then((food)=>{
-                    socket.send(JSON.stringify([['completeFeed',food]]))});
-        }
-    });
+    socket.addEventListener('message', onMessage);
     socket.addEventListener('open', () => {
         socket.send(JSON.stringify([['set_id',id]]));
         ui.am_client_to_server = true;

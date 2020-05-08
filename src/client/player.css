@@ -51,3 +51,7 @@ h1.hunger {
     text-shadow: 2px 2px 2px #ff0, -2px -2px 2px #ff0;
     opacity: 0.7;
 }
+
+h1.hunger.ismetrue {
+    cursor: pointer;
+}
