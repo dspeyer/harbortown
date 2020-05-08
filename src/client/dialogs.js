@@ -140,7 +140,7 @@ class PickResourcesDialog extends React.Component {
                   <div className="prdstate">
                     { resourceElements }
                   </div>
-                  <input type="button" value="Cancel" onClick={closeSelf} />
+                  { (!this.props.uncancelable) && <input type="button" value="Cancel" onClick={closeSelf} /> }
                   <input type="button" value="Done" onClick={closeSelf}
                          disabled={this.props.n && Object.values(this.state.chosen).reduce((a,b)=>a+b,0)!=this.props.n} />
                   <br/>{this.state.dbg}
@@ -161,7 +161,7 @@ export async function pickResources(rl, n) {
 let pickPlayerResourcesWaiting = [];
 let pickPlayerResourcesLocked = false;
 
-export async function pickPlayerResources(player, filter, msg) {
+export async function pickPlayerResources(player, filter, msg, uncancelable) {
     if (pickPlayerResourcesLocked) {
         let p = new Promise((resolve) => { pickPlayerResourcesWaiting.push(resolve); });
         await p;
@@ -172,7 +172,7 @@ export async function pickPlayerResources(player, filter, msg) {
 
     if (!msg) msg="Choose resources to send";
     let dlobj=[];
-    const dlelem = <PickResourcesDialog msg={msg} out={dlobj} player={player} />;
+    const dlelem = <PickResourcesDialog msg={msg} out={dlobj} player={player} uncancelable={uncancelable}/>;
     const dl = showDialog(dlelem, dlobj);
     
     for (let r in player.resources) {

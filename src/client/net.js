@@ -29,7 +29,7 @@ export function onMessage(raw)  {
     }
     if (msg.foodDemand) {
         const p = gameState.players.filter((p)=> p.isMe)[0];
-        ui.pickPlayerResources(p, (r)=> resources[r].food>0, msg.foodDemand).
+        ui.pickPlayerResources(p, (r)=> resources[r].food>0, msg.foodDemand, /*uncancelable=*/true).
             then((food)=>{
                 socket.send(JSON.stringify([['completeFeed',food]]))});
     }
