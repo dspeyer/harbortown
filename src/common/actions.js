@@ -1,6 +1,5 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
-import { building_firm } from './buildings.js'; // TODO: remove circular import
-import { buildings_by_number, shuffle, addResources, satisfies, subtractResources, checkDecks, countPile, findOwner, appendKey } from './utils.js';
+import { buildings_by_number, shuffle, addResources, satisfies, subtractResources, checkDecks, countPile, findOwner, appendKey, safeCopy } from './utils.js';
 
 export function newGame(players, initBuildings) {
     let game = {}
@@ -226,9 +225,29 @@ export async function utilizeBuilding(player, game, ui, building) {
     ui.update();
 }
 
+export async function build({player, ui, game, sawmill, msg, pausable}) {
+    if (!msg) msg = 'Choose a building to build';
+    const bn = await ui.pickBuildingPlan(msg, {resources:player.resources, pausable});
+    if (pausable && bn=='pause') throw "Paused";
+    let plan = buildings_by_number[bn];
+    if (!plan) throw "Not a building: "+bn;
+    let idx;
+    if ( (idx = checkDecks(plan.number, game)) != -1 ) {
+        game.buildingPlans[idx].shift();
+    } else {
+        throw "Not buildable "+JSON.stringify(plan);
+    }
+    let buildcost = safeCopy(plan.buildcost);
+    if (sawmill && buildcost.wood > 0) { buildcost.wood -= 1; }
+    subtractResources(player, buildcost);
+    player.buildings.push(plan.number);
+    game.log.push(plan.name);
+}
+
+
 export async function resumeConstruction(player, game, ui) {
     if (game.bigActionTaken != 0.5) throw "Construction isn't paused";
-    await building_firm.action(player,ui,game,{},'Choose a second building or ',true);
+    await build({player,ui,game,msg:'Choose a second building or ',pausable:true});
     game.bigActionTaken += 0.5;
 }
 

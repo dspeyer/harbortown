@@ -1,29 +1,12 @@
-import { shuffle, safeCopy, subtractResources, addResources, countSymbol, checkDecks, countPile, buildings_by_number } from './utils.js';
-import { utilizeBuilding } from './actions.js';
+import { shuffle, subtractResources, addResources, countSymbol, countPile, buildings_by_number } from './utils.js';
+import { utilizeBuilding, build } from './actions.js';
 import {resources} from './data.js';
 
-export const building_firm = {name: 'Building Firm',
-                       symbols: ['🏠','🔨'],
-                       text: 'Build 1 building',
-                       action: async (player, ui, game, self, msg, pausable) => {
-                           if (!msg) msg = 'Choose a building to build';
-                           const bn = await ui.pickBuildingPlan(msg, {resources:player.resources, pausable});
-                           if (pausable && bn=='pause') throw "Paused";
-                           let plan = buildings_by_number[bn];
-                           if (!plan) throw "Not a building: "+bn;
-                           let idx;
-                           if ( (idx = checkDecks(plan.number, game)) != -1 ) {
-                               game.buildingPlans[idx].shift();
-                           } else {
-                               throw "Not buildable "+JSON.stringify(plan);
-                           }
-                           let buildcost = safeCopy(plan.buildcost);
-                           if (self && self.name=='Sawmill' && buildcost.wood > 0) { buildcost.wood -= 1; }
-                           subtractResources(player, buildcost);
-                           player.buildings.push(plan.number);
-                           game.log.push(plan.name);
-                       }
-                      };
+export const building_firm = { name: 'Building Firm',
+                               symbols: ['🏠','🔨'],
+                               text: 'Build 1 building',
+                               action: async (player, ui, game) => { await build({player,ui,game}); }
+                             };
 
 export const clientCheat = {};
 
@@ -85,10 +68,10 @@ export const starting_buildings = [
       value: 8,
       number: 'b3',
       action: async (player,ui,game,self) => {
-          await building_firm.action(player,ui,game,self);
+          await build({player,ui,game,msg:"Choose first building to build"});
           ui.update();
           try {
-              await building_firm.action(player,ui,game,self,'Choose a second building to build or ', true);
+              await build({player,ui,game,msg:'Choose a second building to build or ', pausable:true});
           } catch(e) {
               if (e=='canceled' || e=='nothing_to_choose') {
                   return;
@@ -425,7 +408,7 @@ export const buildings = [
      buildcost: {clay:1,iron:1},
      minplayers: 3,
      text: 'Build one building, save one wood',
-     action: async (player,ui,game,self) => { await building_firm.action(player, ui, game, self, "Choose building to saw"); }
+     action: async (player,ui,game,self) => { await build({player, ui, game, sawmill:true, msg:"Choose building to saw"}); }
     },
     
     {name: 'Clay Mound',
