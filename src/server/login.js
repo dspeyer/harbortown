@@ -52,14 +52,22 @@ export function showLogin(req,res,trouble) {
 }
 
 export async function handleLogin(req,res) {
-    const {email, pass} = req.body;
+    const {email, pass, sendemail} = req.body;
     console.log({email});
     let person = await colls.people.find({email}).collation(caseIns).next();
     console.log(person);
     if ( ! person ) return showLogin(req,res,true);
     let rp = await bcrypt.compare(pass, person.pwhash);
     console.log({rp});
-    if ( ! rp ) return showLogin(req,res,true);
+    if ( ! rp ) {
+        if (sendemail) {
+            sendLoginLink("Login Link", "This link will log you in", email);
+            res.send("Link Sent");
+            return;
+        } else {
+            return showLogin(req,res,true);
+        }
+    }
     console.log('success');
     loginSuccess(res, person.name, email);
 }

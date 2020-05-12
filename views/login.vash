@@ -9,6 +9,24 @@
              min-height: 16em;
              margin-top: calc( 50vh - 8em - 2em );
          }
+         .horiz {
+             display: flex;
+             flex-direction: row;
+             margin-bottom: 2em;
+         }
+         .horiz input {
+             margin-bottom: 0;
+         }
+         .thin {
+             flex-grow: 0;
+             background: linear-gradient(to right, #fff 0%, #fff 30%, #ddd 40%, #333 50%, #ddd 60%, #fff 70%, #fff 100%);
+             text-shadow: -1px -1px white, 1px 1px white;
+             font-weight: bold;
+             padding-top: 0.6em;
+         }
+         .horiz .pt {
+             padding-top: 1.2em;
+         }
         </style>
     </head>
     <body>
@@ -21,8 +39,21 @@
           <h1>Login</h1>
           Email Address
           <input name="email" class="text">
-          Password:
-          <input name="pass" type="password" class="text">
+          <div class="horiz">
+            <div>
+              Password:
+              <input name="pass" type="password" class="text">
+            </div>
+            <div class="thin">
+                OR
+            </div>
+            <div>
+                <div class="pt">
+                    <input type="checkbox" name="sendemail" id="sendemail">
+                    <label for="sendemail">Just send me an email</label>
+                </div>
+            </div>
+          </div>
           <input type="submit" value="Log In">
           <hr>
           Don't have an account here yet?  <a href="register">Register</a>
