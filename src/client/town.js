@@ -118,7 +118,8 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
 
 export function ButtonBar({myturn,feeding}) {
     let bat = gameState.bigActionTaken;
-    return (<div className="buttonbar">
+    let bg = ( gameState.players.length > 3 );
+    return (<div className="buttonbar" style={{fontSize: ( bg ? '10pt' : '14pt')}}>
               <CancelButton/>
               🌊
               { bat==0.5 ?
@@ -138,7 +139,7 @@ export function ButtonBar({myturn,feeding}) {
               <span className="miniOnly"><wbr/>🌊</span>
               <input type="button" value="Score" onClick={ui.showScore} />
               <input type="button" value="Log" onClick={ui.showLog} />
-              <input type="button" value="?" onClick={ui.showHelp} />
+              <input type="button" value={bg?"?":"Help"} onClick={ui.showHelp} />
               🌊
               <input type="button" value="Revert" onClick={revert} disabled={!myturn || !canRevert()} />
               <input type="button" value="Done" onClick={wrap.bind(null,nextTurn)} disabled={!myturn || !bat} />
