@@ -116,7 +116,7 @@ div.horiz {
     position: relative;
 }
 
-.shipStacks {
+.righthandstuff {
     grid-column-start: 2;
     grid-column-end: 3; 
     grid-row-start: 1; 
@@ -124,7 +124,11 @@ div.horiz {
     font-size: 10.5pt;
     margin: 4px 0;
     height: 144px;
+}
+
+.shipStacks {
     overflow-y: auto;
+    height: 80px;
 }
 
 .plans {

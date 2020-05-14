@@ -99,11 +99,13 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                       <ResourceStack type={r} number={resources[r]} holder={holders.townResources} hilite={gameState.hilites[r]} />
                   ))}
                 </div>
-                <div className="shipStacks">
+                <div className="righthandstuff">
                   <EndOfTurn turn={turn} />
-                  {['wood','iron','steel','luxury'].map((i)=>{
-                      return ships[i].length>0 && <MiniShip key={i} ship={[i,ships[i][0]]} later={ships[i].slice(1)}/>;
-                  })}
+                  <div className="shipStacks">
+                    {['wood','iron','steel','luxury'].map((i)=>{
+                        return ships[i].length>0 && <MiniShip key={i} ship={[i,ships[i][0]]} later={ships[i].slice(1)}/>;
+                    })}
+                  </div>
                 </div>
                 <div className="horiz buildings">{ buildings.map((bn)=>{  
                     return <Building bn={bn} key={bn} player={dbb[bn]} hilite={gameState.hilites[bn]} />;
