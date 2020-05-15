@@ -106,7 +106,6 @@ div.horiz {
     grid-row-end: 6;
     position: relative;
     white-space: nowrap;
-    font-size: 10pt;
     color: blue;
 }
 
