@@ -213,8 +213,8 @@ export async function utilizeBuilding(player, game, ui, building) {
             if (owner!='town') addResources(owner, building.entry);
             ui.update();
         } else if (pt.length) {
-            const entryres = await ui.pickPlayerResources(player, (res)=>resources[res].food,
-                                                          {msg:"Pick resources for entry cost: "+JSON.stringify(building.entry)});
+            const msg = "Pick resources for entry cost: "+pt.map((x)=>building.entry[x]+' '+x).join(' or ');
+            const entryres = await ui.pickPlayerResources(player, (res)=>resources[res].food, {msg});
             if (owner!='town') addResources(owner, entryres);
             if ( ! satisfies(entryres, building.entry) ) throw "Insufficient Entry Resources";
         }
