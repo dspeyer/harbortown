@@ -2,6 +2,24 @@ import { shuffle, subtractResources, addResources, countSymbol, countPile, build
 import { utilizeBuilding, build } from './actions.js';
 import {resources} from './data.js';
 
+function autoEnergy(res, q) {
+    let out = {};
+    for (let i of ['coke','charcoal','coal','wood']) {
+        out[i] = Math.min(res[i]||0, Math.floor(q/resources[i].energy));
+        console.log('aE1',i,res[i],q,out[i]);
+        q -= out[i] * resources[i].energy;
+    }
+    if (q>0) {
+        for (let i of ['charcoal','coal','coke']) {
+            if (res[i]>out[i]) {
+                out[i]+=1;
+                break;
+            }
+        }
+    }
+    return out;
+}
+
 export const building_firm = { name: 'Building Firm',
                                symbols: ['🏠','🔨'],
                                text: 'Build 1 building',
@@ -116,11 +134,24 @@ export const buildings = [
      minplayers: 1,
      text: '3 ϟ + boatload ⮕ value',
      action: async (player, ui, game) => {
-         const enres = await ui.pickPlayerResources(player, (x)=>resources[x].energy, "Choose energy to load ships with 3/ship");
+         const enres = await ui.pickPlayerResources(player, (x)=>resources[x].energy, {msg:"Choose energy to load ships with 3/ship"});
          const energy = countPile(enres,'energy');
          const nship = Math.floor(energy/3);
          const cap = capOfShips(player.ships, nship, game);
-         const sres = await ui.pickPlayerResources(player, (x)=>resources[x].value>0, "Choose goods to ship (max "+cap+")");
+         function auto(res) {
+             let out = {};
+             let rem = cap;
+             let opts = Object.keys(res).filter((x)=>resources[x].value>0);
+             let shipability = (x) => ((resources[x].value||0) - (resources[x].energy||0)/10 - (resources[x].food||0)/100);
+             opts.sort((a,b)=>shipability(b)-shipability(a));
+             for (let r of opts) {
+                 out[r] = Math.min(res[r],rem);
+                 rem -= out[r];
+                 if (!rem) break;
+             }
+             return out;
+         }
+         const sres = await ui.pickPlayerResources(player, (x)=>resources[x].value>0, {msg:"Choose goods to ship (max "+cap+")",auto});
          if (countPile(sres,'value',(x)=>1) > cap) throw "Too many goods";
          const v = countPile(sres,'value');
          addResources(player,{money:v});
@@ -148,7 +179,7 @@ export const buildings = [
      minplayers: 3,
      text: 'Sell adv for 1, basic for 1/3',
      action: async (player, ui) => {
-         const toSell = await ui.pickPlayerResources(player, (res) => (res!='money' && res!='loans'));
+         const toSell = await ui.pickPlayerResources(player, (res) => (res!='money' && res!='loans'), {auto:'all'});
          const adv = countPile(toSell,'advanced');
          const basic = countPile(toSell,'value',(x)=>1) - adv;
          if (basic%3 != 0) {
@@ -167,7 +198,7 @@ export const buildings = [
      minplayers: 1,
      text: 'coal ⮕ coke + money',
      action: async (player, ui) => {
-         const res = await ui.pickPlayerResources(player, (res)=>(res=='coal'));
+         const res = await ui.pickPlayerResources(player, (res)=>(res=='coal'), {auto:'all'});
          const n = res.coal;
          addResources(player,{coke:n,money:n});
      }
@@ -279,7 +310,13 @@ export const buildings = [
      minplayers: 1,
      text: '2 wheat + 1 ϟ ⮕ 2 bread + 1 money',
      action: async (player, ui) => {
-         const res = await ui.pickPlayerResources(player, (res) => (res=='wheat' || resources[res].energy>0));
+         function auto(res) {
+             console.log('bh auto', res);
+             let out = autoEnergy(res,Math.ceil((res.wheat-1)/2));
+             out.wheat = Math.min(res.wheat-1, 2*countPile(out,'energy'));
+             return out;
+         }
+         const res = await ui.pickPlayerResources(player, (res) => (res=='wheat' || resources[res].energy>0), {auto});
          const energy = countPile(res,'energy')
          if (2*energy < res.wheat) {
              throw "Not enough energy for that wheat";
@@ -300,7 +337,7 @@ export const buildings = [
      minplayers: 1,
      text: 'wood ⮕ charcoal',
      action: async (player, ui) => {
-         const res = await ui.pickPlayerResources(player, (res)=>(res=='wood'));
+         const res = await ui.pickPlayerResources(player, (res)=>(res=='wood'), {auto:'all'});
          addResources(player,{charcoal:res.wood});
      }
     },
@@ -315,6 +352,8 @@ export const buildings = [
      text: '1/2/3 wood ⮕ 5/6/7 money',
      action: async (player, ui) => {
          const res = await ui.pickPlayerResources(player, (res)=>(res=='wood'));
+         if (res.wood>3) throw "Too much wood (must be 1-3)";
+         if (!res.wood) throw "No wood!";
          addResources(player,{money:res.wood+4});
      }
     },
@@ -328,7 +367,9 @@ export const buildings = [
      minplayers: 1,
      text: 'fish + any ϟ ⮕ lox 1/2 money (max 6)',
      action: async (player, ui) => {
-         const res = await ui.pickPlayerResources(player, (res)=>(res=='fish' || resources[res].energy>0));
+         const res = await ui.pickPlayerResources(player,
+                                                  (res)=>(res=='fish' || resources[res].energy>0),
+                                                  {auto:(r)=>({fish:Math.min(r.fish,6), ...autoEnergy(r,1)})});
          if ( ! (res.fish > 0) ) throw "fish required";
          const energytokens = countPile(res,'energy',(x)=>1);
          if (energytokens == 0) throw "energy required";
@@ -358,7 +399,11 @@ export const buildings = [
      minplayers: 1,
      text: '5 ϟ + 1 iron ⮕ steel',
      action: async (player, ui) => {
-         const res = await ui.pickPlayerResources(player, (res)=>(res=='iron' || resources[res].energy>0));
+         function auto(res) {
+             let n = Math.min((res.coke||0),(res.iron||0)/2);
+             return {iron:n*2,coke:n};
+         }
+         const res = await ui.pickPlayerResources(player, (res)=>(res=='iron' || resources[res].energy>0), {auto});
          const energy = countPile(res,'energy');
          if (energy < res.iron*5) {
              throw "Not enough energy for that iron";
@@ -431,7 +476,7 @@ export const buildings = [
      minplayers: 1,
      text: 'cattle ⮕ meat + 1/2 hides',
      action: async (player, ui) => { 
-         const res = await ui.pickPlayerResources(player, (res)=>(res=='cattle'));
+         const res = await ui.pickPlayerResources(player, (res)=>(res=='cattle'), {auto:(r)=>({cattle:Math.max(r.cattle-2,1)})});
          addResources(player,{meat:res.cattle, hides:Math.floor(res.cattle/2)});
      }
     },
@@ -459,8 +504,13 @@ export const buildings = [
      buildcost: {wood:2,clay:1,iron:1},
      minplayers: 1,
      text: 'clay + 1/2 ϟ ⮕ brick + 1/2 money',
-     action: async (player, ui) => { 
-         const res = await ui.pickPlayerResources(player, (res)=>(res=='clay' || res=='brick' || resources[res].energy>0));
+     action: async (player, ui) => {
+         function auto(res) {
+             let out = autoEnergy(res,Math.ceil(res.clay/2));
+             out.clay = Math.min(res.clay, 2*countPile(out,'energy'));
+             return out;
+         }
+         const res = await ui.pickPlayerResources(player, (res)=>(res=='clay' || res=='brick' || resources[res].energy>0), {auto});
          const energy = countPile(res,'energy');
          const clay = (res.clay||0) + (res.brick||0);
          if (2*energy < clay) {

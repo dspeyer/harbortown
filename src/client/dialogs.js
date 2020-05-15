@@ -103,6 +103,16 @@ class PickResourcesDialog extends React.Component {
         this.setState({chosen});
     }
 
+    auto(cb) {
+        console.log('invoked auto with ',cb);
+        addResources(this.props.player, this.state.chosen);
+        let newState = cb(this.props.player.resources);
+        console.log({newState});
+        subtractResources(this.props.player, newState);
+        this.setState({chosen:newState});
+        ui.update();
+    }
+    
     onMove(ev) {
         if (!this.state.grabbed) return;
         if (ev.changedTouches) ev = ev.changedTouches[0];
@@ -140,6 +150,7 @@ class PickResourcesDialog extends React.Component {
                   <div className="prdstate">
                     { resourceElements }
                   </div>
+                  { this.props.auto && <input type="button" value="Auto Select" onClick={this.auto.bind(this,this.props.auto)} /> }
                   { (!this.props.uncancelable) && <input type="button" value="Cancel" onClick={closeSelf} /> }
                   <input type="button" value="Done" onClick={closeSelf}
                          disabled={this.props.n && Object.values(this.state.chosen).reduce((a,b)=>a+b,0)!=this.props.n} />
@@ -161,7 +172,10 @@ export async function pickResources(rl, n) {
 let pickPlayerResourcesWaiting = [];
 let pickPlayerResourcesLocked = false;
 
-export async function pickPlayerResources(player, filter, msg, uncancelable) {
+export async function pickPlayerResources(player, filter, opt_args) {
+    if (!opt_args) opt_args={};
+    let {msg, uncancelable, auto} = opt_args;
+    
     if (pickPlayerResourcesLocked) {
         let p = new Promise((resolve) => { pickPlayerResourcesWaiting.push(resolve); });
         await p;
@@ -171,8 +185,12 @@ export async function pickPlayerResources(player, filter, msg, uncancelable) {
     if (ui.setTab) ui.setTab(player);
 
     if (!msg) msg="Choose resources to send";
+    if (auto=='all') {
+        auto = (res) => Object.fromEntries(Object.entries(res).filter((x)=>filter(x[0])));
+    }
+    
     let dlobj=[];
-    const dlelem = <PickResourcesDialog msg={msg} out={dlobj} player={player} uncancelable={uncancelable}/>;
+    const dlelem = <PickResourcesDialog msg={msg} out={dlobj} player={player} uncancelable={uncancelable} auto={auto} />;
     const dl = showDialog(dlelem, dlobj);
     
     for (let r in player.resources) {
