@@ -99,10 +99,13 @@ async function replay_event(e, game, playfrom) {
         pickNextSpecialBuilding: rawget,
         pickBuilding: logged(bget, (x)=>x.name),
         pickPlayerBuilding: logged(bget, (x)=>x.name),
-        pickPlayerResources: (p,_,msg) => { let r = rawget();
+        pickShip: logged(rawget, (x)=>x),
+        pickPlayerResources: (p,_,opt) => { let r = rawget();
                                             subtractResources(p, r);
-                                            if (e[0]!='completeFeed') game.log.push(((msg && msg.indexOf('entry')!=-1)?'Entry: ':'Sent: ') +
-                                                                                    JSON.stringify(r) );
+                                            if (e[0]!='completeFeed') {
+                                                game.log.push(((opt && opt.msg && opt.msg.indexOf('entry')!=-1)?'Entry: ':'Sent: ') +
+                                                              JSON.stringify(r) );
+                                            }
                                             return r; },
         showMessage: (msg, personal) => { if (!personal) broadcastMessages.push(msg);},
         initUi: ()=>{},

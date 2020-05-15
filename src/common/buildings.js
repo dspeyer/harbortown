@@ -40,29 +40,37 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                 
                 action: async (player, ui, game, self) => {
                     let modernized = self.truegetmodernized(game);
-                    let res = await ui.pickPlayerResources(player, (res)=>{return res=='wood' || res=='iron' || res=='steel' ||
-                                                                                  (!modernized && res=='brick') ||
-                                                                                  resources[res].energy > 0;});
+                    let ship_type = await ui.pickShip(player, modernized);
+                    if (! game.ships[ship_type].length ) throw "No "+ship_type+" ships available to build";
+                    if (ship_type == 'luxury') subtractResources(player, {'steel':3});
+                    if (ship_type == 'steel') subtractResources(player, {'steel':2});
+                    if (ship_type == 'iron') subtractResources(player, {'iron':Math.min(4,player.resources.iron||0),
+                                                                        'steel':4-Math.min(4,player.resources.iron||0)});
+                    if (ship_type == 'wood') subtractResources(player, {'wood':5});
+                    if (ship_type != 'wood' && ! modernized) {
+                        try {
+                            subtractResources(player, {brick:1});
+                            self.truesetmodernized(game, true)
+                            modernized = true;
+                            game.log.push('Modernized');
+                        } catch (e) {
+                            throw e+" to modernize";
+                        }
+                    }
+                    ui.update();
+
+                    let msg = "Send 3ϟ (energy).";
+                    if (!modernized && player.resources.brick>0) msg += " (You may also send a brick to charitably modernize.)";
+                    let filter = (res)=>((!modernized && res=='brick') || resources[res].energy > 0);
+                    let res = await ui.pickPlayerResources(player, filter, {msg, auto: (res)=>autoEnergy(res,3)});
                     if (res.brick > 1) throw "Only one brick needed to modernize";
                     if ( ! modernized && res.brick>0) {
                         self.truesetmodernized(game, true)
                         modernized = true;
                         game.log.push('Modernized');
                     }
-                    if ((res.steel>0 || res.iron>0) && ! modernized) {
-                        throw "Only modernized wharf can use metal";
-                    }
-                    
-                    let ship_type;
-                    if (res.steel==3) ship_type='luxury';
-                    else if (res.steel==2) ship_type='steel';
-                    else if ( (res.steel||0) + (res.iron||0) == 4 ) ship_type='iron';
-                    else if (res.wood>=5) { res.wood -=5; ship_type='wood'; }
-                    else throw "Cannot deduce intended ship type";
-
                     if (countPile(res,'energy') < 3) throw "Not enough energy";
 
-                    if (game.ships[ship_type].length == 0) throw "No "+ship_type+" ships available to build";
                     game.log.push('€'+game.ships[ship_type][0]+' '+ship_type+' ship')
                     player.ships.push([ship_type,game.ships[ship_type].shift()]);
                 }

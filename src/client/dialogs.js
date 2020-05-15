@@ -5,6 +5,7 @@ import { gameState, ui } from './state.js';
 import { ResourceStack, ResourceTile } from './resources.js';
 import { annotate_log } from './net.js';
 import { Building } from './buildingui.js';
+import { Ship } from './ships.js';
 import { ship_feeds, ship_capacities, ship_prices, sym_names } from '../common/data.js';
 import { special_buildings } from '../common/buildings.js';
 import { safeCopy } from '../common/utils.js';
@@ -315,6 +316,31 @@ export async function pickPlayerBuilding(msg, player) {
     return buildings_by_number[bn];
 }    
 
+export async function pickShip(player, modernized) {
+    let out;
+    let p = showDialog(
+        <div className="pickShipDialog">
+          <h2>Which Ship Would You Like to Build?</h2>
+          {Object.entries(gameState.ships).filter((x)=>x[1].length).map(
+              (st)=> (
+                  <a className="dlgShipHolder" onClick={(ev)=>{out=st[0];closeSelf(ev);}}>
+                    <Ship ship={[st[0],st[1][0]]} />
+                      { ({wood:5,iron:4,steel:2,luxury:3})[st[0]]}
+                      {st[0]=='luxury' ? 'steel' : st[0]}
+                    +3ϟ
+                    {st[0]!='wood' && !modernized && <span>+1brick</span>}
+                  {st[0]=='iron' && !(player.resources.iron>=4) && player.resources.steel>0 && <p><i>Would use<br/> steel as iron</i></p>}
+                  </a> 
+              ))}
+          <hr/>
+          <input type="button" value="Cancel" onClick={closeSelf} />
+        </div>,
+        [{state:0}]);
+    await p;
+    annotate_log(out);
+    return out;
+}
+
 export function showScore() {
     const syms = ['🔨','🎣','🏠','🏢','🏭','🏛'];
     showDialog(
@@ -503,6 +529,7 @@ export function initDialogs() {
         pickPlayerBuilding,
         pickNextSpecialBuilding,
         pickBuildingPlan,
+        pickShip,
         showError,
         clearMessages,
         showScore,
