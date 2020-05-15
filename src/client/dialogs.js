@@ -214,6 +214,7 @@ export async function pickPlayerResources(player, filter, opt_args) {
         return picked;
         
     } finally {
+        clearAllClickTargets();
         pickPlayerResourcesLocked = false;
         if (pickPlayerResourcesWaiting.length) {
             pickPlayerResourcesWaiting.shift()();
