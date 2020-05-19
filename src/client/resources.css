@@ -74,10 +74,10 @@ div.stack {
     margin: 4px;
     position: relative;
     width: calc( 2em + 70px );
+    font-size: 12pt;
 }
 
 .townGrid div.stack {
-    font-size: 12pt;
     z-index: 1;
 }
 
