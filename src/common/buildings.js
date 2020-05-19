@@ -13,8 +13,16 @@ function autoEnergy(res, q) {
         for (let i of ['charcoal','coal','coke']) {
             if (res[i]>out[i]) {
                 out[i]+=1;
+                q -= resources[i].energy;
                 break;
             }
+        }
+    }
+    if (q<0) {
+        for (let i of ['coal','charcoal','wood']) {
+            let c = Math.min(out[i], -Math.floor(q/resources[i].energy));
+            out[i] -= c;
+            q += c * resources[i].energy;
         }
     }
     return out;
@@ -498,7 +506,7 @@ export const buildings = [
      minplayers: 1,
      text: '3 iron (4 if 6ϟ)',
      action: async (player, ui) => { 
-         const res = await ui.pickPlayerResources(player, (res)=>resources[res].energy);
+         const res = await ui.pickPlayerResources(player, (res)=>resources[res].energy, {auto:(r)=>autoEnergy(r,6)});
          const energy = countPile(res, 'energy');
          addResources(player,{iron:3+(energy>=6)});
      }
