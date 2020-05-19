@@ -56,6 +56,12 @@ export function completeFeed(player, game, ui, food) {
 export function nextTurn(player, game, ui) {
     game.currentAdvancer += 1;
     if ((game.currentTurn >= game.events.length) && (game.currentAdvancer >= game.players.length)) {
+        for (let p of game.players) {
+            while (p.resources.loans>0 && p.resources.money>5) {
+                p.resources.loans -= 1;
+                p.resources.money -= 5;
+            }
+        }
         ui.endGame(game);
         return;
     }
