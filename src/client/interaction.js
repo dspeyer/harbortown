@@ -97,7 +97,6 @@ function hlStartFade() {
 }
 ui.hlStartFade = hlStartFade;    
 
-
 export function showDialog(elem, elemobjwrap) {
     const dialogs = document.getElementById('nonroot');
     const holder = document.createElement('div');

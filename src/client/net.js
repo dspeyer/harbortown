@@ -5,7 +5,6 @@ import { gameState, ui } from './state.js';
 
 let log = [];
 let socket;
-let onNGS = null;
 
 export function onMessage(raw)  {
     const msg = JSON.parse(raw.data);
@@ -15,13 +14,9 @@ export function onMessage(raw)  {
         ui.update();
         ui.showHilites();
         if ( ! document.hidden ) ui.hlStartFade();
-        if (onNGS) {
-            onNGS();
-            onNGS = null;
-        }
     }
     if (msg.msg) {
-        ui.showMessage(msg.msg);
+        ui.showMessage(msg.msg, /* personal= */ true);
     }
     if (msg.init && ! msg.foodDemand) {
         const p = gameState.players.filter((p)=>p.isMe)[0];
@@ -35,8 +30,7 @@ export function onMessage(raw)  {
     }
 }
 
-export function init(_onNGS) {
-    onNGS = _onNGS;
+export function init() {
     let hn = window.location.hostname;
     let port = window.location.port;
     let id = window.location.search.substr(1);
