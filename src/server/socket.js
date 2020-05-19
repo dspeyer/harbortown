@@ -38,7 +38,7 @@ function clean(game, email) {
     return out;
 }
 
-async function demandPlayerResources(game, player, filter, msg, feeding) {
+async function demandPlayerResources(game, player, filter, {msg, uncancelable}) {
     console.log(' PPR in fooddemand for '+JSON.stringify(player));
     for (let s of sockets_by_id[game.id]) {
         if (s.readyState==3) { //TODO: named constant
