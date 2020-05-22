@@ -126,8 +126,12 @@ div.horiz {
 }
 
 .shipStacks {
-    overflow-y: auto;
     height: 80px;
+}
+
+.ssn4 {
+    transform: scale(0.9);
+    transform-origin: top;
 }
 
 .plans {

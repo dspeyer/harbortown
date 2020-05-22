@@ -101,7 +101,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
                 </div>
                 <div className="righthandstuff">
                   <EndOfTurn turn={turn} />
-                  <div className="shipStacks">
+                  <div className={"shipStacks ssn"+Object.values(ships).filter(x=>x.length).length}>
                     {['wood','iron','steel','luxury'].map((i)=>{
                         return ships[i].length>0 && <MiniShip key={i} ship={[i,ships[i][0]]} later={ships[i].slice(1)}/>;
                     })}
