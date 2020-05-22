@@ -258,7 +258,7 @@ export async function resumeConstruction(player, game, ui) {
 }
 
 export async function buy(player, game, ui) {
-    const bn = await ui.pickBuildingPlan('Choose a building or ship to buy', {for_buy: true});
+    const bn = await ui.pickBuildingPlan('Choose a building or ship to buy', {for_buy: true, resources: player.resources});
     if (bn in game.ships) {
         subtractResources(player, { money: ship_prices[bn] });
         game.log.push('€'+game.ships[bn][0]+' bn ship for €'+ship_prices[bn])

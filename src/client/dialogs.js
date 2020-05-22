@@ -278,23 +278,50 @@ export async function pickBuilding() {
     return buildings_by_number[bn];
 }
 
-export async function pickBuildingPlan(msg, {resource, for_buy, pausable}) {
+function res_gte(a,b) {
+    if ((b.clay && b.brick) || (b.iron && b.steel)) throw "TODO: handle this case";
+    for (let r in b) {
+        if (a[r]>=b[r]) continue;
+        if (r=='clay' && (a.clay||0)+(a.brick||0) >= b.clay) continue;
+        if (r=='iron' && (a.iron||0)+(a.steel||0) >= b.iron) continue;
+        return false;
+    }
+    return true;
+}
+
+export async function pickBuildingPlan(msg, {resources, for_buy, pausable}) {
     if (ui.setTab) ui.setTab('bps');
     allInstructions[0].set(msg, pausable);
+    let shown = false;
     for (let deck of gameState.buildingPlans) {
         if (deck.length) {
-            holders.buildings[deck[0]].show(for_buy && buildings_by_number[deck[0]].price);
+            let b = buildings_by_number[deck[0]];
+            if ( !resources ||
+                 (for_buy && resources.money>=(b.price||b.value)) ||
+                 (!for_buy && res_gte(resources, b.buildcost))) {
+                holders.buildings[deck[0]].show(for_buy && b.price);
+                shown = true;
+            }
         }
     }
     if (for_buy) {
-        for (let b of gameState.townBuildings) {
-            holders.buildings[b].show(for_buy && buildings_by_number[b].price);
-        }
-        for (let m in gameState.ships) {
-            if (gameState.ships[m].length) {
-                holders.miniships[m].show(ship_prices[m]);
+        for (let bi of gameState.townBuildings) {
+            let b = buildings_by_number[bi];
+            if (resources.money>=(b.price||b.value)) {
+                holders.buildings[bi].show(for_buy && b.price);
+                shown = true;
             }
         }
+        for (let m in gameState.ships) {
+            if (gameState.ships[m].length && resources.money>=ship_prices[m]) {
+                holders.miniships[m].show(ship_prices[m]);
+                shown = true;
+            }
+        }
+    }
+    if (!shown && !pausable) {
+        clearAllClickTargets();
+        throw "Nothing you can afford";
     }
     let p = new Promise((resolve, reject)=>{ ui.resolve=resolve; ui.reject = reject; });
     let bn = await p;
