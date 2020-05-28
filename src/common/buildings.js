@@ -416,7 +416,7 @@ export const buildings = [
      text: '5 ϟ + 1 iron ⮕ steel',
      action: async (player, ui) => {
          function auto(res) {
-             let n = Math.min((res.coke||0),(res.iron||0)/2);
+             let n = Math.floor(Math.min((res.coke||0),(res.iron||0)/2));
              return {iron:n*2,coke:n};
          }
          const res = await ui.pickPlayerResources(player, (res)=>(res=='iron' || resources[res].energy>0), {auto});
