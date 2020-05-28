@@ -117,7 +117,7 @@ export function closeSelf(ev) {
     let holder;
     for (holder=ev.target; holder.className!='dialogholder'; holder=holder.parentNode);
     if (ev.target.value=='Cancel') {
-        holder.reject('Cancelled');
+        holder.reject('canceled');
     } else {
         holder.resolve();
     }
