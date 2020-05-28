@@ -235,6 +235,7 @@ export async function build({player, ui, game, sawmill, msg, pausable}) {
     if (!msg) msg = 'Choose a building to build';
     const bn = await ui.pickBuildingPlan(msg, {resources:player.resources, pausable});
     if (pausable && bn=='pause') throw "Paused";
+    if (bn === undefined) throw "canceled"; // This can happen when replaying a 1 building construction firm
     let plan = buildings_by_number[bn];
     if (!plan) throw "Not a building: "+bn;
     let idx;
