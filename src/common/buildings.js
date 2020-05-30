@@ -20,9 +20,10 @@ function autoEnergy(res, q) {
     }
     if (q<0) {
         for (let i of ['coal','charcoal','wood']) {
-            let c = Math.min(out[i], -Math.floor(q/resources[i].energy));
+            let c = Math.min(out[i], -Math.ceil(q/resources[i].energy));
             out[i] -= c;
             q += c * resources[i].energy;
+            if (q>=0) break;
         }
     }
     return out;
