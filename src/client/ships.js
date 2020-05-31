@@ -6,13 +6,13 @@ import './ships.css';
 export function MiniShip({ship,later}) {
     const [mat, value] = ship;
     let title = mat+" ship (feeds "+gameState.shipStats[mat].feed+", ships "+gameState.shipStats[mat].ship+") €"+value;
-    if (later) title += "; then "+later.map((x)=>"€"+x).join(", ");
+    if (later && later.length) title += "; then "+later.map((x)=>"€"+x).join(", ");
     if ( ! holders.miniships ) holders.miniships = {};
     return <span className="miniship" title={title} >
              {later && <ClickTarget holder={holders.miniships} data={mat} />}
              <img src={'images/'+mat+'.png'}/>
              <span className="cost">{value}</span>
-             {later && <span className="cnt">(+{later.length})</span> }
+             {later && !!later.length && <span className="cnt">(+{later.length})</span> }
            </span>;
 }
 
