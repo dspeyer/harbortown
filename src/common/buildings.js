@@ -2,6 +2,7 @@ import { shuffle, subtractResources, addResources, countSymbol, countPile, build
 import { utilizeBuilding, build } from './actions.js';
 import {resources} from './data.js';
 
+
 function autoEnergy(res, q) {
     let out = {};
     for (let i of ['coke','charcoal','coal','wood']) {
@@ -547,8 +548,9 @@ export const buildings = [
      text: '2+🏠 standard goods; pick next special building',
      action: async (player, ui, game) => {
          const wanted = 2+countSymbol(player,'🏠');
-         const goods = await ui.pickResources(['wood','clay','iron','fish','wheat','cattle','hides','coal'], wanted);
-         if (Object.values(goods).reduce((a,b)=>a+b,0)!=wanted) throw "Wrong number of goods";
+         const opts = ['wood','clay','iron','fish','wheat','cattle','hides','coal'];
+         const goods = await ui.pickResources(opts, wanted);
+         if (Object.values(goods).reduce((a,b)=>a+b,0)!=Math.min(wanted,opts.length)) throw "Wrong number of goods";
          addResources(player, goods);
          const nsb = await ui.pickNextSpecialBuilding();
          if (nsb != game.specialBuildings[0]) {
@@ -774,8 +776,9 @@ export const special_buildings = [
      text: 'nonsteel adv per 🏠',
      action: async (player, ui) => {
          const wanted = countSymbol(player,'🏠');
-         const goods = await ui.pickResources(['charcoal','brick','lox','bread','meat','leather','coke'], wanted);
-         if (Object.values(goods).reduce((a,b)=>a+b,0)!=wanted) throw "Wrong number of goods";
+         const opts = ['charcoal','brick','lox','bread','meat','leather','coke'];
+         const goods = await ui.pickResources(opts, wanted);
+         if (Object.values(goods).reduce((a,b)=>a+b,0)!=Math.min(wanted,opts.length)) throw "Wrong number of goods";
          addResources(player, goods);
      }
     },

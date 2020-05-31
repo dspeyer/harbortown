@@ -161,11 +161,16 @@ class PickResourcesDialog extends React.Component {
 }
 
 export async function pickResources(rl, n) {
-    let dlobj=[];
-    const msg = 'Pick '+n+' of the following resources';
-    const dlelem = <PickResourcesDialog msg={msg} out={dlobj} offers={rl} n={n} />;
-    const dl = showDialog(dlelem, dlobj);
-    const resources = (await dl).chosen;
+    if (n < rl.length) {
+        let dlobj=[];
+        const msg = 'Pick '+n+' of the following resources';
+        const dlelem = <PickResourcesDialog msg={msg} out={dlobj} offers={rl} n={n} />;
+        const dl = showDialog(dlelem, dlobj);
+        var resources = (await dl).chosen;
+    } else {
+        showMessage("No need to choose, you get all of them");
+        var resources = Object.fromEntries( rl.map((i)=>[i,1]) );
+    }
     annotate_log(resources);
     return resources;
 }
