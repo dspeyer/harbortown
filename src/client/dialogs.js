@@ -122,6 +122,21 @@ class PickResourcesDialog extends React.Component {
         this.setState({x:this.state.x+dx, y:this.state.y+dy, grabbed:[ev.clientX,ev.clientY]});
     }
     
+    okDisabled() {
+        if (this.props.n) return Object.values(this.state.chosen).reduce((a,b)=>a+b,0) != this.props.n;
+        if (this.props.req) return !this.full();
+        return false;
+    }
+
+    full() {
+        if (!this.props.req) return false;
+        for (let k in this.props.req) {
+            if (this.state.chosen[k] == this.props.req[k]) return true;
+            if (countPile(this.state.chosen, k) >= this.props.req[k]) return true;
+        }
+        return false;
+    }
+
     render(){
         let resourceElements=[];
         if (this.props.offers) {
@@ -154,7 +169,7 @@ class PickResourcesDialog extends React.Component {
                   { this.props.auto && <input type="button" value="Auto Select" onClick={this.auto.bind(this,this.props.auto)} /> }
                   { (!this.props.uncancelable) && <input type="button" value="Cancel" onClick={closeSelf} /> }
                   <input type="button" value="Done" onClick={closeSelf}
-                         disabled={this.props.n && Object.values(this.state.chosen).reduce((a,b)=>a+b,0)!=this.props.n} />
+                         disabled={this.okDisabled()} />
                   <br/>{this.state.dbg}
                 </div>);
     }
@@ -180,7 +195,7 @@ let pickPlayerResourcesLocked = false;
 
 export async function pickPlayerResources(player, filter, opt_args) {
     if (!opt_args) opt_args={};
-    let {msg, uncancelable, auto} = opt_args;
+    let {msg, uncancelable, auto, req} = opt_args;
     
     if (pickPlayerResourcesLocked) {
         let p = new Promise((resolve) => { pickPlayerResourcesWaiting.push(resolve); });
@@ -196,7 +211,7 @@ export async function pickPlayerResources(player, filter, opt_args) {
     }
     
     let dlobj=[];
-    const dlelem = <PickResourcesDialog msg={msg} out={dlobj} player={player} uncancelable={uncancelable} auto={auto} />;
+    const dlelem = <PickResourcesDialog msg={msg} out={dlobj} player={player} uncancelable={uncancelable} auto={auto} req={req} />;
     const dl = showDialog(dlelem, dlobj);
     
     for (let r in player.resources) {
@@ -205,6 +220,7 @@ export async function pickPlayerResources(player, filter, opt_args) {
         }
     }
     ui.resolve = (res) => {
+        if (dlobj[0].full()) return;
         subtractResources(player, {[res]:1} );
         dlobj[0].incr(res);
         ui.update();

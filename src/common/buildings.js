@@ -72,7 +72,7 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                     let msg = "Send 3ϟ (energy).";
                     if (!modernized && player.resources.brick>0) msg += " (You may also send a brick to charitably modernize.)";
                     let filter = (res)=>((!modernized && res=='brick') || resources[res].energy > 0);
-                    let res = await ui.pickPlayerResources(player, filter, {msg, auto: (res)=>autoEnergy(res,3)});
+                    let res = await ui.pickPlayerResources(player, filter, {msg, auto:(res)=>autoEnergy(res,3), req:{energy:3}});
                     if (res.brick > 1) throw "Only one brick needed to modernize";
                     if ( ! modernized && res.brick>0) {
                         self.truesetmodernized(game, true)

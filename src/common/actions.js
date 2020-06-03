@@ -42,7 +42,8 @@ export function completeFeed(player, game, ui, food) {
         ui.pickPlayerResources(player,
                                (r)=>resources[r].food,
                                {msg:player.name+': that was '+fed+' food, now eat another '+player.hunger+' food',
-                                uncancelable:true}).
+                                uncancelable:true,
+                                req:{food:player.hunger}}).
             then(completeFeed.bind(null, player, game, ui));
     } else {
         delete player.hunger
@@ -138,7 +139,8 @@ export function nextTurn(player, game, ui) {
                     ui.pickPlayerResources(p,
                                            (r)=>resources[r].food,
                                            {msg:p.name+': eat '+p.hunger+' food',
-                                            uncancelable:true}).
+                                            uncancelable:true,
+                                            req:{food:p.hunger}}).
                         then(completeFeed.bind(null,p,game,ui));
                 } else {
                     console.log('letting the server worry about feeding ',p);
@@ -220,7 +222,7 @@ export async function utilizeBuilding(player, game, ui, building) {
             ui.update();
         } else if (pt.length) {
             const msg = "Pick resources for entry cost: "+pt.map((x)=>building.entry[x]+' '+x).join(' or ');
-            const entryres = await ui.pickPlayerResources(player, (res)=>resources[res].food, {msg});
+            const entryres = await ui.pickPlayerResources(player, (res)=>resources[res].food, {msg, req:building.entry});
             if (owner!='town') addResources(owner, entryres);
             if ( ! satisfies(entryres, building.entry) ) throw "Insufficient Entry Resources";
         }

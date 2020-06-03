@@ -24,7 +24,7 @@ export function onMessage(raw)  {
     }
     if (msg.foodDemand) {
         const p = gameState.players.filter((p)=> p.isMe)[0];
-        ui.pickPlayerResources(p, (r)=> resources[r].food>0, {msg: msg.foodDemand, uncancelable:true}).
+        ui.pickPlayerResources(p, (r)=> resources[r].food>0, {msg: msg.foodDemand, uncancelable:true, req:{food:p.hunger}}).
             then((food)=>{
                 socket.send(JSON.stringify([['completeFeed',food]]))});
     }

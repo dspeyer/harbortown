@@ -20,7 +20,7 @@ if (window.location.search) {
     net.init();
 } else {
     restore(gameState,
-            newGame(['Daniel','Nick','Eppilito'],//'Pei-hsin','Ken Horan'],
+            newGame(['Daniel','Nick','Eppilito','Pei-hsin','Ken Horan'],
                     initBuildings));
     for (let p of gameState.players) p.isMe = true;
     gameState.desc = 'Client-only game';
