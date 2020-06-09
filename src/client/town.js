@@ -119,6 +119,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
 export function ButtonBar({myturn,feeding}) {
     let bat = gameState.bigActionTaken;
     let bg = ( gameState.players.length > 3 );
+    let hasLoans = (gameState.players[gameState.currentPlayer].loans > 0);
     return (<div className="buttonbar" style={{fontSize: ( bg ? '10pt' : '14pt')}}>
               <CancelButton/>
               🌊
@@ -133,7 +134,7 @@ export function ButtonBar({myturn,feeding}) {
               🌊
               <input type="button" value="Buy" onClick={wrap.bind(null,buy)} disabled={!myturn || feeding} />
               <input type="button" value="Sell" onClick={wrap.bind(null,sell)} disabled={!myturn || feeding} />
-              <input type="button" value="Repay" onClick={wrap.bind(null,repayLoan)} disabled={!myturn || feeding} />
+              <input type="button" value="Repay" onClick={wrap.bind(null,repayLoan)} disabled={!myturn || feeding || !hasLoans} />
               <input type="button" value="C" onClick={wrap.bind(null,cheat)} style={{display:'none'}}/>
               🌊
               <span className="miniOnly"><wbr/>🌊</span>
