@@ -95,6 +95,7 @@ class PickResourcesDialog extends React.Component {
             this.setState({chosen});
             addResources(this.props.player, { [res]: 1 });
             ui.update();
+            window.setTimeout(()=>{holders.playerResources[this.props.player.number][res].show();}, 15);
         }
     }
 
