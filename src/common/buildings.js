@@ -508,7 +508,8 @@ export const buildings = [
      minplayers: 1,
      text: '3 iron (4 if 6ϟ)',
      action: async (player, ui) => { 
-         const res = await ui.pickPlayerResources(player, (res)=>resources[res].energy, {auto:(r)=>autoEnergy(r,6)});
+         const res = await ui.pickPlayerResources(player, (res)=>resources[res].energy,
+                                                  {auto:(r)=>autoEnergy(r,6), msg:"Send 6ϟ (energy) if you want a 4th iron"});
          const energy = countPile(res, 'energy');
          addResources(player,{iron:3+(energy>=6)});
      }
