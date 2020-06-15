@@ -119,7 +119,7 @@ export function Town({advancers, current, resources, buildings, plans, ships, tu
 export function ButtonBar({myturn,feeding}) {
     let bat = gameState.bigActionTaken;
     let bg = ( gameState.players.length > 3 );
-    let hasLoans = (gameState.players[gameState.currentPlayer].loans > 0);
+    let hasLoans = (gameState.players[gameState.currentPlayer].resources.loans > 0);
     return (<div className="buttonbar" style={{fontSize: ( bg ? '10pt' : '14pt')}}>
               <CancelButton/>
               🌊
