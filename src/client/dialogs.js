@@ -156,7 +156,7 @@ class PickResourcesDialog extends React.Component {
             }
         }
         return (<div className={'pickResourcesDialog grabbed'+!!this.state.grabbed}
-                     style={{top:this.state.y-(this.state.grabbed?2:0),left:this.state.x-(this.state.grabbed?2:0)}}
+                     style={{top:this.state.y,left:this.state.x}}
                      onMouseDown={(ev)=>{this.setState({grabbed:[ev.clientX,ev.clientY]})}}
                      onTouchStart={(ev)=>{this.setState({grabbed:[ev.clientX,ev.clientY]})}}
                      onMouseUp={()=>{this.setState({grabbed:false})}}
