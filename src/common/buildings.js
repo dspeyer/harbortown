@@ -426,6 +426,9 @@ export const buildings = [
          if (energy < res.iron*5) {
              throw "Not enough energy for that iron";
          }
+         if (energy > res.iron*5) {
+             ui.showMessage((energy-res.iron*5)+' excess energy went to waste', /*personal=*/true);
+         }
          addResources(player,{steel:res.iron});
      }
     },
