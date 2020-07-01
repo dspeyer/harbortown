@@ -5,6 +5,7 @@ import { Ship } from './ships.js';
 import { gameState } from './state.js';
 import { holders } from './interaction.js';
 import { onMessage } from './net.js';
+import { safeCopy, buildings_by_number } from '../common/utils.js';
 import './player.css';
 
 export function Player(props) {
@@ -30,6 +31,8 @@ export function Player(props) {
     } else {
         feed = ()=>{};
     }
+    let buildings = safeCopy(props.player.buildings);
+    buildings.sort((a,b)=>(buildings_by_number[a].name.localeCompare(buildings_by_number[b].name)));
     return <div className={'player' +
                            (player.color!='khaki' ? ' darkbkg' : '') +
                            (player.number==gameState.currentPlayer ? ' current' : '')}
@@ -38,7 +41,7 @@ export function Player(props) {
              { player.hunger>0 && <h1 class={'hunger isme'+player.isMe} onClick={feed} >Awaiting {player.hunger} food</h1> }
              <div className="stuff">
                { resourceElements }
-               { props.player.buildings.map( (bn)=>{
+               { buildings.map( (bn)=>{
                    return <Building bn={bn} key={bn} player={props.dbb[bn]} hilite={gameState.hilites[bn]} />
                } ) }
                { props.player.ships.map( (s,i)=>{
