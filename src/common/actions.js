@@ -1,5 +1,5 @@
 import { resources, drop_tiles, player_colors, game_events, ship_capacities, ship_feeds, ship_prices } from './data.js';
-import { buildings_by_number, shuffle, addResources, satisfies, subtractResources, checkDecks, countPile, findOwner, appendKey, safeCopy } from './utils.js';
+import { buildings_by_number, shuffle, addResources, satisfies, subtractResources, checkDecks, countPile, findOwner, appendKey, safeCopy, calcScore } from './utils.js';
 
 export function newGame(players, initBuildings) {
     let game = {}
@@ -69,6 +69,17 @@ export function nextTurn(player, game, ui) {
                 p.resources.money -= 5;
                 game.log.push(p.name+' repayed loan');
             }
+        }
+        game.winner = null;
+        game.highScore = -99999;
+        for (let p of game.players) {
+            let score = calcScore(p);
+            game.log.push(p.name+' scored '+score.total);
+            if (score.total > game.highScore) {
+                game.winner = p.name;
+                game.highScore = score.total;
+            }
+            game.log.push(game.winner+' wins');
         }
         ui.endGame(game);
         return;

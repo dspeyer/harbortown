@@ -8,7 +8,7 @@ import { Building } from './buildingui.js';
 import { Ship } from './ships.js';
 import { ship_feeds, ship_capacities, ship_prices, sym_names } from '../common/data.js';
 import { special_buildings } from '../common/buildings.js';
-import { safeCopy } from '../common/utils.js';
+import { safeCopy, calcScore } from '../common/utils.js';
 import { holders, showDialog, allInstructions, clearAllClickTargets, closeSelf } from './interaction.js';
 
 export async function pickTownResource() {
@@ -418,22 +418,18 @@ export function showScore() {
               <th className="shipping" title="Goods shippable">⛴</th>
             </tr>
             {gameState.players.map((p)=>{
-                let buildings = p.buildings.map((x)=>buildings_by_number[x]);
-                let scoreCols = [
-                    p.resources.money || 0,
-                    buildings.map((x)=>x.value).reduce((a,b)=>a+b,0),
-                    p.ships.map((x)=>x[1]).reduce((a,b)=>a+b,0),
-                    buildings.map((x)=>x.endgameBonus?x.endgameBonus(p):0).reduce((a,b)=>a+b,0),
-                    -7 * (p.resources.loans||0)
-                ];
-                let ts = scoreCols.reduce((a,b)=>a+b, 0);
+                let score = calcScore(p);
                 let usr = countPile(p.resources,'value');
                 return (<tr>
-                          <td>{p.name}</td>
-                          { scoreCols.map((v) => <td>{v}</td>) }
-                          <td>{ts}</td>
+                          <th>{p.name}</th>
+                          <td>{score.money}</td>
+                          <td>{score.buildings}</td>
+                          <td>{score.ships}</td>
+                          <td>{score.bonus}</td>
+                          <td>{score.loans}</td>
+                          <td>{score.total}</td>
                           <td className="usr">{usr}</td>
-                          <td className="usr">{usr+ts}</td>
+                          <td className="usr">{usr+score.total}</td>
                           {syms.map((s)=>{ return (<td className="syms">{countSymbol(p,s)}</td>);})}
                           <td className="shipping">
                             { p.ships. map((x)=>ship_feeds[x[0]][gameState.players.length]). reduce((a,b)=>a+b,0) }

@@ -41,7 +41,12 @@
                 <td>@g.desc</td>
                 <td>@g.players.map((p)=>{return p.name;}).join(', ')</td>
                 @if (g.ended) {
-                  <td>Over @model.ago(g.ended).toString().replace(/([0-9]*\.[0-9]).*/,'$1') days ago</td>
+                  <td>
+                    Over @model.ago(g.ended).toString().replace(/([0-9]*\.[0-9]).*/,'$1') days ago
+                    @if (g.winner) {
+                      <em>@g.winner won with @g.highScore points</em>
+                    }
+                  </td>
                 } else {
                   <td>@g.players[g.currentPlayer].name</td>
                 }

@@ -125,3 +125,14 @@ export function appendKey(obj, key, val) {
     }
     obj[key].push(val);
 }
+
+export function calcScore(player) {
+    let buildings_list = player.buildings.map((x)=>buildings_by_number[x]);
+    let money = player.resources.money || 0;
+    let buildings = buildings_list.map((x)=>x.value).reduce((a,b)=>a+b,0);
+    let ships = player.ships.map((x)=>x[1]).reduce((a,b)=>a+b,0);
+    let bonus = buildings_list .map((x)=>x.endgameBonus?x.endgameBonus(player):0) .reduce((a,b)=>a+b,0);
+    let loans = -7 * (player.resources.loans||0);
+    let total = money + buildings + ships + bonus + loans;
+    return { money, buildings, ships, bonus, loans, total };
+}
