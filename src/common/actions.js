@@ -28,6 +28,11 @@ export function newGame(players, initBuildings) {
     game.hilites = {};
     game.sockets = []; // Used by server
     initBuildings(game);
+    game.log.push([1, 'Initial Setup']);
+    game.log.push('Advancers: '+game.advancers.map((x)=>x.join('/')).join(', '));
+    for (let i of game.buildingPlans) {
+        game.log.push('Building Plan Pile: '+i.map((x)=>buildings_by_number[x].name).join(', '));
+    }
     nextTurn(null, game, /*ui=*/ {update:()=>{}});
     return game;
 }
@@ -57,10 +62,12 @@ export function completeFeed(player, game, ui, food) {
 export function nextTurn(player, game, ui) {
     game.currentAdvancer += 1;
     if ((game.currentTurn >= game.events.length) && (game.currentAdvancer >= game.players.length)) {
+        game.log.push([1,'End of Game']);
         for (let p of game.players) {
             while (p.resources.loans>0 && p.resources.money>5) {
                 p.resources.loans -= 1;
                 p.resources.money -= 5;
+                game.log.push(p.name+' repayed loan');
             }
         }
         ui.endGame(game);
@@ -264,7 +271,7 @@ export async function buy(player, game, ui) {
     const bn = await ui.pickBuildingPlan('Choose a building or ship to buy', {for_buy: true, resources: player.resources});
     if (bn in game.ships) {
         subtractResources(player, { money: ship_prices[bn] });
-        game.log.push('€'+game.ships[bn][0]+' bn ship for €'+ship_prices[bn])
+        game.log.push('€'+game.ships[bn][0]+' '+bn+' ship for €'+ship_prices[bn])
         player.ships.push([ bn, game.ships[bn].shift() ]);
     } else if (bn in buildings_by_number) {
         let b = buildings_by_number[bn];
@@ -299,6 +306,7 @@ export async function sell(player, game, ui) {
     if (idx == -1) throw "Cannot sell";
     player.buildings.splice(idx,1);
     addResources(player, {money:Math.floor(b.value/2)});
+    game.log.append('Got €'+Math.floor(b.value/2));
     game.townBuildings.push(b.number);
     if (b.number in game.disks_by_building) {
         delete game.disks_by_building[b.number];

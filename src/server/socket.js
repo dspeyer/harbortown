@@ -67,7 +67,7 @@ async function demandPlayerResources(game, player, filter, {msg, uncancelable}) 
 async function announceGameEnd(game) {
     for (let p of game.players) {
         let email = p.email;
-        let person = await colls.people.find({email:player.email}).collation(caseIns).next();
+        let person = await colls.people.find({email:p.email}).collation(caseIns).next();
         if (person.turnemails && person.validated) {
             sendLoginLink('Game Over',
                           "Game #"+game.id+" ("+game.desc+") has finished",
@@ -99,12 +99,12 @@ async function replay_event(e, game, playfrom) {
         pickNextSpecialBuilding: rawget,
         pickBuilding: logged(bget, (x)=>x.name),
         pickPlayerBuilding: logged(bget, (x)=>x.name),
-        pickShip: logged(rawget, (x)=>x),
+        pickShip: logged(rawget, (x)=>"chose "+x+" ship"),
         pickPlayerResources: (p,_,opt) => { let r = rawget();
                                             subtractResources(p, r);
                                             if (e[0]!='completeFeed') {
-                                                game.log.push(((opt && opt.msg && opt.msg.indexOf('entry')!=-1)?'Entry: ':'Sent: ') +
-                                                              JSON.stringify(r) );
+                                                game.log.push( ((opt && opt.msg && opt.msg.indexOf('entry')!=-1)?'Entry: ':'Sent: ') +
+                                                               Object.entries(r).filter((x)=>x[1]).map((x)=>x.join(':')).join(', ') );
                                             }
                                             return r; },
         showMessage: (msg, personal) => { if (!personal) broadcastMessages.push(msg);},
