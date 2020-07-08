@@ -317,7 +317,7 @@ export async function sell(player, game, ui) {
     if (idx == -1) throw "Cannot sell";
     player.buildings.splice(idx,1);
     addResources(player, {money:Math.floor(b.value/2)});
-    game.log.append('Got €'+Math.floor(b.value/2));
+    game.log.push('Got €'+Math.floor(b.value/2));
     game.townBuildings.push(b.number);
     if (b.number in game.disks_by_building) {
         delete game.disks_by_building[b.number];
