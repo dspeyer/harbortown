@@ -45,7 +45,7 @@ const wharf = { getname(){ return this.modernized ? 'Modernized Wharf' : 'Wharf'
                 buildcost: {wood:2,clay:2,iron:2},
                 truegetmodernized(game){ return (this.number in game.wharfModernization); },
                 truesetmodernized(game, v){ game.wharfModernization[this.number] = v; },
-                getmodernized() { return clientCheat.game ? this.truegetmodernized(clientCheat.game) : false; },
+                getmodernized() { try{ return this.truegetmodernized(clientCheat.game); } catch (e) { return false; } },
                 gettext(){ return this.modernized ? 'Build a ship' : 'Build wooden ship, or metal w/ modernization'; },
                 
                 action: async (player, ui, game, self) => {
