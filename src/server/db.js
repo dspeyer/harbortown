@@ -4,15 +4,16 @@ const { MongoClient } = mongodb;
 export let colls = {};
 
 const mgHostPort = process.env.MONGO_HOSTPORT || 'localhost:27017';
+const mgProto = process.env.MONGO_PROTO || 'mongodb';
 const mgDb = process.env.MONGO_DB || 'harbortown';
 let mgUserPass = ''
 if (process.env.MONGO_PASS) {
     mgUserPass = 'harbortown:'+process.env.MONGO_PASS+'@';
 }
 
-console.log({mgUserPass,mgDb,mgHostPort,url:"mongodb://"+mgUserPass+mgHostPort+'/'+mgDb});
+console.log({mgUserPass,mgDb,mgHostPort,url:mgProto+"://"+mgUserPass+mgHostPort+'/'+mgDb});
 
-MongoClient.connect("mongodb://"+mgUserPass+mgHostPort+'/'+mgDb, (err,client) => {
+MongoClient.connect(mgProto+"://"+mgUserPass+mgHostPort+'/'+mgDb, (err,client) => {
     if (err) throw err;
     let db = client.db(mgDb);
     let cw = ['games','seeds','ids','people']
