@@ -11,8 +11,6 @@ if (process.env.MONGO_PASS) {
     mgUserPass = 'harbortown:'+process.env.MONGO_PASS+'@';
 }
 
-console.log({mgUserPass,mgDb,mgHostPort,url:mgProto+"://"+mgUserPass+mgHostPort+'/'+mgDb});
-
 MongoClient.connect(mgProto+"://"+mgUserPass+mgHostPort+'/'+mgDb, (err,client) => {
     if (err) throw err;
     let db = client.db(mgDb);
